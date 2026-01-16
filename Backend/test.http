@@ -1,0 +1,164 @@
+@BASE_URL = http://localhost:5000/api
+@TOKEN = Anujthedon101
+@ORDER_ID = YOUR_ORDER_ID_HERE
+@PRODUCT_ID = YOUR_PRODUCT_ID_HERE
+
+### =========================
+### AUTH
+### =========================
+
+### Register
+POST {{BASE_URL}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "testuser@gmail.com",
+  "password": "123456"
+}
+
+###
+
+### Login
+POST {{BASE_URL}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@gmail.com",
+  "password": "123456"
+}
+
+### =========================
+### USER PRODUCTS
+### =========================
+
+### Get all products
+GET {{BASE_URL}}/user/products
+
+###
+
+### Get single product
+GET {{BASE_URL}}/user/products/{{PRODUCT_ID}}
+
+### =========================
+### CART
+### =========================
+
+### Add to cart
+POST {{BASE_URL}}/user/cart/add/{{PRODUCT_ID}}
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "quantity": 1
+}
+
+###
+
+### Get full cart
+GET {{BASE_URL}}/user/cart
+Authorization: Bearer {{TOKEN}}
+
+### =========================
+### CHECKOUT
+### =========================
+
+### Checkout (Create Order)
+POST {{BASE_URL}}/user/checkout
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "address": {
+    "name": "Anuj Rawat",
+    "phone": "9876543210",
+    "city": "Delhi",
+    "pincode": "110045",
+    "street": "Janakpuri"
+  }
+}
+
+### =========================
+### PAYMENTS
+### =========================
+
+### Razorpay Payment
+POST {{BASE_URL}}/payment/razorpay
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "orderId": "{{ORDER_ID}}"
+}
+
+###
+
+### Stripe Payment
+POST {{BASE_URL}}/payment/stripe
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "orderId": "{{ORDER_ID}}"
+}
+
+###
+
+### Verify Payment (Success Simulation)
+POST {{BASE_URL}}/payment/verify
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "orderId": "{{ORDER_ID}}"
+}
+
+### =========================
+### USER ORDERS
+### =========================
+
+### Get my orders
+GET {{BASE_URL}}/user/orders
+Authorization: Bearer {{TOKEN}}
+
+### =========================
+### ADMIN
+### =========================
+
+### Get all orders (Admin)
+GET {{BASE_URL}}/admin/orders
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### Update order status
+PUT {{BASE_URL}}/admin/orders/{{ORDER_ID}}
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "status": "Shipped"
+}
+
+###
+
+### Inventory summary
+GET {{BASE_URL}}/admin/inventory/summary
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### Inventory products
+GET {{BASE_URL}}/admin/inventory/products
+Authorization: Bearer {{TOKEN}}
+
+###
+
+### Update product stock
+PUT {{BASE_URL}}/admin/inventory/update-stock/{{PRODUCT_ID}}
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "stock": 20
+}
