@@ -1,13 +1,14 @@
 import { OrderModel } from "../../../Schema/OrderSchema.js";
 import { CartModel } from "../../../Schema/Cart_Schema.js";
 import { ProductModel } from "../../../Schema/Product_Schema.js";
+import { sendOrderEmail } from "../../Helpers/Email.js";
 
 export const verifyPayment = async (req, res) => {
   try {
-    const { orderId } = req.body;
+    const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
     const userId = req.userId;
 
-    const order = await OrderModel.findById(orderId);
+    const order = await OrderModel.findById(orderId).populate("userId"); // Populate user data if needed here, or rely on customerDetails if saved
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -37,8 +38,16 @@ export const verifyPayment = async (req, res) => {
       await product.save();
     }
 
-    // 2️⃣ Mark order as paid
+    // 2️⃣ Mark order as paid and save payment details
     order.status = "Paid";
+    order.paymentId = razorpay_payment_id;
+    order.razorpayOrderId = razorpay_order_id;
+    order.razorpaySignature = razorpay_signature;
+
+    // Ensure paymentResult object structure if schema supports it or just flat fields above
+    // Schema in step 177 showed flat fields: paymentId, razorpayOrderId, razorpaySignature
+    // So sticking to flat assignment.
+
     await order.save();
 
     // 3️⃣ Clear user cart
@@ -47,6 +56,15 @@ export const verifyPayment = async (req, res) => {
       cart.items = [];
       await cart.save();
     }
+
+    // 4️⃣ Send Email to Admin
+    // Pass order and user details. 
+    // If order.userId is populated, we use that. 
+    // Or if valid customerDetails exists in order schema (step 177 showed it does), use that.
+    const userDetails = order.customerDetails || (order.userId ? { name: order.userId.name, email: order.userId.email } : {});
+
+    // Run asynchronously, don't block response
+    sendOrderEmail(order, userDetails, razorpay_payment_id).catch(err => console.error("Email send failed", err));
 
     res.json({
       success: true,

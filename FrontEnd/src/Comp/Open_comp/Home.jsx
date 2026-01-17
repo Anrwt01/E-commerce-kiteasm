@@ -84,10 +84,6 @@ const Home = () => {
                       src={getImageUrl(product)}
                       alt={product.name}
                       className="product-image"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/images/products/kite.jpg";
-                      }}
                     />
                   </div>
 

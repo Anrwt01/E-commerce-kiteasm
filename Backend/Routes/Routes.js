@@ -10,7 +10,7 @@ import { Register } from "../Http/Controller/Auth/Register.js";
 
 /* 🛒 User Product & Cart Controllers */
 import { User_All_product } from "../Http/Controller/User/Products.js";
-import { User_Single_prod } from "../Http/Controller/User/user1Prod.js";
+import { User_Single_prod } from "../Http/Controller/User/user1Prod.js"; // Renamed import
 import { addToCart } from "../Http/Controller/User/Add_to_cart.js";
 import { Full_cart } from "../Http/Controller/User/Full_cart.js";
 import { removeFromCart } from "../Http/Controller/User/Remove_cart.js";
@@ -18,6 +18,7 @@ import { updateUserDetails } from "../Http/Controller/User/updateUserDetails.js"
 
 /* 📦 Order & Checkout Controllers */
 import { Checkout } from "../Http/Controller/User/Checkout.js";
+import { SendContactEmail } from '../Http/Controller/Open_panel/ContactController.js';
 import { All_product as UserOrders } from "../Http/Controller/User/All_orders.js";
 
 /* 💳 Payment Controllers */
@@ -27,10 +28,10 @@ import { verifyPayment } from "../Http/Controller/Payment/VerifyPayment.js";
 
 /* 🛠 Admin Controllers */
 import { AdminALLorder } from "../Http/Controller/Admin_panel/allOrder.js";
-import { Order_Update } from "../Http/Controller/Admin_panel/Order.js";
+import { Order_Update, getSingleOrder } from "../Http/Controller/Admin_panel/Order.js";
 import { New_prod } from "../Http/Controller/Admin_panel/New_prod.js";
 import { Update_prod } from "../Http/Controller/Admin_panel/Update_Prod.js";
-import { All_product } from "../Http/Controller/Admin_panel/Product_all.js";
+import { All_product, Delete_prod } from "../Http/Controller/Admin_panel/Product_all.js";
 import { Single_prod_details } from "../Http/Controller/Admin_panel/Single_product.js";
 
 // /* 📊 Admin Inventory Controllers */
@@ -51,9 +52,10 @@ router.post("/auth/register", Register);
 /* ===========================
    USER PRODUCTS
 =========================== */
+// Public Routes
 router.get("/user/products", User_All_product);
-router.get("/user/products/:Prod_id", User_Single_prod);
-
+router.get("/user/products/:Prod_id", User_Single_prod); // Use :Prod_id to match controller
+router.post("/contact", SendContactEmail);
 /* ===========================
    USER CART
 =========================== */
@@ -91,6 +93,13 @@ router.put(
    Order_Update
 );
 
+router.get(
+   "/admin/orders/:id",
+   verifyme,
+   verifyRole,
+   getSingleOrder
+);
+
 router.put("/user/profile/update", verifyme, updateUserDetails);
 
 
@@ -119,10 +128,17 @@ router.get(
 );
 
 router.put(
-   "/admin/products/:id",
+   "/admin/products/:Prod_id",
    verifyme,
    verifyRole,
    Update_prod
+);
+
+router.delete(
+   "/admin/products/:Prod_id",
+   verifyme,
+   verifyRole,
+   Delete_prod
 );
 
 // /* ===========================

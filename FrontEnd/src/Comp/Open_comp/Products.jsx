@@ -48,16 +48,20 @@ const Products = () => {
             key={product._id}
             onClick={() => navigate(`/products/${product._id}`)}
           >
-            <img src={getImageUrl(product)} alt={product.name} />
+            <div className="product-image-wrapper">
+              <img src={getImageUrl(product)} alt={product.name} />
+            </div>
 
-            <h3>{product.name}</h3>
-            <p className="price">₹{product.price}</p>
+            <div className="product-info-minimal">
+              <h3 className="product-name-minimal">{product.name}</h3>
+              <p className="product-price-minimal">₹{product.price}</p>
 
-            {product.stock === 0 ? (
-              <span className="out-stock">Out of Stock</span>
-            ) : (
-              <span className="in-stock">In Stock</span>
-            )}
+              {product.stock === 0 ? (
+                <span className="stock-pill-minimal out-stock">Out of Stock</span>
+              ) : (
+                <span className="stock-pill-minimal in-stock">In Stock</span>
+              )}
+            </div>
           </div>
         ))}
       </div>

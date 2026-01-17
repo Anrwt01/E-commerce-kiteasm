@@ -1,5 +1,6 @@
 import { OrderModel } from "../../../Schema/OrderSchema.js";
 import { CartModel } from "../../../Schema/Cart_Schema.js";
+import { ProductModel } from "../../../Schema/Product_Schema.js";
 
 
 export const Checkout = async (req, res) => {
@@ -17,9 +18,23 @@ export const Checkout = async (req, res) => {
     }
 
     let totalAmount = 0;
-    cart.items.forEach(item => {
+
+    // 🔍 Validate Stock & Calculate Total
+    for (const item of cart.items) {
+      const product = await ProductModel.findById(item.productId);
+
+      if (!product) {
+        return res.status(404).json({ message: `Product not found: ${item.productId}` });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Out of stock: ${product.name}. Available: ${product.stock}`
+        });
+      }
+
       totalAmount += item.price * item.quantity;
-    });
+    }
 
     const order = await OrderModel.create({
       userId,

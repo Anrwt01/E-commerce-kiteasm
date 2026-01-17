@@ -1,0 +1,236 @@
+.my-orders-container {
+    padding: 120px 20px 80px;
+    max-width: 1200px;
+    margin: auto;
+    min-height: 90vh;
+    font-family: 'Outfit', sans-serif;
+}
+
+.page-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 60px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
+}
+
+.loading-spinner-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 0;
+}
+
+.empty-orders-state {
+    text-align: center;
+    padding: 100px 40px;
+    background: var(--bg-card);
+    border-radius: 40px;
+    border: 1px solid var(--glass-border);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.empty-orders-state h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-main);
+}
+
+.empty-orders-state p {
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+.start-shopping-btn {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: 0 10px 30px rgba(255, 77, 77, 0.3);
+}
+
+.start-shopping-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(255, 77, 77, 0.4);
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.order-card-premium {
+    background: var(--bg-card);
+    border-radius: 32px;
+    border: 1px solid var(--glass-border);
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.order-card-premium:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.order-header-main {
+    padding: 30px 40px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.order-tag {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 6px 14px;
+    border-radius: 100px;
+}
+
+.order-date {
+    margin-top: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.order-status-group {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.status-pill {
+    padding: 8px 18px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-pill.paid,
+.status-pill.delivered {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.status-pill.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.status-pill.failed,
+.status-pill.cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.total-price-tag {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.order-items-grid {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.order-item-compact {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.item-img-box {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.item-img-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.item-info-compact h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+.item-meta-compact {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    opacity: 0.4;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .order-header-main {
+        padding: 25px;
+    }
+
+    .order-items-grid {
+        padding: 25px;
+        grid-template-columns: 1fr;
+    }
+
+    .total-price-tag {
+        font-size: 1.4rem;
+    }
+}

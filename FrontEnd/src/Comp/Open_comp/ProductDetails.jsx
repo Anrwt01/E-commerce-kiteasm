@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./ProductDetails.css";
 
@@ -7,6 +7,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProduct();
@@ -56,7 +57,9 @@ const ProductDetails = () => {
         { quantity: 1 },
         { headers: { Authorization: token } }
       );
-      alert("Added to cart!");
+      // Redirect to cart for better flow
+      // alert("Added to cart!"); 
+      navigate("/cart");
     } catch (error) {
       console.error("Add to cart error", error);
       alert("Failed to add to cart");

@@ -1,95 +1,163 @@
 .dashboard-container {
-    min-height: 80vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f8f9fa;
-    padding: 20px;
+    padding: 120px 20px 80px;
+    max-width: 1200px;
+    margin: auto;
+    min-height: 90vh;
 }
 
-.dashboard-card {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    max-width: 800px;
-    width: 100%;
+.dashboard-header {
     text-align: center;
+    margin-bottom: 60px;
+    animation: fadeInDown 0.8s ease-out;
 }
 
 .dashboard-title {
-    font-size: 2.5rem;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
 }
 
 .dashboard-subtitle {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 40px;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    margin-top: 10px;
 }
 
+.dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* About Section in Dashboard */
+.dashboard-about-section {
+    padding: 40px;
+    border-radius: 32px;
+    text-align: left;
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+.dashboard-about-section h3 {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.dashboard-about-section p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    max-width: 900px;
+}
+
+.dashboard-stats {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.stat-pill {
+    padding: 8px 16px;
+    background: rgba(255, 77, 77, 0.1);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Grid Options */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
+    opacity: 0;
 }
 
 .dashboard-option {
-    background: #fff;
-    border: 2px solid #eee;
-    padding: 30px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    background: var(--bg-card);
+    padding: 40px 30px;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    transition: var(--transition-smooth);
+    text-align: center;
     text-decoration: none;
     color: inherit;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
 }
 
 .dashboard-option:hover {
-    transform: translateY(-5px);
-    border-color: #ff6b6b;
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.1);
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .option-icon {
-    font-size: 2rem;
-    background: #fff0f0;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: #ff6b6b;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
 }
 
 .option-title {
-    font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
 }
 
 .option-desc {
-    font-size: 0.9rem;
-    color: #888;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.dashboard-actions {
+    text-align: center;
+    margin-top: 20px;
 }
 
 .logout-btn {
-    background: #333;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: var(--transition-smooth);
 }
 
 .logout-btn:hover {
-    background: #000;
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

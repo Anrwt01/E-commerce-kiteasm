@@ -1,7 +1,7 @@
 import { ProductModel } from "../../../Schema/Product_Schema.js";
 
 export const Update_prod = async (req, res) => {
-  const { Prod_id } = req.query;
+  const { Prod_id } = req.params;
   const { price, stock } = req.body;
 
   try {

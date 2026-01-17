@@ -1,0 +1,140 @@
+.all-orders-container {
+    padding: 120px 20px 80px;
+    background-color: var(--bg-dark);
+    min-height: 100vh;
+    font-family: 'Outfit', sans-serif;
+    max-width: 1400px;
+    margin: auto;
+}
+
+.all-orders-container h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 50px;
+    letter-spacing: -1px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.orders-table-wrapper {
+    background: var(--bg-card);
+    border-radius: 32px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.orders-table th {
+    padding: 25px;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.orders-table td {
+    padding: 25px;
+    color: var(--text-main);
+    font-size: 1rem;
+    border-bottom: 1px solid var(--glass-border);
+    transition: var(--transition-fast);
+}
+
+.orders-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.orders-table tr:last-child td {
+    border-bottom: none;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.status-processing {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.status-shipped {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.status-delivered {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.status-cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.view-btn {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.view-btn:hover {
+    color: var(--accent);
+    transform: translateX(5px);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .all-orders-container {
+        padding-top: 100px;
+    }
+}

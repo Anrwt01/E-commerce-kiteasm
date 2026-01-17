@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = () => {
     const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
 
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(!!localStorage.getItem('token'));
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(false);
+        navigate('/login');
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -16,14 +24,13 @@ const Navbar = () => {
             }
         };
 
+        // Check token on mount and update user state
         const token = localStorage.getItem('token');
-        if (token) {
-            setUser(true);
-        }
+        setUser(!!token);
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [scrolled]);
+    }, [scrolled, localStorage.getItem('token')]); // Re-run if token changes (though React doesn't auto-sense LS changes, this helps on re-renders)
 
     return (
         <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
@@ -33,16 +40,26 @@ const Navbar = () => {
                 </div>
 
                 <div className="navbar-links">
-                    <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
-                    <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link>
+                    {!user ? (
+                        <>
+                            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
+                            <Link to="/about" className={location.pathname === '/about' ? 'active' : ''}>About</Link>
+                        </>
+                    ) : (
+                        <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>Dashboard</Link>
+                    )}
                     <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact</Link>
+                    {user && (
+                        <Link to="/products" className={location.pathname === '/products' ? 'active' : ''}>Products</Link>
+                    )}
                 </div>
 
                 <div className="navbar-auth">
                     {user ? (
                         <>
                             <Link to="/cart" className="nav-btn login-nav" style={{ marginRight: '10px' }}>Cart</Link>
-                            <Link to="/dashboard" className="nav-btn login-nav">Dashboard</Link>
+                            <Link to="/orders" className="nav-btn login-nav" style={{ marginRight: '10px' }}>Orders</Link>
+                            <button onClick={handleLogout} className="nav-btn register-nav" style={{ cursor: 'pointer' }}>Logout</button>
                         </>
                     ) : (
                         <>

@@ -1,21 +1,17 @@
-
 import { ProductModel } from "../../../Schema/Product_Schema.js";
 
+export const New_prod = async (req, res) => {
+  const { name, description, price, stock, category, images } = req.body;
 
-
-
-export const New_prod = async (req,res)=>{
-      const { name, description, price, stock, category } = req.body;
-
-      
-
-      
-try{
-     if (!name || !description || !price || stock === undefined || !category) {
+  try {
+    if (!name || !description || !price || stock === undefined || !category) {
       return res.status(400).json({
         message: "All fields are required"
       });
     }
+
+    // Use provided images or fallback
+    const productImages = images && images.length > 0 ? images : [{ url: "/products/default.jpg" }];
 
     const product = await ProductModel.create({
       name,
@@ -23,7 +19,7 @@ try{
       price,
       stock,
       category,
-      images: [{ url: "/products/default.jpg" }] // static image example
+      images: productImages
     });
 
     return res.status(201).json({
@@ -37,4 +33,3 @@ try{
     });
   }
 }
-

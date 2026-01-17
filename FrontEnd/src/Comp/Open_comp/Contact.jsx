@@ -1,7 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import "./Contact.css"
 
 const Contact = () => {
+  const [formData, setFormData] = useState({ email: "", message: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await axios.post("http://localhost:5000/api/contact", formData);
+      alert("Message sent successfully!");
+      setFormData({ email: "", message: "" });
+    } catch (error) {
+      console.error("Contact error:", error);
+      alert("Failed to send message.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       {/* Title Section */}
@@ -19,7 +42,7 @@ const Contact = () => {
 
             {/* Contact Form */}
             <div className="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <h4 className="mtext-105 cl2 txt-center p-b-30">
                   Send Us A Message
                 </h4>
@@ -28,7 +51,10 @@ const Contact = () => {
                   <input
                     className="stext-111 cl2 plh3 size-116 p-l-62 p-r-30"
                     type="email"
+                    name="email"
                     placeholder="Your Email Address"
+                    value={formData.email}
+                    onChange={handleChange}
                     required
                   />
                   <img
@@ -41,16 +67,21 @@ const Contact = () => {
                 <div className="bor8 m-b-30">
                   <textarea
                     className="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25"
+                    name="message"
                     placeholder="How can we help you?"
+                    value={formData.message}
+                    onChange={handleChange}
                     required
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
+                  disabled={loading}
                   className="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer"
+                  style={{ opacity: loading ? 0.7 : 1 }}
                 >
-                  Submit
+                  {loading ? "Sending..." : "Submit"}
                 </button>
               </form>
             </div>
