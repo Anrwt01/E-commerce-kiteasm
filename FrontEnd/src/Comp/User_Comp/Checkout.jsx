@@ -9,20 +9,8 @@ const Checkout = () => {
     const [totalAmount, setTotalAmount] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const [address, setAddress] = useState({
-        street: "",
-        city: "",
-        state: "",
-        pincode: "",
-        country: "India",
-        phone: ""
-    });
 
-    useEffect(() => {
-        fetchCart();
-    }, []);
-
-    const fetchCart = async () => {
+     const fetchCart = async () => {
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get("http://localhost:5000/api/user/cart", {
@@ -41,6 +29,21 @@ const Checkout = () => {
             navigate("/cart");
         }
     };
+
+    const [address, setAddress] = useState({
+        street: "",
+        city: "",
+        state: "",
+        pincode: "",
+        country: "India",
+        phone: ""
+    });
+
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+   
 
     const handleChange = (e) => {
         setAddress({ ...address, [e.target.name]: e.target.value });

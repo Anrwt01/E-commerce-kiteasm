@@ -7,12 +7,12 @@ export const User_Single_prod =async (req,res)=>{
     try {
 const product = await ProductModel.findById(Prod_id);
 
-    if (!product || !product.isActive) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found"
-      });
-    }
+    // if (!product || !product.isActive) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Product not found"
+    //   });
+    // }
 
    return res.status(200).json({
             Message : "Single Product DEtails",

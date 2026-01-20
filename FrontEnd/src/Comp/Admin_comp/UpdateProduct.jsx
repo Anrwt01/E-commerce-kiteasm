@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import "./AddProduct.css"; // Reusing default form CSS
+import { 
+  ArrowLeftIcon, 
+  ArrowPathIcon, 
+  WrenchScrewdriverIcon,
+  PhotoIcon
+} from "@heroicons/react/24/outline";
 
 const UpdateProduct = () => {
     const navigate = useNavigate();
@@ -21,16 +26,9 @@ const UpdateProduct = () => {
     const fetchProductDetails = async (id) => {
         try {
             const token = localStorage.getItem("token");
-            // Use existing endpoint
             const res = await axios.get(`http://localhost:5000/api/admin/products/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            // The controller Single_prod_details likely returns { success: true, product: {...} }
-            // Let's verify typically, or handle common structures.
-            // Assuming res.data.product
-            // But wait, "User_Single_prod" might differ from "Single_prod_details"
-            // Let's check Routes.js -> Lines 114-119: router.get("/admin/products/:Prod_id", ..., Single_prod_details);
-            // I'll assume res.data.product or res.data
 
             const product = res.data.product || res.data;
 
@@ -45,21 +43,14 @@ const UpdateProduct = () => {
             setLoading(false);
         } catch (error) {
             console.error("Fetch product error:", error);
-            alert("Failed to fetch product details.");
             navigate("/admin/all-products");
         }
     };
 
     useEffect(() => {
-        if (productId) {
-            fetchProductDetails(productId);
-        } else {
-            alert("No product ID provided!");
-            navigate("/admin/all-products");
-        }
+        if (productId) fetchProductDetails(productId);
+        else navigate("/admin/all-products");
     }, [productId]);
-
-
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -69,7 +60,6 @@ const UpdateProduct = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-
             const payload = {
                 ...formData,
                 images: [{ url: formData.imageUrl }]
@@ -79,104 +69,94 @@ const UpdateProduct = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            alert("Product updated successfully!");
+            alert("Manifest Updated Successfully.");
             navigate("/admin/all-products");
         } catch (error) {
-            console.error("Update product error:", error);
-            alert("Failed to update product.");
+            alert("Failed to update product specs.");
         }
     };
 
-    if (loading) return <div className="add-product-container">Loading...</div>;
+    const styles = {
+        container: { backgroundColor: '#f8fafc', minHeight: '100vh', padding: '140px 24px 100px' },
+        card: { maxWidth: '850px', margin: '0 auto', background: 'white', padding: '48px', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 20px 50px rgba(0,0,0,0.04)' },
+        input: { width: '100%', padding: '14px 18px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '14px', outline: 'none', marginBottom: '20px', transition: 'all 0.2s' },
+        label: { display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#94a3b8', marginBottom: '8px', marginLeft: '4px' }
+    };
+
+    if (loading) return (
+        <div style={{ ...styles.container, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <ArrowPathIcon style={{ width: '40px', color: '#0ea5e9' }} className="animate-spin" />
+        </div>
+    );
 
     return (
-        <div className="add-product-container">
-            <form className="add-product-form" onSubmit={handleSubmit}>
-                <h1>Update Product</h1>
-
-                <div className="form-group">
-                    <label>Product Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        className="form-input"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Description</label>
-                    <textarea
-                        name="description"
-                        className="form-textarea"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Price</label>
-                    <input
-                        type="number"
-                        name="price"
-                        className="form-input"
-                        value={formData.price}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Stock Quantity</label>
-                    <input
-                        type="number"
-                        name="stock"
-                        className="form-input"
-                        value={formData.stock}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Category</label>
-                    <select
-                        name="category"
-                        className="form-select"
-                        value={formData.category}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Category</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Kites">Kites</option>
-                        <option value="Accessories">Accessories</option>
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label>Image URL</label>
-                    <input
-                        type="url"
-                        name="imageUrl"
-                        className="form-input"
-                        value={formData.imageUrl}
-                        onChange={handleChange}
-                        required // Optional if you want to allow no image
-                    />
-                    {formData.imageUrl && (
-                        <img src={formData.imageUrl} alt="Preview" className="image-preview" />
-                    )}
-                </div>
-
-                <button type="submit" className="submit-btn">
-                    Update Product
+        <div style={styles.container}>
+            <div style={{ maxWidth: '850px', margin: '0 auto', marginBottom: '32px' }}>
+                <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ArrowLeftIcon width={16} /> Cancel Modification
                 </button>
-            </form>
+            </div>
+
+            <div style={styles.card}>
+                <div style={{ marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0ea5e9', marginBottom: '12px' }}>
+                        <WrenchScrewdriverIcon style={{ width: '18px' }} />
+                        <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase' }}>Engineering Dept</span>
+                    </div>
+                    <h1 style={{ fontSize: '36px', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1.5px' }}>Modify Unit Specs<span style={{ color: '#0ea5e9' }}>.</span></h1>
+                    <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Product Reference: {productId.slice(-6).toUpperCase()}</p>
+                </div>
+
+                <form onSubmit={handleSubmit}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                        {/* LEFT: Core Data */}
+                        <div>
+                            <label style={styles.label}>Identity</label>
+                            <input type="text" name="name" value={formData.name} onChange={handleChange} required style={styles.input} />
+
+                            <label style={styles.label}>Valuation (₹)</label>
+                            <input type="number" name="price" value={formData.price} onChange={handleChange} required style={styles.input} />
+
+                            <label style={styles.label}>Inventory Capacity</label>
+                            <input type="number" name="stock" value={formData.stock} onChange={handleChange} required style={styles.input} />
+                        </div>
+
+                        {/* RIGHT: Meta Data */}
+                        <div>
+                            <label style={styles.label}>Category</label>
+                            <select name="category" value={formData.category} onChange={handleChange} required style={styles.input}>
+                                <option value="Kites">Kites</option>
+                                <option value="Decor">Decor</option>
+                                <option value="Gear">Gear</option>
+                                <option value="Accessories">Accessories</option>
+                            </select>
+
+                            <label style={styles.label}>Visual Manifest URL</label>
+                            <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required style={styles.input} />
+
+                            <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', height: '108px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                {formData.imageUrl ? (
+                                    <img src={formData.imageUrl} alt="Preview" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    <PhotoIcon style={{ width: '32px', color: '#cbd5e1' }} />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '32px' }}>
+                        <label style={styles.label}>Technical Description</label>
+                        <textarea name="description" value={formData.description} onChange={handleChange} required style={{ ...styles.input, height: '120px', resize: 'none' }} />
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        style={{ width: '100%', padding: '18px', background: '#0f172a', color: 'white', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: '800', letterSpacing: '1px', cursor: 'pointer', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                    >
+                        <ArrowPathIcon width={20} strokeWidth={2.5} /> COMMIT CHANGES TO DATABASE
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };

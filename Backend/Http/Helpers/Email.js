@@ -2,13 +2,18 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+export const transporter = nodemailer.createTransport({
+  host: "smtp.zoho.in",        // India users
+  // host: "smtp.zoho.com",   // Global users
+  port: 465,
+  secure: true,               // MUST be true for 465
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // Zoho App Password
+  },
 });
+
+
 
 export const sendOrderEmail = async (order, user, paymentId) => {
     try {

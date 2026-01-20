@@ -4,7 +4,7 @@ import { ProductModel } from "../../../Schema/Product_Schema.js";
 // Get User Cart
 export const getCart = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const userId = req.userId;
         let cart = await CartModel.findOne({ userId }).populate("items.productId");
 
         if (!cart) {
@@ -21,8 +21,12 @@ export const getCart = async (req, res) => {
 // Add Item to Cart
 export const addToCart = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const userId = req.userId;
         const { productId, quantity = 1 } = req.body;
+
+        
+        console.log(productId)
+        console.log(typeof productId)
 
         const product = await ProductModel.findById(productId);
         if (!product) return res.status(404).json({ message: "Product not found" });
@@ -65,8 +69,7 @@ export const addToCart = async (req, res) => {
 // Remove Item from Cart
 export const removeFromCart = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const { productId } = req.params;
+       
 
         let cart = await CartModel.findOne({ userId });
         if (!cart) return res.status(404).json({ message: "Cart not found" });

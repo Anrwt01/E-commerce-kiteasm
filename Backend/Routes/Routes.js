@@ -11,10 +11,11 @@ import { Register } from "../Http/Controller/Auth/Register.js";
 /* 🛒 User Product & Cart Controllers */
 import { User_All_product } from "../Http/Controller/User/Products.js";
 import { User_Single_prod } from "../Http/Controller/User/user1Prod.js"; // Renamed import
-import { addToCart } from "../Http/Controller/User/Add_to_cart.js";
-import { Full_cart } from "../Http/Controller/User/Full_cart.js";
-import { removeFromCart } from "../Http/Controller/User/Remove_cart.js";
+// import { addToCart } from "../Http/Controller/User/Add_to_cart.js";
+// import { Full_cart } from "../Http/Controller/User/Full_cart.js";
+// import { removeFromCart } from "../Http/Controller/User/Remove_cart.js";
 import { updateUserDetails } from "../Http/Controller/User/updateUserDetails.js";
+import {getCart, removeFromCart , addToCart}  from "../Http/Controller/User/Cart_Controller.js"
 
 /* 📦 Order & Checkout Controllers */
 import { Checkout } from "../Http/Controller/User/Checkout.js";
@@ -33,6 +34,7 @@ import { New_prod } from "../Http/Controller/Admin_panel/New_prod.js";
 import { Update_prod } from "../Http/Controller/Admin_panel/Update_Prod.js";
 import { All_product, Delete_prod } from "../Http/Controller/Admin_panel/Product_all.js";
 import { Single_prod_details } from "../Http/Controller/Admin_panel/Single_product.js";
+import { updateOrderStatus } from "../Http/Controller/Admin_panel/updateOrderStatus.js";
 
 // /* 📊 Admin Inventory Controllers */
 // import {
@@ -59,8 +61,8 @@ router.post("/contact", SendContactEmail);
 /* ===========================
    USER CART
 =========================== */
-router.get("/user/cart", verifyme, Full_cart);
-router.post("/user/cart/add/:productId", verifyme, addToCart);
+router.get("/user/cart", verifyme, getCart);
+router.post("/user/cart/add", verifyme, addToCart);
 router.delete("/user/cart/remove/:productId", verifyme, removeFromCart);
 
 /* ===========================
@@ -139,6 +141,13 @@ router.delete(
    verifyme,
    verifyRole,
    Delete_prod
+);
+
+router.put(
+  "/order/status/:orderId",
+  verifyme,
+  verifyRole,
+  updateOrderStatus
 );
 
 // /* ===========================

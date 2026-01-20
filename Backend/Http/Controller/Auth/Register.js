@@ -53,7 +53,7 @@ export const Register = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "User registered successfully",
-      token
+      token, user
     });
 
   } catch (error) {
