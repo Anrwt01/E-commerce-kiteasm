@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./MyOrders.css";
+import { CubeIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 
 const MyOrders = () => {
     const navigate = useNavigate();
@@ -18,75 +18,73 @@ const MyOrders = () => {
             const res = await axios.get("http://localhost:5000/api/user/orders", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log("User Orders:", res.data);
-            // Adjust based on typical response structure. Typically controller returns object with list.
             const ordersList = res.data.orders || res.data || [];
-            // Sort by date desc
-            setOrders(ordersList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-            setLoading(false);
+            if (Array.isArray(ordersList)) {
+                setOrders(ordersList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+            }
         } catch (error) {
             console.error("Fetch orders error:", error);
+        } finally {
             setLoading(false);
         }
     };
 
     if (loading) return (
-        <div className="my-orders-container">
-            <div className="loading-spinner-wrapper">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
-            </div>
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="serif italic">Syncing mission logs...</div>
         </div>
     );
 
     return (
-        <div className="my-orders-container">
-            <h1 className="page-title">Purchase History</h1>
+        <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '1000px' }}>
+            <div style={{ marginBottom: '80px' }}>
+                <span className="text-xs uppercase tracking-widest text-muted">Order History</span>
+                <h1 className="serif" style={{ fontSize: '48px', marginTop: '16px' }}>Your Missions<span style={{ fontStyle: 'normal' }}>.</span></h1>
+                <p className="text-muted serif italic" style={{ fontSize: '18px', marginTop: '10px' }}>Details for all your Aero Kite deployments.</p>
+            </div>
 
             {orders.length === 0 ? (
-                <div className="empty-orders-state">
-                    <div className="empty-icon text-6xl mb-6">📦</div>
-                    <h2>No orders yet</h2>
-                    <p>When you buy kites, they'll show up here!</p>
-                    <button onClick={() => navigate('/products')} className="start-shopping-btn">
-                        Explore Collection
-                    </button>
+                <div style={{ textAlign: 'center', padding: '100px 0', background: 'var(--gray-light)' }}>
+                    <CubeIcon style={{ width: 48, margin: '0 auto', color: 'var(--gray-mid)', opacity: 0.3 }} />
+                    <p className="serif italic text-muted" style={{ marginTop: '20px', fontSize: '20px' }}>No deployments recorded.</p>
+                    <button onClick={() => navigate('/products')} className="btn btn-black" style={{ marginTop: '40px' }}>Launch First Mission</button>
                 </div>
             ) : (
-                <div className="orders-list">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                     {orders.map((order) => (
-                        <div key={order._id} className="order-card-premium">
-                            <div className="order-header-main">
-                                <div className="order-ids">
-                                    <span className="order-tag">Order #{order._id.slice(-6).toUpperCase()}</span>
-                                    <p className="order-date">Placed on {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                        <div key={order._id} style={{ border: '1px solid var(--gray-light)', padding: '40px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', paddingBottom: '20px', borderBottom: '1px solid var(--gray-light)' }}>
+                                <div>
+                                    <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900 }}>MSN-{order._id.slice(-6).toUpperCase()}</span>
+                                    <p className="text-xs text-muted font-serif italic" style={{ marginTop: '8px' }}>
+                                        Established: {new Date(order.createdAt).toLocaleDateString().toUpperCase()}
+                                    </p>
                                 </div>
-                                <div className="order-status-group">
-                                    <span className={`status-pill ${order.status?.toLowerCase() || order.paymentStatus?.toLowerCase()}`}>
-                                        {order.status || order.paymentStatus || "Unknown"}
-                                    </span>
-                                    <span className="total-price-tag">₹{order.totalAmount}</span>
+                                <div style={{ textAlign: 'right' }}>
+                                    <p style={{ fontSize: '24px', fontWeight: 900 }}>₹{order.totalAmount}</p>
+                                    <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent)', fontWeight: 900 }}>{order.status || order.paymentStatus || 'Mission Active'}</span>
                                 </div>
                             </div>
 
-                            <div className="order-items-grid">
+                            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                 {order.items && order.items.map((item, index) => (
-                                    <div key={index} className="order-item-compact">
-                                        <div className="item-img-box">
-                                            <img
-                                                src={item.productId?.images?.[0]?.url || "/images/products/kite.jpg"}
-                                                alt={item.productName}
-                                            />
+                                    <div key={index} style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                                        <div style={{ width: '60px', height: '60px', background: 'var(--gray-light)', padding: '5px' }}>
+                                            <img src={item.productId?.images?.[0]?.url || "/images/products/kite.jpg"} alt="Gear" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                         </div>
-                                        <div className="item-info-compact">
-                                            <h4>{item.productName || item.productId?.name || "Product Name"}</h4>
-                                            <div className="item-meta-compact">
-                                                <span>Qty: {item.quantity}</span>
-                                                <span className="dot"></span>
-                                                <span>₹{item.price} each</span>
-                                            </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h4 className="text-xs" style={{ fontWeight: 900, textTransform: 'uppercase' }}>{item.productName || item.productId?.name}</h4>
+                                            <p className="text-xs text-muted">QTY: {item.quantity}</p>
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+
+                            <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--gray-light)', display: 'flex', justifyContent: 'flex-end', gap: '30px' }}>
+                                <button className="text-xs uppercase tracking-widest text-muted" style={{ fontWeight: 900 }}>Manifest</button>
+                                <button className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    Track Delivery <ArrowRightIcon style={{ width: 14 }} />
+                                </button>
                             </div>
                         </div>
                     ))}

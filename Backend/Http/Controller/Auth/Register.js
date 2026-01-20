@@ -24,15 +24,15 @@ export const Register = async (req, res) => {
       });
     }
 
-    // 🔐 Hash password (FIXED)
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // // 🔐 Hash password (FIXED)
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPassword = await bcrypt.hash(password, salt);
 
     // 👤 Create user
     const user = await UserModel.create({
       name,
       email,
-      password: hashedPassword,
+      password,
       phone1,
       phone2,
       address

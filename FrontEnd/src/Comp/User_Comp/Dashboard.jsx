@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Dashboard.css";
+import { ShoppingBagIcon, SparklesIcon, Cog6ToothIcon, CubeIcon, ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        // Check if user is logged in
         const token = localStorage.getItem("token");
         const userData = localStorage.getItem("user");
 
         if (!token) {
             navigate("/login");
-        } else {
-            if (userData) {
-                try {
-                    setUser(JSON.parse(userData));
-                } catch (e) {
-                    console.error("Failed to parse user data", e);
-                }
+        } else if (userData) {
+            try {
+                setUser(JSON.parse(userData));
+            } catch (e) {
+                console.error("Failed to parse user data", e);
             }
         }
     }, [navigate]);
@@ -27,85 +24,62 @@ const Dashboard = () => {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        alert("Logged out successfully");
         navigate("/login");
     };
 
     if (!user) return null;
 
+    const sections = [
+        { title: 'Explore Store', desc: 'Latest drops & gear', icon: ShoppingBagIcon, path: '/products' },
+        { title: 'My Orders', desc: 'Track your deliveries', icon: CubeIcon, path: '/orders' },
+        { title: 'Expedition Bag', desc: 'Ready for flight', icon: SparklesIcon, path: '/cart' },
+        { title: 'Settings', desc: 'Profile & coordinates', icon: Cog6ToothIcon, path: '/user/update' },
+    ];
+
     return (
-        <div className="dashboard-container">
-            <div className="dashboard-header">
-                <h1 className="dashboard-title">Welcome, {user.name?.split(" ")[0]}!</h1>
-                <p className="dashboard-subtitle">Your personal kite flying portal.</p>
+        <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px' }}>
+            <div style={{ marginBottom: '80px' }}>
+                <span className="text-xs uppercase tracking-widest text-muted">Member Hub</span>
+                <h1 className="serif" style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', marginTop: '16px' }}>
+                    Hello, {user.name?.split(" ")[0].toUpperCase()}<span style={{ fontStyle: 'normal' }}>.</span>
+                </h1>
+                <p className="text-muted serif italic" style={{ fontSize: '18px', marginTop: '10px' }}>Manage your fleet and exclusive member benefits.</p>
             </div>
 
-            <div className="dashboard-content">
-                {/* Brand Story Section */}
-                <section className="dashboard-about-section glass">
-                    <h3>The Kiteasm Spirit</h3>
-                    <p>At Kiteasm, we don't just sell kites; we sell the freedom of the sky. From premium stick kites to pro-grade manjha, every piece in our collection is crafted for balance, durability, and pro-level performance.</p>
-                    <div className="dashboard-stats">
-                        <div className="stat-pill">Premium Gear</div>
-                        <div className="stat-pill">Pro Quality</div>
-                        <div className="stat-pill">Fast Delivery</div>
-                    </div>
-                </section>
-
-                <div className="dashboard-grid">
-                    {/* Shop Products */}
-                    <Link to="/products" className="dashboard-option card-hover">
-                        <div className="option-icon">🪁</div>
-                        <div className="option-title">Explore Store</div>
-                        <div className="option-desc">Browser latest collection</div>
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                {sections.map((section) => (
+                    <Link
+                        key={section.title}
+                        to={section.path}
+                        className="product-card"
+                        style={{ background: 'var(--gray-light)', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', transition: 'background 0.3s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#eeeeee'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--gray-light)'}
+                    >
+                        <section.icon style={{ width: '32px', marginBottom: '40px', color: 'black' }} />
+                        <h3 style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', trackingWidest: '0.1em', marginBottom: '10px' }}>{section.title}</h3>
+                        <p className="text-xs text-muted font-serif italic">{section.desc}</p>
                     </Link>
+                ))}
+            </div>
 
-                    {/* My Orders */}
-                    <Link to="/orders" className="dashboard-option card-hover">
-                        <div className="option-icon">📦</div>
-                        <div className="option-title">My Orders</div>
-                        <div className="option-desc">Track your flyers</div>
-                    </Link>
+            <div style={{ marginTop: '100px', padding: '60px', background: 'var(--black)', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '30px' }}>
+                <SparklesIcon style={{ width: '32px', color: 'var(--accent)' }} />
+                <h2 className="serif" style={{ fontSize: '32px' }}>Member Status: Premium</h2>
+                <p style={{ maxWidth: '600px', fontSize: '14px', opacity: 0.7, lineHeight: 1.6 }}>
+                    As an Aero Kite member, you have early access to the Summer '26 Apex Series and exclusive invitations to pro-flyer clinics.
+                </p>
+                <button className="btn" style={{ background: 'white', color: 'black' }}>View Perks</button>
+            </div>
 
-                    {/* Cart */}
-                    <Link to="/cart" className="dashboard-option card-hover">
-                        <div className="option-icon">🛒</div>
-                        <div className="option-title">View Cart</div>
-                        <div className="option-desc">Ready to launch?</div>
-                    </Link>
-
-                    {/* Update Profile */}
-                    <Link to="/user/update" className="dashboard-option card-hover">
-                        <div className="option-icon">⚙️</div>
-                        <div className="option-title">Settings</div>
-                        <div className="option-desc">Manage your profile</div>
-                    </Link>
-                </div>
-
-                {/* Featured Products Mini-Grid */}
-                <section className="dashboard-featured-section mt-12">
-                    <div className="flex justify-between items-center mb-8">
-                        <h3 className="text-2xl font-bold text-white">Latest Arrivals</h3>
-                        <Link to="/products" className="text-red-500 hover:text-red-400 font-semibold text-sm">View All &rarr;</Link>
-                    </div>
-                    {/* Placeholder for real dynamic data or showing a few curated items */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div className="featured-item-mini glass group cursor-pointer" onClick={() => navigate('/products')}>
-                            <div className="aspect-square rounded-xl bg-white/5 overflow-hidden mb-3">
-                                <img src="/images/products/kite.jpg" alt="Featured" className="w-full h-full object-contain group-hover:scale-110 transition-transform" />
-                            </div>
-                            <h4 className="text-xs text-gray-400 font-medium">Pro Collection</h4>
-                            <p className="text-sm text-white font-bold">Signature Fighter</p>
-                        </div>
-                        {/* More placeholders can go here or I can fetch them if I update the dashboard to use state */}
-                    </div>
-                </section>
-
-                <div className="dashboard-actions">
-                    <button onClick={handleLogout} className="logout-btn">
-                        Securely Logout
-                    </button>
-                </div>
+            <div style={{ marginTop: '60px', textAlign: 'center' }}>
+                <button
+                    onClick={handleLogout}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', color: 'var(--gray-mid)', fontSize: '10px', textTransform: 'uppercase', fontWeight: 900, trackingWidest: '0.2em' }}
+                >
+                    <ArrowRightOnRectangleIcon style={{ width: '16px' }} />
+                    Securely Sign Out
+                </button>
             </div>
         </div>
     );

@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import { UserModel } from "../../../Schema/User_Schema.js";
 
@@ -26,7 +25,7 @@ export const Login = async (req, res) => {
     }
 
     // 🔐 Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await password === user.password;
 
     if (!isMatch) {
       return res.status(401).json({

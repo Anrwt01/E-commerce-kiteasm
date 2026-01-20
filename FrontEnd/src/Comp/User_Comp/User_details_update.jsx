@@ -1,141 +1,91 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./User_details_update.css"
 
 const User_details_update = () => {
   const navigate = useNavigate();
 
-  // Protect Route
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
+    if (!token) navigate("/login");
   }, [navigate]);
 
   const nameRef = useRef(null);
   const phone2Ref = useRef(null);
-
-  // Address refs
   const houseRef = useRef(null);
   const galinoRef = useRef(null);
   const cityRef = useRef(null);
   const stateRef = useRef(null);
   const pincodeRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
-  const sendUpdatedUserDetails = async (e) => {
-    e.preventDefault(); // ✅ important
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
     const payload = {
       name: nameRef.current.value,
       phone2: phone2Ref.current.value || null,
-      address: [
-        {
-          house: houseRef.current.value,
-          galino: galinoRef.current.value,
-          city: cityRef.current.value,
-          state: stateRef.current.value,
-          pincode: pincodeRef.current.value
-        }
-      ]
+      address: [{
+        house: houseRef.current.value,
+        galino: galinoRef.current.value,
+        city: cityRef.current.value,
+        state: stateRef.current.value,
+        pincode: pincodeRef.current.value
+      }]
     };
 
     try {
-      const res = await axios.put(
-        "http://localhost:5000/api/user/profile/update",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        }
-      );
-
+      await axios.put("http://localhost:5000/api/user/profile/update", payload, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      });
       alert("Profile updated successfully");
-      console.log(res.data);
-
     } catch (error) {
-      console.error(
-        "Update error:",
-        error.response?.data || error.message
-      );
+      console.error(error);
       alert("Failed to update profile");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const inputStyle = {
+    width: '100%', padding: '20px', background: 'var(--gray-light)',
+    border: '1px solid transparent', fontSize: '14px', outline: 'none',
+    marginBottom: '20px'
+  };
+
   return (
-    <div className="update-profile-container">
-      <h2>Update Profile</h2>
+    <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '800px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+        <h1 className="serif" style={{ fontSize: '48px' }}>Update Profile<span style={{ fontStyle: 'normal' }}>.</span></h1>
+        <p className="text-xs text-muted uppercase tracking-widest" style={{ marginTop: '16px' }}>Refine your coordinates</p>
+      </div>
 
-      <form onSubmit={sendUpdatedUserDetails}>
-        <input
-          className="register-input"
-          type="text"
-          placeholder="Full Name"
-          ref={nameRef}
-          required
-        />
-
-        <input
-          className="register-input"
-          type="text"
-          placeholder="Alternate Phone Number"
-          ref={phone2Ref}
-          pattern="[0-9]{10}"
-          title="Enter 10-digit phone number"
-        />
-
-        {/* ADDRESS DETAILS */}
-        <div className="form-section-title">Address</div>
-
-        <div className="input-row">
-          <input
-            className="register-input"
-            type="text"
-            placeholder="House / Flat No"
-            ref={houseRef}
-            required
-          />
-
-          <input
-            className="register-input"
-            type="text"
-            placeholder="Gali / Locality"
-            ref={galinoRef}
-            required
-          />
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        <div>
+          <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'block', marginBottom: '20px' }}>01. Identity</span>
+          <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <input type="text" placeholder="Full Name" ref={nameRef} required style={inputStyle} />
+            <input type="text" placeholder="Alt Phone" ref={phone2Ref} pattern="[0-9]{10}" style={inputStyle} />
+          </div>
         </div>
 
-        <div className="input-row">
-          <input
-            className="register-input"
-            type="text"
-            placeholder="City"
-            ref={cityRef}
-            required
-          />
-
-          <input
-            className="register-input"
-            type="text"
-            placeholder="State"
-            ref={stateRef}
-            required
-          />
+        <div>
+          <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'block', marginBottom: '20px' }}>02. Address</span>
+          <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <input type="text" placeholder="House / Flat No" ref={houseRef} required style={inputStyle} />
+            <input type="text" placeholder="Gali / Locality" ref={galinoRef} required style={inputStyle} />
+          </div>
+          <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+            <input type="text" placeholder="City" ref={cityRef} required style={inputStyle} />
+            <input type="text" placeholder="State" ref={stateRef} required style={inputStyle} />
+            <input type="text" placeholder="Pincode" ref={pincodeRef} required style={inputStyle} />
+          </div>
         </div>
 
-        <input
-          className="register-input"
-          type="text"
-          placeholder="Pincode"
-          ref={pincodeRef}
-          required
-          pattern="[0-9]{6}"
-          title="Enter 6-digit pincode"
-        />
-
-        <button type="submit">Update</button>
+        <button type="submit" disabled={loading} className="btn btn-black" style={{ padding: '24px' }}>
+          {loading ? 'Updating...' : 'Save Profile'}
+        </button>
       </form>
     </div>
   );

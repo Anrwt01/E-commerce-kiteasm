@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./AddProduct.css";
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -11,7 +10,7 @@ const AddProduct = () => {
         price: "",
         stock: "",
         category: "",
-        imageUrl: "", // Using URL for now as per plan
+        imageUrl: "",
     });
 
     const handleChange = (e) => {
@@ -22,124 +21,62 @@ const AddProduct = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-
-            // Backend expects images: [{ url: "..." }]
-            // But my backend code for New_prod seemed to ignore req.body.images and utilize a hardcoded one?
-            // Step 84 output: uses hardcoded images: [{ url: "/products/default.jpg" }]
-            // I should update the backend controller to accept image URL if I want it to work properly.
-            // But for this step, let's send what we have. 
-            // I will assume the backend controller will be fixed or I should fix it.
-            // Wait, "New_prod" in step 84 has: 
-            // images: [{ url: "/products/default.jpg" }] // static image example
-            // I MUST fix the backend controller to use the image URL from body if I want this to be "full working".
-
             const payload = {
                 ...formData,
-                // If I fix backend, I should send images array OR imageUrl
                 images: [{ url: formData.imageUrl }]
             };
 
             await axios.post("http://localhost:5000/api/admin/products", payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
 
             alert("Product added successfully!");
             navigate("/admin/all-products");
         } catch (error) {
-            console.error("Add product error:", error);
+            console.error(error);
             alert("Failed to add product.");
         }
     };
 
+    const inputStyle = {
+        width: '100%', padding: '16px', background: 'var(--gray-light)',
+        border: '1px solid transparent', fontSize: '14px', outline: 'none',
+        marginBottom: '20px'
+    };
+
     return (
-        <div className="add-product-container">
-            <form className="add-product-form" onSubmit={handleSubmit}>
-                <h1>Add New Product</h1>
+        <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '600px' }}>
+            <div style={{ marginBottom: '60px', textAlign: 'center' }}>
+                <h1 className="serif" style={{ fontSize: '40px' }}>New Gear Addition<span style={{ fontStyle: 'normal' }}>.</span></h1>
+                <p className="text-xs text-muted uppercase tracking-widest" style={{ marginTop: '16px' }}>Manifest a new fleet unit</p>
+            </div>
 
-                <div className="form-group">
-                    <label>Product Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        className="form-input"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
+            <form onSubmit={handleSubmit}>
+                <input type="text" name="name" placeholder="Product Name" value={formData.name} onChange={handleChange} required style={inputStyle} />
+                <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} required style={{ ...inputStyle, height: '100px', resize: 'none' }} />
+
+                <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                    <input type="number" name="price" placeholder="Price (₹)" value={formData.price} onChange={handleChange} required style={inputStyle} />
+                    <input type="number" name="stock" placeholder="Stock Quantity" value={formData.stock} onChange={handleChange} required style={inputStyle} />
                 </div>
 
-                <div className="form-group">
-                    <label>Description</label>
-                    <textarea
-                        name="description"
-                        className="form-textarea"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                <select name="category" value={formData.category} onChange={handleChange} required style={inputStyle}>
+                    <option value="">Select Category</option>
+                    <option value="Kites">Kites</option>
+                    <option value="Decor">Decor</option>
+                    <option value="Gear">Gear</option>
+                </select>
 
-                <div className="form-group">
-                    <label>Price</label>
-                    <input
-                        type="number"
-                        name="price"
-                        className="form-input"
-                        value={formData.price}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                <input type="url" name="imageUrl" placeholder="Image URL (Unsplash recommended)" value={formData.imageUrl} onChange={handleChange} required style={inputStyle} />
 
-                <div className="form-group">
-                    <label>Stock Quantity</label>
-                    <input
-                        type="number"
-                        name="stock"
-                        className="form-input"
-                        value={formData.stock}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                {formData.imageUrl && (
+                    <div style={{ marginBottom: '20px', background: 'var(--gray-light)', padding: '20px', textAlign: 'center' }}>
+                        <img src={formData.imageUrl} alt="Preview" style={{ maxHeight: '200px', maxWidth: '100%' }} />
+                    </div>
+                )}
 
-                <div className="form-group">
-                    <label>Category</label>
-                    <select
-                        name="category"
-                        className="form-select"
-                        value={formData.category}
-                        onChange={handleChange}
-                        required
-                    >
-                        <option value="">Select Category</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Clothing">Clothing</option>
-                        <option value="Kites">Kites</option> {/* Project seems to be Kiteasm */}
-                        <option value="Accessories">Accessories</option>
-                    </select>
-                </div>
-
-                <div className="form-group">
-                    <label>Image URL</label>
-                    <input
-                        type="url"
-                        name="imageUrl"
-                        className="form-input"
-                        placeholder="https://example.com/image.jpg"
-                        value={formData.imageUrl}
-                        onChange={handleChange}
-                        required
-                    />
-                    {formData.imageUrl && (
-                        <img src={formData.imageUrl} alt="Preview" className="image-preview" />
-                    )}
-                </div>
-
-                <button type="submit" className="submit-btn">
-                    Add Product
+                <button type="submit" className="btn btn-black" style={{ width: '100%', padding: '20px' }}>
+                    Confirm Addition
                 </button>
             </form>
         </div>

@@ -1,11 +1,10 @@
 import express from "express";
 import { addToCart, getCart, removeFromCart } from "../Http/Controller/User/Cart_Controller.js";
-import { isAuthenticated } from "../Http/Middleware/Auth_Middleware.js"; // Assuming you have auth middleware
-
+import { verifyme } from "../Http/Middleware/Verifyme.js";
 const router = express.Router();
 
-router.get("/", isAuthenticated, getCart);
-router.post("/add", isAuthenticated, addToCart);
-router.delete("/remove/:productId", isAuthenticated, removeFromCart);
+router.get("/", verifyme, getCart);
+router.post("/add", verifyme, addToCart);
+router.delete("/remove/:productId", verifyme, removeFromCart);
 
 export default router;

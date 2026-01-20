@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Checkout.css";
+import { ShieldCheckIcon, TruckIcon, LockClosedIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 const Checkout = () => {
     const navigate = useNavigate();
@@ -28,19 +28,14 @@ const Checkout = () => {
             const res = await axios.get("http://localhost:5000/api/user/cart", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            // Assuming res.data.items based on Cart_schema/controller
-            // Let's protect against empty cart
-            const items = res.data.cart?.items || res.data.items || [];
+            const items = res.data.data?.items || res.data.items || [];
             if (items.length === 0) {
-                alert("Your cart is empty!");
                 navigate("/products");
+                return;
             }
             setCartItems(items);
-
-            // Calculate total
             const total = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
             setTotalAmount(total);
-
         } catch (error) {
             console.error("Cart fetch error:", error);
             navigate("/cart");
@@ -63,7 +58,7 @@ const Checkout = () => {
 
     const handlePayment = async () => {
         if (!address.street || !address.city || !address.pincode || !address.phone) {
-            alert("Please fill in all address details.");
+            alert("Mission Control requires full address details.");
             return;
         }
 
@@ -71,45 +66,34 @@ const Checkout = () => {
 
         try {
             const token = localStorage.getItem("token");
-
-            // 1. Create Order on Backend
             const orderRes = await axios.post("http://localhost:5000/api/user/checkout",
                 { address },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             const { orderId, amount } = orderRes.data;
-
-            // 2. Create Razorpay Order
             const paymentRes = await axios.post("http://localhost:5000/api/payment/razorpay",
                 { orderId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
             const { razorpayOrderId } = paymentRes.data;
-
-            // 3. Load Script
             const isScriptLoaded = await loadRazorpayScript();
+
             if (!isScriptLoaded) {
-                alert("Razorpay SDK failed to load. Are you online?");
+                alert("Razorpay SDK failed to load.");
                 setLoading(false);
                 return;
             }
 
-            // 4. Open Razorpay Modal
             const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_PlaceHolder", // Frontend Environment Variable or Hardcoded fallback (not recommended)
-                // Wait, I don't know the user's frontend env var name. 
-                // Usually it's safer to get the key from the backend API if possible, or assume user put it in VITE_RAZORPAY_KEY.
-                // Or I can leave it blank and Razorpay might complain.
-                // Let's assume standard Vite env var.
+                key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_PlaceHolder",
                 amount: amount * 100,
                 currency: "INR",
-                name: "Kiteasm Store",
-                description: "Order Payment",
+                name: "AERO KITES",
+                description: "Premium Gear Acquisition",
                 order_id: razorpayOrderId,
                 handler: async function (response) {
-                    // 5. Verify Payment
                     try {
                         const verifyRes = await axios.post("http://localhost:5000/api/payment/verify", {
                             orderId,
@@ -119,12 +103,10 @@ const Checkout = () => {
                         }, { headers: { Authorization: `Bearer ${token}` } });
 
                         if (verifyRes.data.success) {
-                            alert("Payment Successful! Order Placed.");
-                            navigate("/orders"); // Redirect to My Orders
+                            navigate("/orders");
                         }
                     } catch (err) {
                         console.error("Verification failed", err);
-                        alert("Payment verification failed.");
                     }
                 },
                 prefill: {
@@ -132,9 +114,7 @@ const Checkout = () => {
                     email: JSON.parse(localStorage.getItem("user"))?.email || "",
                     contact: address.phone
                 },
-                theme: {
-                    color: "#007bff"
-                }
+                theme: { color: "#000000" }
             };
 
             const rzp = new window.Razorpay(options);
@@ -143,89 +123,92 @@ const Checkout = () => {
 
         } catch (error) {
             console.error("Checkout error:", error);
-            alert("Checkout failed. Please try again.");
             setLoading(false);
         }
     };
 
+    const inputStyle = {
+        width: '100%', padding: '20px', background: 'var(--gray-light)',
+        border: '1px solid transparent', fontSize: '12px', fontWeight: 900,
+        textTransform: 'uppercase', outline: 'none', marginBottom: '16px'
+    };
+
     return (
-        <div className="checkout-container">
-            <div className="checkout-grid">
+        <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '800px' }}>
+            <button onClick={() => navigate(-1)} style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '8px' }} className="text-xs uppercase tracking-widest text-muted">
+                <ArrowLeftIcon style={{ width: 16 }} />
+                Return to Hangar
+            </button>
 
-                {/* Shipping Form */}
-                <div className="shipping-card">
-                    <h2>Shipping Address</h2>
-                    <form className="checkout-form">
-                        <div className="form-group">
-                            <label>Street Address</label>
-                            <textarea
-                                name="street"
-                                rows="2"
-                                value={address.street}
-                                onChange={handleChange}
-                            ></textarea>
-                        </div>
+            <div style={{ marginBottom: '80px' }}>
+                <h1 className="serif" style={{ fontSize: '48px' }}>Checkout<span style={{ fontStyle: 'normal' }}>.</span></h1>
+                <p className="text-xs text-muted uppercase tracking-widest" style={{ marginTop: '16px' }}>Single-column minimalist flow</p>
+            </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                            <div className="form-group">
-                                <label>City</label>
-                                <input type="text" name="city" value={address.city} onChange={handleChange} />
-                            </div>
-                            <div className="form-group">
-                                <label>State</label>
-                                <input type="text" name="state" value={address.state} onChange={handleChange} />
-                            </div>
-                        </div>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                            <div className="form-group">
-                                <label>Pincode</label>
-                                <input type="text" name="pincode" value={address.pincode} onChange={handleChange} />
-                            </div>
-                            <div className="form-group">
-                                <label>Country</label>
-                                <input type="text" name="country" value={address.country} disabled />
-                            </div>
-                        </div>
-
-                        <div className="form-group">
-                            <label>Phone Number</label>
-                            <input type="tel" name="phone" value={address.phone} onChange={handleChange} />
-                        </div>
-                    </form>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '60px' }}>
+                {/* Shipping */}
+                <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px' }}>
+                        <TruckIcon style={{ width: 20, color: 'var(--accent)' }} />
+                        <h2 className="text-xs uppercase tracking-widest" style={{ fontWeight: 900 }}>01. Shipping</h2>
+                    </div>
+                    <textarea
+                        name="street" placeholder="Street Address" rows="2" value={address.street} onChange={handleChange}
+                        style={{ ...inputStyle, resize: 'none', height: '100px' }}
+                    />
+                    <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                        <input type="text" name="city" placeholder="City" value={address.city} onChange={handleChange} style={inputStyle} />
+                        <input type="text" name="state" placeholder="State" value={address.state} onChange={handleChange} style={inputStyle} />
+                    </div>
+                    <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                        <input type="text" name="pincode" placeholder="Pincode" value={address.pincode} onChange={handleChange} style={inputStyle} />
+                        <input type="text" name="phone" placeholder="Phone" value={address.phone} onChange={handleChange} style={inputStyle} />
+                    </div>
                 </div>
 
-                {/* Order Summary */}
-                <div className="summary-card">
-                    <h2>Order Summary</h2>
-                    <div className="summary-items">
+                {/* Summary */}
+                <div style={{ background: 'var(--gray-light)', padding: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '30px' }}>
+                        <LockClosedIcon style={{ width: 20, color: 'var(--accent-alt)' }} />
+                        <h2 className="text-xs uppercase tracking-widest" style={{ fontWeight: 900 }}>02. Summary</h2>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
                         {cartItems.map((item, index) => (
-                            <div key={index} className="summary-item">
-                                <div className="summary-item-info">
-                                    <h4>{item.productName || item.productId?.name || "Product"}</h4>
-                                    <p>Qty: {item.quantity}</p>
+                            <div key={index} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <p className="text-xs" style={{ fontWeight: 900, textTransform: 'uppercase' }}>{item.productName || item.productId?.name}</p>
+                                    <p className="text-xs text-muted">QTY: {item.quantity}</p>
                                 </div>
-                                <div className="summary-item-price">
-                                    ${item.price * item.quantity}
-                                </div>
+                                <p className="text-xs" style={{ fontWeight: 900 }}>₹{item.price * item.quantity}</p>
                             </div>
                         ))}
                     </div>
-
-                    <div className="summary-total">
-                        <h3>Total Amount</h3>
-                        <span className="total-price">${totalAmount}</span>
+                    <div style={{ borderTop: '1px solid #ddd', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span className="text-xs uppercase text-muted">Subtotal</span>
+                            <span className="text-xs" style={{ fontWeight: 900 }}>₹{totalAmount}</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span className="text-xs uppercase text-muted">Logistics</span>
+                            <span className="text-xs" style={{ fontWeight: 900, color: 'var(--accent)' }}>COMPLIMENTARY</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                            <span className="serif" style={{ fontSize: '24px' }}>Total.</span>
+                            <span style={{ fontSize: '24px', fontWeight: 900 }}>₹{totalAmount}</span>
+                        </div>
                     </div>
-
-                    <button
-                        className="pay-btn"
-                        onClick={handlePayment}
-                        disabled={loading}
-                    >
-                        {loading ? "Processing..." : "Proceed to Pay"}
-                    </button>
                 </div>
 
+                {/* Button */}
+                <button
+                    onClick={handlePayment}
+                    disabled={loading}
+                    className="btn btn-black"
+                    style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+                >
+                    <ShieldCheckIcon style={{ width: 24 }} />
+                    <span style={{ fontSize: '14px' }}>{loading ? "Processing Transaction..." : "Authorize Acquisition"}</span>
+                </button>
             </div>
         </div>
     );

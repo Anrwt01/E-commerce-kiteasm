@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import "./AllProducts.css";
 
 const AllProducts = () => {
     const [products, setProducts] = useState([]);
@@ -11,15 +10,8 @@ const AllProducts = () => {
         try {
             const token = localStorage.getItem("token");
             const res = await axios.get("http://localhost:5000/api/admin/products", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
-            // Ensure we are setting an array
-            // Adjust structure based on API response: res.data.products or res.data
-            // Based on typical controller, it might be res.data.products
-            // Let's assume res.data.products based on typical implementation, 
-            // but checking Routes.js -> All_product controller -> usually returns { products: [...] }
             setProducts(res.data.products || res.data || []);
             setLoading(false);
         } catch (error) {
@@ -36,80 +28,59 @@ const AllProducts = () => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             try {
                 const token = localStorage.getItem("token");
-                // API Route: usually DELETE /admin/products/:id but Routes.js didn't explicitly show delete? 
-                // Wait, Routes.js had: router.put("/admin/products/:id", Update_prod);
-                // It did NOT show a DELETE route in the view_file output.
-                // Let's check Routes.js again or make a safe guess.
-                // Actually, looking at previous output step 79:
-                // router.post(... New_prod)
-                // router.get(... All_product)
-                // router.get(... Single_prod_details)
-                // router.put(... Update_prod)
-                // NO DELETE ROUTE VISIBLE!
-                // I need to add DELETE route to backend too? Or maybe I missed it?
-                // Let's re-read step 79 carefully. Lines 98-126. No delete.
-                // I must add DELETE route to backend if I want to delete.
-                // Or for now, I can just alert "Delete feature coming soon"
-
-                // For this task, user asked "full working". I should implement Delete functionality.
-                // But to do that I need to edit backend again.
-                // I will add the delete logic but comment it out or handle error for now, 
-                // OR better, I'll quickly add the DELETE route in the next step.
-
-                // For now, let's assume I will add it.
                 await axios.delete(`http://localhost:5000/api/admin/products/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
                 setProducts(products.filter((p) => p._id !== id));
             } catch (error) {
                 console.error("Delete error:", error);
-                alert("Failed to delete product or feature not available.");
+                alert("Failed to delete product.");
             }
         }
     };
 
-    if (loading) return <div className="all-products-container">Loading products...</div>;
+    if (loading) return (
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="serif italic">Polling inventory...</div>
+        </div>
+    );
 
     return (
-        <div className="all-products-container">
-            <div className="products-header">
-                <h1>All Products</h1>
-                <Link to="/admin/add-product" className="add-btn">
-                    + Add New Product
-                </Link>
+        <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '80px', borderBottom: '1px solid var(--gray-light)', paddingBottom: '40px' }}>
+                <div>
+                    <span className="text-xs uppercase tracking-widest text-muted">Inventory Catalog</span>
+                    <h1 className="serif" style={{ fontSize: '48px', marginTop: '16px' }}>All Products<span style={{ fontStyle: 'normal' }}>.</span></h1>
+                </div>
+                <Link to="/admin/add-product" className="btn btn-black">Add New Gear</Link>
             </div>
 
-            <div className="products-grid">
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))' }}>
                 {products.length > 0 ? (
                     products.map((product) => (
                         <div key={product._id} className="product-card">
-                            <img
-                                src={product.images && product.images[0] ? product.images[0].url : "https://via.placeholder.com/200"}
-                                alt={product.name}
-                                className="product-image"
-                            />
-                            <div className="product-info">
-                                <h3>{product.name}</h3>
-                                <p>Price: ${product.price}</p>
-                                <p className="product-stock">Stock: {product.stock}</p>
+                            <div className="product-image-wrapper">
+                                <img
+                                    src={product.images && product.images[0] ? product.images[0].url : "/images/products/kite.jpg"}
+                                    alt={product.name}
+                                />
+                            </div>
+                            <div style={{ marginTop: '20px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                    <h3 style={{ fontSize: '16px', fontWeight: 900, textTransform: 'uppercase' }}>{product.name}</h3>
+                                    <p className="text-xs" style={{ fontWeight: 900 }}>₹{product.price}</p>
+                                </div>
+                                <p className="text-xs text-muted" style={{ marginTop: '4px' }}>STOCK: {product.stock}</p>
 
-                                <div className="product-actions">
-                                    <Link to={`/admin/update-product?id=${product._id}`} className="edit-btn">
-                                        Edit
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete(product._id)}
-                                        className="delete-btn"
-                                    >
-                                        Delete
-                                    </button>
+                                <div style={{ marginTop: '20px', display: 'flex', gap: '20px' }}>
+                                    <Link to={`/admin/update-product?id=${product._id}`} className="text-xs uppercase tracking-widest" style={{ fontWeight: 900 }}>Edit</Link>
+                                    <button onClick={() => handleDelete(product._id)} className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, color: 'var(--accent-alt)' }}>Delete</button>
                                 </div>
                             </div>
                         </div>
                     ))
                 ) : (
-                    <p>No products found.</p>
+                    <p className="serif italic text-muted">No products found in the database.</p>
                 )}
             </div>
         </div>
