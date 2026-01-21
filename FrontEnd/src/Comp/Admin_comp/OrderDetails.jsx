@@ -1,56 +1,60 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeftIcon, 
   MapPinIcon, 
   UserIcon, 
   CreditCardIcon, 
-  ClockIcon,
   CheckBadgeIcon
 } from "@heroicons/react/24/outline";
 
 const OrderDetails = () => {
-    const [searchParams] = useSearchParams();
-    const orderId = searchParams.get("id");
+    const { id } = useParams(); 
     const navigate = useNavigate();
 
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [newStatus, setNewStatus] = useState("");
 
-    const fetchOrderDetails = async (id) => {
+    const fetchOrderDetails = async (orderId) => {
         try {
+            setLoading(true);
             const token = localStorage.getItem("token");
-            const res = await axios.get(`http://localhost:5000/api/admin/orders/${id}`, {
+            const res = await axios.get(`http://localhost:5000/api/admin/orders/${orderId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            const data = res.data.order || res.data;
+            
+            const data = res.data.order || res.data.data || res.data;
             setOrder(data);
-            setNewStatus(data.status);
+            // Default to the current status from DB
+            setNewStatus(data.orderStatus || data.status);
             setLoading(false);
         } catch (error) {
             console.error("Fetch order details error:", error);
-            navigate("/admin/orders");
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (orderId) fetchOrderDetails(orderId);
+        if (id) fetchOrderDetails(id);
         else navigate("/admin/orders");
-    }, [orderId]);
+    }, [id]);
 
+    // --- ADDED THIS FUNCTION ---
     const handleStatusUpdate = async () => {
         try {
             const token = localStorage.getItem("token");
-            await axios.put(`http://localhost:5000/api/admin/orders/${orderId}`,
-                { status: newStatus },
+          const id =  await axios.put(`http://localhost:5000/api/admin/orders/${id}`,
+                { status: newStatus }, // Backend usually expects { status: "..." }
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            alert("Fleet Manifest Updated.");
-            fetchOrderDetails(orderId);
+
+            console.log(id)
+            alert("Fleet Manifest Updated Successfully.");
+            fetchOrderDetails(id); // Refresh data
         } catch (error) {
-            alert("Status update failed.");
+            alert("Status update failed. Check server logs.", error);
         }
     };
 
@@ -62,7 +66,13 @@ const OrderDetails = () => {
         sectionTitle: { fontSize: '13px', fontWeight: '900', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }
     };
 
-    if (loading) return <div style={styles.container}>Processing Manifest...</div>;
+    if (loading) return (
+        <div style={{...styles.container, textAlign: 'center'}}>
+            <p style={{fontWeight: '700', color: '#64748b'}}>Decrypting Manifest...</p>
+        </div>
+    );
+
+    if (!order) return <div style={styles.container}>Manifest Not Found.</div>;
 
     return (
         <div style={styles.container}>
@@ -101,8 +111,8 @@ const OrderDetails = () => {
                     <div>
                         <div style={styles.card}>
                             <h3 style={styles.sectionTitle}><CheckBadgeIcon width={18}/> Fleet Items</h3>
-                            {order.orderItems.map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', gap: '20px', padding: '16px 0', borderBottom: idx !== order.orderItems.length - 1 ? '1px solid #f8fafc' : 'none', alignItems: 'center' }}>
+                            {(order.orderItems || []).map((item, idx) => (
+                                <div key={idx} style={{ display: 'flex', gap: '20px', padding: '16px 0', borderBottom: idx !== (order.orderItems?.length - 1) ? '1px solid #f8fafc' : 'none', alignItems: 'center' }}>
                                     <img src={item.image} alt={item.name} style={{ width: '64px', height: '64px', borderRadius: '12px', objectFit: 'cover', background: '#f8fafc' }} />
                                     <div style={{ flex: 1 }}>
                                         <h4 style={{ margin: 0, fontSize: '15px', color: '#0f172a' }}>{item.name}</h4>
@@ -114,7 +124,7 @@ const OrderDetails = () => {
                             
                             <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '2px solid #f1f5f9', display: 'flex', justifyContent: 'space-between' }}>
                                 <span style={{ fontSize: '18px', fontWeight: '900', color: '#0f172a' }}>Total Valuation</span>
-                                <span style={{ fontSize: '24px', fontWeight: '900', color: '#0ea5e9' }}>₹{order.totalPrice.toLocaleString()}</span>
+                                <span style={{ fontSize: '24px', fontWeight: '900', color: '#0ea5e9' }}>₹{(order.totalPrice || order.totalAmount)?.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
@@ -125,11 +135,11 @@ const OrderDetails = () => {
                             <h3 style={styles.sectionTitle}><UserIcon width={18}/> Customer</h3>
                             <div style={{ marginBottom: '20px' }}>
                                 <p style={styles.label}>Identity</p>
-                                <p style={styles.value}>{order.user?.name || "Guest Checkout"}</p>
+                                <p style={styles.value}>{order.user?.name || order.customerDetails?.name || "Guest"}</p>
                             </div>
                             <div>
                                 <p style={styles.label}>Contact</p>
-                                <p style={styles.value}>{order.user?.email || "N/A"}</p>
+                                <p style={styles.value}>{order.user?.email || order.customerDetails?.email || "N/A"}</p>
                             </div>
                         </div>
 
@@ -148,19 +158,19 @@ const OrderDetails = () => {
                             <h3 style={styles.sectionTitle}><CreditCardIcon width={18}/> Payment</h3>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                                 <span style={styles.label}>Method</span>
-                                <span style={{ ...styles.value, fontSize: '12px' }}>{order.paymentMethod?.toUpperCase()}</span>
+                                <span style={{ ...styles.value, fontSize: '12px' }}>{(order.paymentMethod || 'N/A').toUpperCase()}</span>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span style={styles.label}>Status</span>
                                 <span style={{ 
                                     fontSize: '11px', 
                                     fontWeight: '900', 
-                                    color: order.paymentResult?.status === 'paid' ? '#22c55e' : '#f59e0b',
-                                    background: order.paymentResult?.status === 'paid' ? '#f0fdf4' : '#fffbeb',
+                                    color: order.paymentStatus === 'paid' ? '#22c55e' : '#f59e0b',
+                                    background: order.paymentStatus === 'paid' ? '#f0fdf4' : '#fffbeb',
                                     padding: '4px 10px',
                                     borderRadius: '6px'
                                 }}>
-                                    {(order.paymentResult?.status || 'PENDING').toUpperCase()}
+                                    {(order.paymentStatus || 'PENDING').toUpperCase()}
                                 </span>
                             </div>
                         </div>

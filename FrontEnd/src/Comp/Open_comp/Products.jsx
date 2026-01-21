@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { productImages } from "../../utils/productImages";
 import { useNavigate } from "react-router-dom";
 import { ShoppingBag, Plus, Zap } from "lucide-react";
 
@@ -19,11 +20,11 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  const getImageUrl = (product) => {
-    if (!product.images?.length) return "https://images.unsplash.com/photo-1508784411316-02b8cd4d3a3a?w=500";
-    const url = product.images[0].url;
-    return url.startsWith("http") ? url : `http://localhost:5000${url}`;
-  };
+  // const getImageUrl = (product) => {
+  //   if (!product.images?.length) return "https://images.unsplash.com/photo-1508784411316-02b8cd4d3a3a?w=500";
+  //   const url = product.images[0].url;
+  //   return url.startsWith("http") ? url : `http://localhost:5000${url}`;
+  // };
 
   return (
     <div style={{ padding: "140px 24px 80px", maxWidth: "1200px", margin: "0 auto" }}>
@@ -46,7 +47,10 @@ const Products = () => {
               onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
             >
               <div style={{ height: "280px", borderRadius: "18px", overflow: "hidden", backgroundColor: "#f1f5f9" }}>
-                <img src={getImageUrl(product)} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+               <img 
+                               // src={product.images?.[0]?.url.startsWith("http") ? product.images[0].url : `http://localhost:5000${product.images?.[0]?.url}`} 
+                               src={productImages[product.images?.[0]?.url]}
+                               alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
               <div style={{ padding: "16px 8px" }}>
                 <h3 style={{ fontSize: "16px", fontWeight: "800", margin: "0" }}>{product.name}</h3>

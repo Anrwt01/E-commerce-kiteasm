@@ -21,9 +21,10 @@ export const updateOrderStatus = async (req, res) => {
     res.json({
       success: true,
       message: "Order status updated & email sent",
+      order
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", err });
   }
 };

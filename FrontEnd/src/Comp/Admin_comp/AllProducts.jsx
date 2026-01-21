@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { productImages } from "../../utils/productImages";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { 
@@ -135,7 +136,8 @@ const AllProducts = () => {
 
                                 <div style={styles.imgWrapper}>
                                     <img
-                                        src={product.images?.[0]?.url || "https://images.unsplash.com/photo-1531608139434-1912ae0713cd?q=80&w=1000&auto=format&fit=crop"}
+                                        // src={product.images?.[0]?.url || "https://images.unsplash.com/photo-1531608139434-1912ae0713cd?q=80&w=1000&auto=format&fit=crop"}
+                                        src={productImages[product.images?.[0]?.url]}
                                         alt={product.name}
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { productImages } from "../../utils/productImages";
 import axios from "axios";
 import { 
     ShoppingBagIcon, SparklesIcon, Cog6ToothIcon, 
@@ -35,17 +36,18 @@ const Dashboard = () => {
             setUser(parsedUser);
             fetchQuickProducts();
             setLoading(false);
-        } catch (err) {
+        } catch (error) {
             localStorage.clear();
             navigate("/login");
+            console.log(error)
         }
     }, [navigate]);
 
-    const getImageUrl = (images) => {
-        if (!images || images.length === 0) return 'https://images.unsplash.com/photo-1552010757-51d8bebb6a9c?w=500';
-        const url = images[0].url;
-        return url.startsWith('http') ? url : `http://localhost:5000${url}`;
-    };
+    // const getImageUrl = (images) => {
+    //     if (!images || images.length === 0) return 'https://images.unsplash.com/photo-1552010757-51d8bebb6a9c?w=500';
+    //     const url = images[0].url;
+    //     return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+    // };
 
     if (loading || !user) return null;
 
@@ -113,7 +115,8 @@ const Dashboard = () => {
                         {featuredProducts.map((p) => (
                             <Link key={p._id} to={`/products/${p._id}`} className="product-card">
                                 <div className="img-holder">
-                                    <img src={getImageUrl(p.images)} alt={p.name} />
+                                    {/* <img src={getImageUrl(p.images)} alt={p.name} /> */}
+                                    <img src={productImages[p.images?.[0]?.url]}  alt={p.name} />
                                 </div>
                                 <div className="info-holder">
                                     <h4>{p.name}</h4>

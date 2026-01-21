@@ -42,7 +42,7 @@ const Register = () => {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         if (res.data.user) {
-          localStorage.setItem("user", JSON.stringify(res.data.user));
+          localStorage.setItem("role", JSON.stringify(res.data.user.role));
         }
         // Smooth redirect to dashboard
         navigate("/dashboard");

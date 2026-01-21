@@ -16,6 +16,7 @@ import { User_Single_prod } from "../Http/Controller/User/user1Prod.js"; // Rena
 // import { removeFromCart } from "../Http/Controller/User/Remove_cart.js";
 import { updateUserDetails } from "../Http/Controller/User/updateUserDetails.js";
 import {getCart, removeFromCart , addToCart}  from "../Http/Controller/User/Cart_Controller.js"
+import { userDetails } from "../Http/Controller/User/userDetails.js";
 
 /* 📦 Order & Checkout Controllers */
 import { Checkout } from "../Http/Controller/User/Checkout.js";
@@ -70,6 +71,7 @@ router.delete("/user/cart/remove/:productId", verifyme, removeFromCart);
 =========================== */
 router.post("/user/checkout", verifyme, Checkout);
 router.get("/user/orders", verifyme, UserOrders);
+router.get("/user/Details", verifyme,userDetails )
 
 /* ===========================
    PAYMENTS

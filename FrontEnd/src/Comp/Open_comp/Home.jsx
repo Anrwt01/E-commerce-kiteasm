@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { productImages } from "../../utils/productImages";
 import { Link } from 'react-router-dom';
 import { Wind, ArrowRight } from 'lucide-react';
 
@@ -22,12 +23,12 @@ const Home = () => {
     fetchProducts();
   }, []);
 
-  const getImageUrl = (images) => {
-    if (!images || images.length === 0) return '/images/products/kite.jpg';
-    const url = images[0].url;
-    if (url.startsWith('http')) return url;
-    return `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
-  };
+  // const getImageUrl = (images) => {
+  //   if (!images || images.length === 0) return '/images/products/kite.jpg';
+  //   const url = images[0].url;
+  //   if (url.startsWith('http')) return url;
+  //   return `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+  // };
 
   return (
     <div className="home-wrapper" style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
@@ -74,7 +75,7 @@ const Home = () => {
                 <Link key={product._id} to={`/products/${product._id}`} className="product-card">
                   <div className="product-img-wrapper">
                     <img
-                      src={getImageUrl(product.images)}
+                      src={productImages[product.images?.[0]?.url]}
                       alt={product.name}
                       loading="lazy"
                       className="product-img"

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
   ArrowLeftIcon, 
   ChevronRightIcon, 
-  AdjustmentsHorizontalIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  ShoppingBagIcon 
 } from "@heroicons/react/24/outline";
 
 const AllOrders = () => {
@@ -20,7 +20,10 @@ const AllOrders = () => {
             const res = await axios.get("http://localhost:5000/api/admin/orders", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            setOrders(res.data.orders || res.data || []);
+            
+            // Based on your console log, the data is in res.data.data
+            const orderData = res.data.data || res.data.orders || [];
+            setOrders(orderData);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching orders:", error);
@@ -31,10 +34,10 @@ const AllOrders = () => {
     useEffect(() => { fetchOrders(); }, []);
 
     const getStatusStyles = (status) => {
-        const s = status.toLowerCase();
+        const s = status?.toLowerCase() || "";
         if (s === "pending") return { color: "#f59e0b", bg: "#fffbeb" };
         if (s === "shipped" || s === "processing") return { color: "#0ea5e9", bg: "#f0f9ff" };
-        if (s === "delivered") return { color: "#10b981", bg: "#ecfdf5" };
+        if (s === "paid" || s === "delivered") return { color: "#10b981", bg: "#ecfdf5" };
         if (s === "cancelled") return { color: "#ef4444", bg: "#fef2f2" };
         return { color: "#64748b", bg: "#f8fafc" };
     };
@@ -49,7 +52,7 @@ const AllOrders = () => {
         statusBadge: (status) => {
             const style = getStatusStyles(status);
             return {
-                padding: '6px 12px', borderRadius: '8px', fontSize: '11px', fontWeight: '800',
+                padding: '6px 12px', borderRadius: '8px', fontSize: '10px', fontWeight: '800',
                 backgroundColor: style.bg, color: style.color, textTransform: 'uppercase'
             };
         }
@@ -64,59 +67,83 @@ const AllOrders = () => {
     return (
         <div style={styles.container}>
             <div style={styles.wrapper}>
-                {/* --- NAVIGATION & HEADER --- */}
+                {/* --- HEADER --- */}
                 <div style={styles.header}>
                     <div>
                         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                             <ArrowLeftIcon width={16} /> Dashboard
                         </button>
-                        <h1 style={{ fontSize: '36px', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1.5px' }}>Global Logistics<span style={{ color: '#0ea5e9' }}>.</span></h1>
+                        <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1px' }}>
+                            Order Manifest<span style={{ color: '#0ea5e9' }}>.</span>
+                        </h1>
                     </div>
                     <button onClick={fetchOrders} style={{ padding: '12px 24px', borderRadius: '12px', background: '#0f172a', color: 'white', border: 'none', fontWeight: '700', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <ArrowPathIcon width={18} /> Refresh Manifest
+                        <ArrowPathIcon width={18} /> Refresh Data
                     </button>
                 </div>
 
-                {/* --- ORDERS TABLE --- */}
+                {/* --- TABLE --- */}
                 <div style={styles.tableCard}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: '#fcfcfd' }}>
-                                <th style={styles.th}>Reference ID</th>
+                                <th style={styles.th}>ID</th>
                                 <th style={styles.th}>Customer</th>
                                 <th style={styles.th}>Date</th>
                                 <th style={styles.th}>Amount</th>
-                                <th style={styles.th}>Flight Status</th>
+                                <th style={styles.th}>Status</th>
                                 <th style={{ ...styles.th, textAlign: 'right' }}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {orders.length > 0 ? (
                                 orders.map((order) => (
-                                    <tr key={order._id} style={{ transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fcfcfd'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                        <td style={{ ...styles.td, fontFamily: 'monospace', color: '#64748b', fontWeight: '600' }}>#{order._id.slice(-8).toUpperCase()}</td>
-                                        <td style={styles.td}>
-                                            <div style={{ fontWeight: '700' }}>{order.user?.name || "Guest Checkout"}</div>
-                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>{order.user?.email || "No email provided"}</div>
+                                    <tr key={order._id} style={{ transition: 'background 0.2s' }}>
+                                        <td style={{ ...styles.td, fontFamily: 'monospace', color: '#64748b' }}>
+                                            #{order._id.slice(-6).toUpperCase()}
                                         </td>
-                                        <td style={styles.td}>{new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                                        <td style={{ ...styles.td, fontWeight: '800' }}>₹{order.totalPrice.toLocaleString()}</td>
                                         <td style={styles.td}>
-                                            <span style={styles.statusBadge(order.status || 'Pending')}>
-                                                {order.status || 'Pending'}
+                                            <div style={{ fontWeight: '700' }}>{order.customerDetails?.name || "N/A"}</div>
+                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>{order.customerDetails?.email}</div>
+                                        </td>
+                                        <td style={styles.td}>
+                                            {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                        </td>
+                                        <td style={{ ...styles.td, fontWeight: '800' }}>
+                                            ₹{order.totalAmount?.toLocaleString()}
+                                        </td>
+                                        <td style={styles.td}>
+                                            <span style={styles.statusBadge(order.orderStatus || order.paymentStatus)}>
+                                                {order.orderStatus || order.paymentStatus}
                                             </span>
                                         </td>
                                         <td style={{ ...styles.td, textAlign: 'right' }}>
-                                            <Link to={`/admin/OrderDetails?id=${order._id}`} style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#0ea5e9', fontWeight: '800', fontSize: '12px' }}>
-                                                MANAGE <ChevronRightIcon width={14} strokeWidth={3} />
-                                            </Link>
+                                           <button 
+                                       onClick={() => navigate(`/admin/OrderDetails/${order._id}`)}
+                                        style={{ 
+                                            background: '#f1f5f9', 
+                                            border: 'none', 
+                                            padding: '8px 16px', 
+                                            borderRadius: '8px', 
+                                            color: '#0f172a', 
+                                            fontWeight: '700', 
+                                            fontSize: '12px', 
+                                            cursor: 'pointer',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        DETAILS <ChevronRightIcon width={14} strokeWidth={3} />
+                                    </button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="6" style={{ ...styles.td, textAlign: 'center', padding: '60px', color: '#94a3b8' }}>
-                                        No active orders found in the database.
+                                    <td colSpan="6" style={{ textAlign: 'center', padding: '100px 0', color: '#94a3b8' }}>
+                                        <ShoppingBagIcon width={40} style={{ margin: '0 auto 10px', opacity: 0.2 }} />
+                                        <p>No orders found in the system.</p>
                                     </td>
                                 </tr>
                             )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { productImages } from "../../utils/productImages";
 import axios from "axios";
 import { Trash2, ChevronLeft, ShoppingBag, ArrowRight, Loader2 } from "lucide-react";
 
@@ -7,9 +8,10 @@ const Cart = () => {
     const navigate = useNavigate();
     const [cart, setCart] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [total, setTotal] = useState(0);
+    const [subtotal, setSubtotal] = useState(0);
+    const [logistics, setLogistics] = useState(0);
+    const [deletingId, setDeletingId] = useState(null);
 
-    // 1. FETCH CART FROM DB
     const fetchCart = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -19,10 +21,9 @@ const Cart = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            // Assuming your backend returns { items: [...] } or { products: [...] }
             const items = res.data.cart?.items || res.data.items || [];
             setCart(items);
-            calculateTotal(items);
+            calculateTotals(items);
         } catch (err) {
             console.error("Cart fetch error:", err);
         } finally {
@@ -30,33 +31,44 @@ const Cart = () => {
         }
     };
 
-    const calculateTotal = (items) => {
-        const sum = items.reduce((acc, item) => {
+    // Updated Calculation: ₹100 per product quantity
+    const calculateTotals = (items) => {
+        const itemTotal = items.reduce((acc, item) => {
             const price = item.productId?.price || 0;
             return acc + (price * item.quantity);
         }, 0);
-        setTotal(sum);
+
+        const shipTotal = items.reduce((acc, item) => {
+            return acc + (item.quantity * 100); // ₹100 per item
+        }, 0);
+
+        setSubtotal(itemTotal);
+        setLogistics(shipTotal);
     };
 
     useEffect(() => {
         fetchCart();
     }, []);
 
-    // 2. REMOVE ITEM FROM DB
     const removeItem = async (productId) => {
+        if (!productId) return;
+        setDeletingId(productId);
         try {
             const token = localStorage.getItem("token");
             await axios.delete(`http://localhost:5000/api/user/cart/remove/${productId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            // Refresh cart after deletion
-            fetchCart();
+
+            const updatedCart = cart.filter(item => item.productId?._id !== productId);
+            setCart(updatedCart);
+            calculateTotals(updatedCart);
         } catch (err) {
             console.error("Remove item error:", err);
+        } finally {
+            setDeletingId(null);
         }
     };
 
-    // --- INLINE STYLES ---
     const styles = {
         container: { backgroundColor: "#f8fafc", minHeight: "100vh", fontFamily: "'Inter', sans-serif" },
         content: { maxWidth: "1000px", margin: "0 auto", padding: "140px 24px 80px" },
@@ -94,7 +106,7 @@ const Cart = () => {
                                 <div key={item.productId?._id} style={styles.itemCard}>
                                     <div style={styles.imgBox}>
                                         <img 
-                                            src={item.productId?.images?.[0]?.url.startsWith('http') ? item.productId.images[0].url : `http://localhost:5000${item.productId?.images?.[0]?.url}`} 
+                                            src={productImages[item.productId?.images?.[0]?.url] || item.productId?.images?.[0]?.url}
                                             alt="product" 
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                                         />
@@ -102,13 +114,19 @@ const Cart = () => {
                                     <div style={{ flex: 1 }}>
                                         <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800" }}>{item.productId?.name}</h3>
                                         <p style={{ color: "#0ea5e9", fontWeight: "900", margin: "4px 0" }}>₹{item.productId?.price}</p>
-                                        <span style={{ fontSize: "12px", color: "#94a3b8" }}>QTY: {item.quantity}</span>
+                                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                            <span style={{ fontSize: "12px", color: "#94a3b8" }}>QTY: {item.quantity}</span>
+                                            <span style={{ fontSize: "12px", color: "#64748b", background: "#f1f5f9", padding: "2px 8px", borderRadius: "4px" }}>
+                                                Logistics: ₹{item.quantity * 100}
+                                            </span>
+                                        </div>
                                     </div>
                                     <button 
                                         onClick={() => removeItem(item.productId?._id)} 
-                                        style={{ background: "none", border: "none", color: "#cbd5e1", cursor: "pointer" }}
+                                        disabled={deletingId === item.productId?._id}
+                                        style={{ background: "none", border: "none", color: "#ef4444", cursor: "pointer" }}
                                     >
-                                        <Trash2 size={20} />
+                                        {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
                                     </button>
                                 </div>
                             ))}
@@ -119,16 +137,16 @@ const Cart = () => {
                             <div style={{ marginTop: "24px", borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
                                     <span style={{ color: "#64748b" }}>Subtotal</span>
-                                    <span style={{ fontWeight: "700" }}>₹{total}</span>
+                                    <span style={{ fontWeight: "700" }}>₹{subtotal}</span>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                    <span style={{ color: "#64748b" }}>Logistics</span>
-                                    <span style={{ color: "#22c55e", fontWeight: "700" }}>FREE</span>
+                                    <span style={{ color: "#64748b" }}>Logistics (₹100/item)</span>
+                                    <span style={{ color: "#0f172a", fontWeight: "700" }}>₹{logistics}</span>
                                 </div>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
                                 <span style={{ fontWeight: "900" }}>Total</span>
-                                <span style={{ fontWeight: "900", fontSize: "20px", color: "#0ea5e9" }}>₹{total}</span>
+                                <span style={{ fontWeight: "900", fontSize: "20px", color: "#0ea5e9" }}>₹{subtotal + logistics}</span>
                             </div>
                             <button onClick={() => navigate("/checkout")} style={styles.checkoutBtn}>
                                 Proceed to Checkout <ArrowRight size={18} />
@@ -139,7 +157,6 @@ const Cart = () => {
                     <div style={styles.emptyBox}>
                         <ShoppingBag size={64} color="#e2e8f0" style={{ marginBottom: "20px" }} />
                         <h2 style={{ fontWeight: "900" }}>Hangar is Empty</h2>
-                        <p style={{ color: "#64748b" }}>You haven't added any gear to your inventory yet.</p>
                         <Link to="/products" style={{ display: "inline-block", marginTop: "24px", color: "#0ea5e9", fontWeight: "800", textDecoration: "none" }}>
                             Browse the Fleet
                         </Link>

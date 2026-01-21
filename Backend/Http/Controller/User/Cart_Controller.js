@@ -69,17 +69,43 @@ export const addToCart = async (req, res) => {
 // Remove Item from Cart
 export const removeFromCart = async (req, res) => {
     try {
-       
+        // 1. Get productId from the URL (:productId)
+        const { productId } = req.params; 
 
+        // 2. Get userId from the auth middleware (protect/verifyToken)
+        const userId =  req.userId; 
+
+        // 3. Find the cart
         let cart = await CartModel.findOne({ userId });
-        if (!cart) return res.status(404).json({ message: "Cart not found" });
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
 
-        cart.items = cart.items.filter((item) => item.productId.toString() !== productId);
+        // 4. Filter out the item
+        // We use .toString() because productId in DB is an ObjectId
+        const initialLength = cart.items.length;
+        cart.items = cart.items.filter(
+            (item) => item.productId.toString() !== productId
+        );
 
+        // Optional: Check if an item was actually removed
+        if (cart.items.length === initialLength) {
+            return res.status(404).json({ message: "Product not found in cart" });
+        }
+
+        // 5. Save and Return
         await cart.save();
-        res.status(200).json({ message: "Item removed", cart });
+        
+        // It's helpful to populate images/name again if your frontend expects it
+        const updatedCart = await CartModel.findOne({ userId }).populate("items.productId");
+
+        res.status(200).json({ 
+            message: "Item removed", 
+            cart: updatedCart 
+        });
+
     } catch (error) {
-        console.error("Remove form Cart Error:", error);
-        res.status(500).json({ message: "Server Error" });
+        console.error("Remove from Cart Error:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
