@@ -22,6 +22,7 @@ import { userDetails } from "../Http/Controller/User/userDetails.js";
 import { Checkout } from "../Http/Controller/User/Checkout.js";
 import { SendContactEmail } from '../Http/Controller/Open_panel/ContactController.js';
 import { All_product as UserOrders } from "../Http/Controller/User/All_orders.js";
+import {updateadd} from "../Http/Controller/User/new_add.js"
 
 /* 💳 Payment Controllers */
 import { createRazorpayPayment } from "../Http/Controller/Payment/createRazorpayPayment.js";
@@ -90,28 +91,29 @@ router.get(
    AdminALLorder
 );
 
-router.put(
-   "/admin/orders/:id",
-   verifyme,
-   verifyRole,
-   Order_Update
-);
+// router.put(
+//    "/admin/orders/:id",
+//    verifyme,
+//    verifyRole,
+//    Order_Update
+// );
 
 router.get(
-   "/admin/orders/:id",
+   "/admin/getSingleOrder/:id",
    verifyme,
    verifyRole,
    getSingleOrder
 );
 
 router.put("/user/profile/update", verifyme, updateUserDetails);
+router.put("/user/add-update", verifyme, updateadd);
 
 
 /* ===========================
    ADMIN PRODUCTS
 =========================== */
 router.post(
-   "/admin/products",
+   "/admin/New/products",
    verifyme,
    verifyRole,
    New_prod
@@ -146,11 +148,13 @@ router.delete(
 );
 
 router.put(
-  "/order/status/:orderId",
+  "/admin/orderupdate/status/:orderId",
   verifyme,
   verifyRole,
   updateOrderStatus
 );
+
+
 
 // /* ===========================
 //    ADMIN INVENTORY DASHBOARD

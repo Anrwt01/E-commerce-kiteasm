@@ -15,34 +15,36 @@ const AddProduct = () => {
         price: "",
         stock: "",
         category: "",
-        imageUrl: "",
+        imageUrl: "" ,
     });
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const token = localStorage.getItem("token");
-            const payload = {
-                ...formData,
-                images: [{ url: formData.imageUrl }]
-            };
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const token = localStorage.getItem("token");
+        
+        // Only include the images array if imageUrl actually has text
+        const payload = {
+            ...formData,
+            images: formData.imageUrl ? [{ url: formData.imageUrl }] : []
+        };
 
-            await axios.post("http://localhost:5000/api/admin/products", payload, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+        const res = await axios.post("http://localhost:5000/api/admin/New/products", payload, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
 
-            // Use a clean toast or simple alert
-            alert("Fleet unit deployed successfully.");
-            navigate("/admin/all-products");
-        } catch (error) {
-            console.error(error);
-            alert("Operational failure: Could not add product.");
-        }
-    };
+        alert("Fleet unit deployed successfully.");
+        navigate("/admin/products");
+    } catch (error) {
+        // Log the SPECIFIC error from the server to debug 404/500
+        console.error("Backend Error:", error.response?.data || error.message);
+        alert(`Operational failure: ${error.response?.data?.message || "Could not add product."}`);
+    }
+};
 
     const inputStyle = {
         width: '100%',
@@ -122,12 +124,12 @@ const AddProduct = () => {
                             <select name="category" value={formData.category} onChange={handleChange} required style={{...inputStyle, appearance: 'none', cursor: 'pointer'}}>
                                 <option value="">Select Category</option>
                                 <option value="Kites">Kites (Airframe)</option>
-                                <option value="Decor">Decor (Aesthetics)</option>
-                                <option value="Gear">Gear (Technical)</option>
+                                <option value="Decor">Mamjha (Aesthetics)</option>
+                                <option value="Gear">Others (Technical)</option>
                             </select>
 
-                            <label style={labelStyle}>Visual Manifest URL</label>
-                            <input type="url" name="imageUrl" placeholder="https://unsplash.com/..." value={formData.imageUrl} onChange={handleChange} required style={inputStyle} />
+                            {/* <label style={labelStyle}>Visual Manifest URL</label>
+                            <input type="url" name="imageUrl" placeholder="https://unsplash.com/..." value={formData.imageUrl} onChange={handleChange} required style={inputStyle} /> */}
                         </div>
                     </div>
 

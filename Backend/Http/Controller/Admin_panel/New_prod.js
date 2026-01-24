@@ -10,6 +10,7 @@ export const New_prod = async (req, res) => {
       });
     }
 
+    console.log(name, description, price, stock, category)
     // Use provided images or fallback
     const productImages = images && images.length > 0 ? images : [{ url: "/products/default.jpg" }];
 

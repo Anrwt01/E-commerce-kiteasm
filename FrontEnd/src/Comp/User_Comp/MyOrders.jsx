@@ -53,7 +53,7 @@ const MyOrders = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                     {orders.map((order) => (
                         <div key={order._id} style={{ border: '1px solid var(--gray-light)', padding: '40px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', paddingBottom: '20px', borderBottom: '1px solid var(--gray-light)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--gray-light)' }}>
                                 <div>
                                     <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900 }}>MSN-{order._id.slice(-6).toUpperCase()}</span>
                                     <p className="text-xs text-muted font-serif italic" style={{ marginTop: '8px' }}>
@@ -62,25 +62,28 @@ const MyOrders = () => {
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
                                     <p style={{ fontSize: '24px', fontWeight: 900 }}>₹{order.totalAmount}</p>
-                                    <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent)', fontWeight: 900 }}>{order.status || order.paymentStatus || 'Mission Active'}</span>
+                                    <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent)', fontWeight: 900 }}>{order.orderStatus || order.paymentStatus || 'Mission Active'}</span>
                                 </div>
                             </div>
 
-                            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                            {/* --- ITEMS LIST (TEXT ONLY) --- */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                 {order.items && order.items.map((item, index) => (
-                                    <div key={index} style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                                        <div style={{ width: '60px', height: '60px', background: 'var(--gray-light)', padding: '5px' }}>
-                                            <img src={item.productId?.images?.[0]?.url || "/images/products/kite.jpg"} alt="Gear" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                        </div>
+                                    <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0' }}>
                                         <div style={{ flex: 1 }}>
-                                            <h4 className="text-xs" style={{ fontWeight: 900, textTransform: 'uppercase' }}>{item.productName || item.productId?.name}</h4>
-                                            <p className="text-xs text-muted">QTY: {item.quantity}</p>
+                                            <h4 className="text-xs" style={{ fontWeight: 900, textTransform: 'uppercase', margin: 0 }}>
+                                                {item.productName || item.productId?.name || "Gear Unit"}
+                                            </h4>
+                                            <p className="text-xs text-muted" style={{ marginTop: '4px' }}>Deployment Quantity: {item.quantity}</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <p className="text-xs" style={{ fontWeight: 800 }}>₹{item.price * item.quantity}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--gray-light)', display: 'flex', justifyContent: 'flex-end', gap: '30px' }}>
+                            <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid var(--gray-light)', display: 'flex', justifyContent: 'flex-end', gap: '30px' }}>
                                 <button className="text-xs uppercase tracking-widest text-muted" style={{ fontWeight: 900 }}>Manifest</button>
                                 <button className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
                                     Track Delivery <ArrowRightIcon style={{ width: 14 }} />

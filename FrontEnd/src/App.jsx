@@ -30,7 +30,7 @@ import MyOrders from "./Comp/User_Comp/MyOrders.jsx";
 import AdminDashboard from "./Comp/Admin_comp/AdminDashboard.jsx";
 import AddProduct from "./Comp/Admin_comp/AddProduct.jsx";
 import AllProducts from "./Comp/Admin_comp/AllProducts.jsx";
-import UpdateProduct from "./Comp/Admin_comp/UpdateProduct.jsx";
+// import UpdateProduct from "./Comp/Admin_comp/UpdateProduct.jsx";
 import AllOrders from "./Comp/Admin_comp/AllOrders.jsx"
 import OrderDetails from "./Comp/Admin_comp/OrderDetails.jsx"
 
@@ -74,7 +74,7 @@ const App = () => {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<AllProducts />} />
             <Route path="/admin/add-product" element={<AddProduct />} />
-            <Route path="/admin/update-product/:id" element={<UpdateProduct />} />
+            {/* <Route path="/admin/update-product/:id" element={<UpdateProduct />} /> */}
             <Route path="/admin/orders" element={<AllOrders />} />
             <Route path="/admin/OrderDetails/:id" element={<OrderDetails />} />
           </Route>

@@ -12,23 +12,25 @@ const Navbar = () => {
   const navigate = useNavigate();
 
  const getAuthFromStorage = () => {
-  const rawRole = localStorage.getItem("role");
   const token = localStorage.getItem("token");
+  const userData = localStorage.getItem("user");
 
-  
-  let role = rawRole;
+  // 1. If no user data exists, return null values early
+  if (!userData) return { token: null, role: null };
+
   try {
-   
-    role = JSON.parse(rawRole);
+    // 2. You MUST parse the whole string first
+    const parsedUser = JSON.parse(userData);
+    
+    // 3. Now you can access the role property
+    const role = parsedUser.role; 
+    
+    return { token, role };
   } catch (err) {
-    // If it's not a JSON string, just use the raw value
-    role = rawRole;
-    console.log(err)
+    console.error("Error parsing user from storage:", err);
+    return { token, role: null };
   }
-
-  return { token, role };
 };
-
 
    
   // 2. Auth State
@@ -115,9 +117,9 @@ const Navbar = () => {
               <li><Link to="/contact" style={styles.link('/contact')}>Contact</Link></li>
               <li><Link to="/about" style={styles.link('/about')}>About</Link></li>
             </>
-          ) : role === "admin" ? (
+          ) : role === "admin"  ? (
             <>
-              <li><Link to="/admin/dashboard" style={styles.link('/admin/dashboard')}>Admin Dashboard</Link></li>
+              <li><Link to="/admin" style={styles.link('/admin')}>Admin Dashboard</Link></li>
               <li><Link to="/admin/orders" style={styles.link('/admin/orders')}>Orders</Link></li>
               <li><Link to="/admin/products" style={styles.link('/admin/products')}>Product</Link></li>
             </>

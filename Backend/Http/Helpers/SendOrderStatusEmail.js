@@ -22,9 +22,10 @@ const transporter = nodemailer.createTransport({
 /**
  * Send order status update email to user
  */
-export const sendOrderStatusEmail = async (order, user) => {
+export const sendOrderStatusEmail = async ( email, name, order) => {
   try {
-    if (!user?.email) {
+    //    
+    if (!email) {
       console.log("User email not found, skipping email");
       return;
     }
@@ -37,13 +38,13 @@ export const sendOrderStatusEmail = async (order, user) => {
 
     const mailOptions = {
       from: `"KiteAsm Store" <${process.env.EMAIL_USER}>`,
-      to: user.email,
+      to: email,
       subject: `Order Update • ${statusText[order.orderStatus]}`,
       html: `
         <div style="font-family: Arial, sans-serif; background:#f9f9f9; padding:20px;">
           <div style="max-width:600px; background:#ffffff; margin:auto; padding:24px; border-radius:8px; border:1px solid #eaeaea;">
             
-            <h2 style="color:#111;">Hello ${user.name || "Customer"},</h2>
+            <h2 style="color:#111;">Hello ${name || "Customer"},</h2>
 
             <p style="font-size:15px; color:#333;">
               ${statusText[order.orderStatus]}.

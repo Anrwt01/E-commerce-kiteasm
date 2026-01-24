@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { productImages } from "../../utils/productImages";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { 
-  PencilSquareIcon, 
-  TrashIcon, 
-  PlusIcon,
-  ArrowLeftIcon,
-  CubeIcon,
-  ExclamationCircleIcon
+  TrashIcon, PlusIcon, ArrowLeftIcon, 
+  CubeIcon, CheckIcon, XMarkIcon, PencilSquareIcon 
 } from "@heroicons/react/24/outline";
 
 const AllProducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [editingId, setEditingId] = useState(null);
+    const [editData, setEditData] = useState({ price: "", stock: "" });
     const navigate = useNavigate();
 
     const fetchProducts = async () => {
@@ -25,155 +23,119 @@ const AllProducts = () => {
             setProducts(res.data.products || res.data || []);
             setLoading(false);
         } catch (error) {
-            console.error("Error fetching products:", error);
             setLoading(false);
         }
     };
 
     useEffect(() => { fetchProducts(); }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Permanent Action: Decommission this unit from inventory?")) {
-            try {
-                const token = localStorage.getItem("token");
-                await axios.delete(`http://localhost:5000/api/admin/products/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setProducts(products.filter((p) => p._id !== id));
-            } catch (error) {
-                console.error("Delete error:", error);
-                alert("Failed to delete product.");
-            }
+    const handleUpdate = async (id) => {
+        try {
+            const token = localStorage.getItem("token");
+            await axios.put(`http://localhost:5000/api/admin/products/${id}`, editData, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setProducts(products.map((p) => 
+                p._id === id ? { ...p, price: Number(editData.price), stock: Number(editData.stock) } : p
+            ));
+            setEditingId(null);
+        } catch (error) {
+            alert("Update failed.");
         }
     };
 
     const styles = {
-        container: { backgroundColor: '#f8fafc', minHeight: '100vh', padding: '140px 24px 100px' },
-        wrapper: { maxWidth: '1200px', margin: '0 auto' },
-        header: { 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'flex-end', 
-            marginBottom: '60px',
-            paddingBottom: '30px',
-            borderBottom: '1px solid #e2e8f0'
-        },
-        card: {
+        container: { backgroundColor: '#fdfdfe', minHeight: '100vh', padding: '120px 40px' },
+        grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' },
+        card: (isEditing) => ({
             backgroundColor: 'white',
-            borderRadius: '24px',
-            padding: '20px',
-            border: '1px solid #f1f5f9',
-            transition: 'all 0.3s ease',
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column'
-        },
-        imgWrapper: {
-            width: '100%',
-            height: '240px',
             borderRadius: '16px',
-            overflow: 'hidden',
-            backgroundColor: '#f8fafc',
-            marginBottom: '20px'
-        },
+            padding: '16px',
+            border: isEditing ? '2px solid #0ea5e9' : '1px solid #f1f5f9',
+            boxShadow: isEditing ? '0 10px 30px -10px rgba(14, 165, 233, 0.2)' : '0 2px 4px rgba(0,0,0,0.02)',
+            transition: 'all 0.2s ease-in-out',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+        }),
+        img: { width: '100%', height: '160px', borderRadius: '12px', objectFit: 'cover', backgroundColor: '#f8fafc' },
         badge: (stock) => ({
-            position: 'absolute',
-            top: '30px',
-            right: '30px',
-            padding: '6px 12px',
-            borderRadius: '100px',
-            fontSize: '10px',
-            fontWeight: '900',
-            backgroundColor: stock < 5 ? '#fef2f2' : '#f0fdf4',
-            color: stock < 5 ? '#ef4444' : '#22c55e',
-            border: `1px solid ${stock < 5 ? '#fee2e2' : '#dcfce7'}`,
-        })
+            fontSize: '10px', fontWeight: '800', padding: '4px 8px', borderRadius: '6px',
+            backgroundColor: stock < 5 ? '#fff1f2' : '#f0fdf4',
+            color: stock < 5 ? '#e11d48' : '#16a34a'
+        }),
+        input: {
+            width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid #e2e8f0',
+            fontSize: '13px', fontWeight: '700', outline: 'none', color: '#1e293b'
+        }
     };
 
-    if (loading) return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-            <div className="animate-spin"><CubeIcon width={40} color="#0ea5e9" /></div>
-            <span style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '2px', color: '#64748b' }}>POLLING INVENTORY...</span>
-        </div>
-    );
+    if (loading) return <div style={{ textAlign: 'center', paddingTop: '200px' }}><CubeIcon width={40} className="animate-spin" /></div>;
 
     return (
         <div style={styles.container}>
-            <div style={styles.wrapper}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
                 
-                {/* --- NAVIGATION & HEADER --- */}
-                <div style={styles.header}>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                     <div>
-                        <button onClick={() => navigate('/admin')} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                            <ArrowLeftIcon width={16} /> Command Center
+                        <button onClick={() => navigate('/admin')} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontWeight: '700', fontSize: '12px', marginBottom: '8px' }}>
+                            <ArrowLeftIcon width={14} /> BACK
                         </button>
-                        <h1 style={{ fontSize: '42px', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1.5px' }}>Fleet Catalog<span style={{ color: '#0ea5e9' }}>.</span></h1>
+                        <h1 style={{ fontSize: '32px', fontWeight: '900', color: '#0f172a', margin: 0 }}>Inventory</h1>
                     </div>
-                    <Link to="/admin/add-product" style={{ textDecoration: 'none', padding: '14px 28px', borderRadius: '14px', background: '#0f172a', color: 'white', fontWeight: '800', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 10px 20px rgba(15, 23, 42, 0.2)' }}>
-                        <PlusIcon width={20} strokeWidth={3} /> DEPLOY GEAR
-                    </Link>
-                </div>
+                    <button onClick={() => navigate('/admin/add-product')} style={{ backgroundColor: '#0f172a', color: 'white', padding: '12px 20px', borderRadius: '12px', border: 'none', fontWeight: '700', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <PlusIcon width={18} /> NEW ITEM
+                    </button>
+                </header>
 
-                {/* --- PRODUCT GRID --- */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '32px' }}>
-                    {products.length > 0 ? (
-                        products.map((product) => (
-                            <div 
-                                key={product._id} 
-                                style={styles.card}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-10px)';
-                                    e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.06)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(0)';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                }}
-                            >
-                                <div style={styles.badge(product.stock)}>
-                                    {product.stock < 5 ? 'LOW STOCK' : 'IN STOCK'}
-                                </div>
-
-                                <div style={styles.imgWrapper}>
-                                    <img
-                                        // src={product.images?.[0]?.url || "https://images.unsplash.com/photo-1531608139434-1912ae0713cd?q=80&w=1000&auto=format&fit=crop"}
-                                        src={productImages[product.images?.[0]?.url]}
-                                        alt={product.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    />
-                                </div>
-
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <h3 style={{ fontSize: '16px', fontWeight: '900', color: '#0f172a', margin: 0 }}>{product.name}</h3>
-                                    <span style={{ fontSize: '18px', fontWeight: '900', color: '#0ea5e9' }}>₹{product.price}</span>
-                                </div>
+                <div style={styles.grid}>
+                    {products.map((p) => {
+                        const isEditing = editingId === p._id;
+                        return (
+                            <div key={p._id} style={styles.card(isEditing)}>
+                                <img src={productImages[p.images?.[0]?.url]} alt={p.name} style={styles.img} />
                                 
-                                <p style={{ fontSize: '12px', color: '#64748b', fontWeight: '700', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                    Current Capacity: {product.stock} units
-                                </p>
-
-                                <div style={{ marginTop: '24px', display: 'flex', gap: '12px', paddingTop: '20px', borderTop: '1px solid #f8fafc' }}>
-                                    <Link 
-                                        to={`/admin/update-product/${product._id}`} 
-                                        style={{ flex: 1, textDecoration: 'none', textAlign: 'center', padding: '12px', borderRadius: '10px', backgroundColor: '#f1f5f9', color: '#475569', fontSize: '11px', fontWeight: '900', letterSpacing: '1px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                                    >
-                                        <PencilSquareIcon width={16} /> MODIFY
-                                    </Link>
-                                    <button 
-                                        onClick={() => handleDelete(product._id)} 
-                                        style={{ flex: 1, border: 'none', padding: '12px', borderRadius: '10px', backgroundColor: '#fef2f2', color: '#ef4444', fontSize: '11px', fontWeight: '900', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                                    >
-                                        <TrashIcon width={16} /> REMOVE
-                                    </button>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
+                                        <h3 style={{ fontSize: '15px', fontWeight: '800', color: '#1e293b', margin: 0 }}>{p.name}</h3>
+                                        <span style={styles.badge(p.stock)}>{p.stock} units</span>
+                                    </div>
+                                    <span style={{ fontSize: '16px', fontWeight: '900', color: '#0ea5e9' }}>₹{p.price}</span>
                                 </div>
+
+                                {isEditing ? (
+                                    <div style={{ backgroundColor: '#f8fafc', padding: '12px', borderRadius: '12px', marginTop: '4px', animation: 'slideIn 0.2s ease' }}>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <label style={{ fontSize: '9px', fontWeight: '800', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>PRICE</label>
+                                                <input type="number" style={styles.input} value={editData.price} onChange={(e) => setEditData({...editData, price: e.target.value})} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <label style={{ fontSize: '9px', fontWeight: '800', color: '#94a3b8', display: 'block', marginBottom: '4px' }}>STOCK</label>
+                                                <input type="number" style={styles.input} value={editData.stock} onChange={(e) => setEditData({...editData, stock: e.target.value})} />
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
+                                            <button onClick={() => handleUpdate(p._id)} style={{ flex: 1, backgroundColor: '#0ea5e9', color: 'white', border: 'none', padding: '8px', borderRadius: '6px', fontWeight: '800', cursor: 'pointer', fontSize: '12px' }}>SAVE</button>
+                                            <button onClick={() => setEditingId(null)} style={{ padding: '8px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer' }}><XMarkIcon width={16} /></button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                        <button 
+                                            onClick={() => { setEditingId(p._id); setEditData({ price: p.price, stock: p.stock }); }} 
+                                            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', backgroundColor: '#f1f5f9', color: '#475569', border: 'none', padding: '10px', borderRadius: '10px', fontWeight: '700', fontSize: '11px', cursor: 'pointer' }}
+                                        >
+                                            <PencilSquareIcon width={14} /> MODIFY
+                                        </button>
+                                        <button style={{ backgroundColor: '#fff1f2', color: '#e11d48', border: 'none', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}>
+                                            <TrashIcon width={14} />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                        ))
-                    ) : (
-                        <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '100px', backgroundColor: 'white', borderRadius: '32px', border: '1px dashed #cbd5e1' }}>
-                            <ExclamationCircleIcon width={48} color="#cbd5e1" style={{ margin: '0 auto 16px' }} />
-                            <p style={{ fontSize: '14px', fontWeight: '700', color: '#94a3b8' }}>MANIFEST EMPTY: NO GEAR DETECTED IN DATABASE</p>
-                        </div>
-                    )}
+                        );
+                    })}
                 </div>
             </div>
         </div>

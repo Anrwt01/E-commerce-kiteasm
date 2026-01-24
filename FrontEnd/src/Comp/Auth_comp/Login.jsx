@@ -25,7 +25,7 @@ const Login = () => {
         console.log(res)
         localStorage.setItem("token", res.data.token);
         if (res.data.user) {
-          localStorage.setItem("role", JSON.stringify(res.data.user.role));
+          localStorage.setItem("user", JSON.stringify(res.data.user));
         }
 
         // 2. Redirect based on Role (Optional but recommended)
