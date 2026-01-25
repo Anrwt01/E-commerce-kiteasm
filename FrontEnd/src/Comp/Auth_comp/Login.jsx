@@ -22,7 +22,7 @@ const Login = () => {
       
       if (res.data.token) {
         // 1. Store Auth Data
-        console.log(res)
+        // console.log(res)
         localStorage.setItem("token", res.data.token);
         if (res.data.user) {
           localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -64,7 +64,7 @@ const Login = () => {
         <input type="password" placeholder="Password" ref={passwordRef} required style={inputStyle} />
 
         <div style={{ textAlign: 'right', marginBottom: '40px' }}>
-          <Link to="#" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'none', textTransform: 'uppercase' }}>Forgot Access?</Link>
+          <Link to="/forgot-password" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'none', textTransform: 'uppercase' }}>Forgot Access?</Link>
         </div>
 
         <button 

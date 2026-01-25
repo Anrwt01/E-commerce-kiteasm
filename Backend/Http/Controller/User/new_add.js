@@ -4,7 +4,7 @@ import { UserModel } from "../../../Schema/User_Schema.js";
 export const updateadd = async (req, res) => {
     try {
         const { name, phone2, address } = req.body;
-        console.log(name,phone2,address)
+        // console.log(name,phone2,address)
       
         const updatedUser = await UserModel.findByIdAndUpdate(
             req.userId, 

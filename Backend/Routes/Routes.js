@@ -4,6 +4,8 @@ import { Router } from "express";
 import { verifyme } from "../Http/Middleware/Verifyme.js";
 import { verifyRole } from "../Http/Middleware/VerifyRole.js";
 
+import { forgotPassword } from "../Http/Controller/User/forgotPassword.js";
+
 /* 👤 Auth Controllers */
 import { Login } from "../Http/Controller/Auth/Login.js";
 import { Register } from "../Http/Controller/Auth/Register.js";
@@ -32,11 +34,17 @@ import { verifyPayment } from "../Http/Controller/Payment/VerifyPayment.js";
 /* 🛠 Admin Controllers */
 import { AdminALLorder } from "../Http/Controller/Admin_panel/allOrder.js";
 import { Order_Update, getSingleOrder } from "../Http/Controller/Admin_panel/Order.js";
+import {downloadOrderExcel} from "../Http/Controller/Admin_panel/downloadOrderExcel.js"
 import { New_prod } from "../Http/Controller/Admin_panel/New_prod.js";
 import { Update_prod } from "../Http/Controller/Admin_panel/Update_Prod.js";
 import { All_product, Delete_prod } from "../Http/Controller/Admin_panel/Product_all.js";
 import { Single_prod_details } from "../Http/Controller/Admin_panel/Single_product.js";
 import { updateOrderStatus } from "../Http/Controller/Admin_panel/updateOrderStatus.js";
+
+
+
+import { searchproduct } from "../Http/Controller/User/searchproduct.js";
+import { getProductSuggestions } from "../Http/Controller/User/getProductSuggestions.js";
 
 // /* 📊 Admin Inventory Controllers */
 // import {
@@ -57,6 +65,13 @@ router.post("/auth/register", Register);
    USER PRODUCTS
 =========================== */
 // Public Routes
+router.get("/search/products", searchproduct); 
+router.get("/suggest/products", getProductSuggestions);
+// router.get("/search/products",searchproduct)
+// router.get("/suggest/products",getProductSuggestions)
+
+router.post("/auth/forgot-password",forgotPassword )
+
 router.get("/user/products", User_All_product);
 router.get("/user/products/:Prod_id", User_Single_prod); // Use :Prod_id to match controller
 router.post("/contact", SendContactEmail);
@@ -104,6 +119,8 @@ router.get(
    verifyRole,
    getSingleOrder
 );
+
+router.get("/admin/download-orders",verifyme, verifyRole, downloadOrderExcel);
 
 router.put("/user/profile/update", verifyme, updateUserDetails);
 router.put("/user/add-update", verifyme, updateadd);

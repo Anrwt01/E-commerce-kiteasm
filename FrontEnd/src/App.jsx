@@ -25,6 +25,7 @@ import User_details_update from "./Comp/User_Comp/User_details_update.jsx";
 import Cart from "./Comp/User_Comp/Cart.jsx";
 import Checkout from "./Comp/User_Comp/Checkout.jsx";
 import MyOrders from "./Comp/User_Comp/MyOrders.jsx";
+import ForgotPassword from "./Comp/Auth_comp/ForgotPassword.jsx";
 
 // Admin Secure Pages
 import AdminDashboard from "./Comp/Admin_comp/AdminDashboard.jsx";
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* --- 🌍 SHARED PUBLIC ROUTES (Always accessible) --- */}
           <Route path="/about" element={<About />} />
@@ -67,6 +69,7 @@ const App = () => {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<MyOrders />} />
+            
           </Route>
 
           {/* --- 🛡️ PROTECTED ADMIN ROUTES (Admin Only) --- */}

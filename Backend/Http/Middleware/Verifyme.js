@@ -5,7 +5,7 @@ dotenv.config();
 export const verifyme = (req, res, next) => {
   try {
   
-    console.log("Incoming Header:", req.headers["authorization"]);
+    // console.log("Incoming Header:", req.headers["authorization"]);
    const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(401).json({ error: "Authorization header missing" });

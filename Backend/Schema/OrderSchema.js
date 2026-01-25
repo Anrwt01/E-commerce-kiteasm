@@ -15,7 +15,10 @@ const orderSchema = new mongoose.Schema(
     customerDetails: {
       name: { type: String, required: true },
       email: { type: String, required: true },
-      phone: { type: String }
+      phone1: { type: String },
+       phone2 : { type: String },
+      address : {type : String},
+      paymentMethod: { type: String, default: "COD" }
     },
 
     totalAmount: { type: Number, required: true },

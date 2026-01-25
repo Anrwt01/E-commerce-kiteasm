@@ -99,13 +99,13 @@ const Footer = () => {
           </h4>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <li style={{ marginBottom: "12px", fontSize: "13px", color: "#666" }}>
-              Call: +91 93150 14029 (toll free)
+              Call: +91 7011001801 (toll free)
             </li>
             <li style={{ marginBottom: "12px", fontSize: "13px", color: "#666" }}>
-              WhatsApp: +91 93150 14029
+              WhatsApp: +91 7011001801
             </li>
             <li style={{ marginBottom: "12px", fontSize: "13px", color: "#666" }}>
-              Email: support@kiteasm.com
+              Email: kiteasm01@gmail.com
             </li>
             <li style={{ marginBottom: "20px", fontSize: "13px", color: "#666" }}>
               Mon to Fri 11 PM - 7 AM (PST)
@@ -189,7 +189,7 @@ const Footer = () => {
         }}
       >
         <a
-          href="https://www.youtube.com/@kiteasm"
+          href="https://www.youtube.com/@RioTheExplorer"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="YouTube"
@@ -227,7 +227,7 @@ const Footer = () => {
           <Instagram size={16} />
         </a>
         <a
-          href="https://wa.me/919315014029"
+          href="https://wa.me/9170111801"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="WhatsApp"

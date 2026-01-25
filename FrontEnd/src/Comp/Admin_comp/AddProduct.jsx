@@ -124,8 +124,10 @@ const AddProduct = () => {
                             <select name="category" value={formData.category} onChange={handleChange} required style={{...inputStyle, appearance: 'none', cursor: 'pointer'}}>
                                 <option value="">Select Category</option>
                                 <option value="Kites">Kites (Airframe)</option>
-                                <option value="Decor">Mamjha (Aesthetics)</option>
-                                <option value="Gear">Others (Technical)</option>
+                                <option value="Manjha">Manjha (Aesthetics)</option>
+                                 <option value="saddi">saddi (Technical)</option>
+                                <option value="accessories">accessories (Technical)</option>
+
                             </select>
 
                             {/* <label style={labelStyle}>Visual Manifest URL</label>

@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
   address: [
     {
       house: String,
-      Galino : String,
+      galino : String,
       city: String,
       state: String,
       pincode: String
@@ -53,7 +53,11 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
+
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
+
 });
 
 export const UserModel = mongoose.model("User", userSchema);

@@ -3,35 +3,32 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-  host: "smtp.zoho.in",        // India users
-  // host: "smtp.zoho.com",   // Global users
-  port: 465,
-  secure: true,               // MUST be true for 465
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Zoho App Password
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 
 
-export const sendOrderEmail = async (order, user, paymentId) => {
+export const sendOrderEmail = async (newOrder, user, paymentId) => {
     try {
         const adminEmail = process.env.EMAIL_USER; // Send to self/admin
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: adminEmail,
-            subject: `New Order Received - Order #${order._id}`,
+            subject: `New Order Received - Order #${newOrder._id}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px;">
           <h2 style="color: #333;">New Order Notification</h2>
           <p>A new order has been placed successfully.</p>
           
           <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px;">Order Details</h3>
-          <p><strong>Order ID:</strong> ${order._id}</p>
+          <p><strong>Order ID:</strong> ${newOrder._id}</p>
           <p><strong>Payment Ref No:</strong> ${paymentId || "N/A"}</p>
-          <p><strong>Total Amount:</strong> ₹${order.totalAmount}</p>
+          <p><strong>Total Amount:</strong> ₹${newOrder.totalAmount}</p>
           <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
           
           <h3 style="border-bottom: 1px solid #eee; padding-bottom: 5px;">User Details</h3>
@@ -48,7 +45,7 @@ export const sendOrderEmail = async (order, user, paymentId) => {
               </tr>
             </thead>
             <tbody>
-              ${order.items.map(item => `
+              ${newOrder.items.map(item => `
                 <tr>
                   <td style="padding: 8px; border: 1px solid #ddd;">${item.productId}</td> 
                   <td style="padding: 8px; border: 1px solid #ddd;">${item.quantity}</td>

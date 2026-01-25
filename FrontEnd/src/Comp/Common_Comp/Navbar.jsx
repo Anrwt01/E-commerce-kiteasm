@@ -39,12 +39,12 @@ const Navbar = () => {
   // Derived variables (automatic)
   const isLoggedIn = !!authState.token;
   const role = authState.role;
-  console.log(authState)
+  // console.log(authState)
 
   // 3. EFFECT: This is the "Automatic Sync" 
   useEffect(() => {
     const handleAuthChange = () => {
-      console.log("Auth changed! Updating Navbar...");
+      // console.log("Auth changed! Updating Navbar...");
       setAuthState(getAuthFromStorage()); // This triggers the re-render
     };
 
