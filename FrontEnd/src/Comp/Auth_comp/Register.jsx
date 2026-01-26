@@ -44,7 +44,6 @@ const Register = () => {
         if (res.data.user) {
           localStorage.setItem("user", JSON.stringify(res.data.user));
         }
-        // Smooth redirect to dashboard
         navigate("/dashboard");
       } else {
         navigate("/login");
@@ -57,86 +56,131 @@ const Register = () => {
     }
   };
 
-  const inputStyle = {
-    width: '100%', 
-    padding: '18px', 
-    background: '#f8fafc',
-    border: '1px solid #e2e8f0', 
-    fontSize: '14px', 
-    outline: 'none',
-    borderRadius: '8px',
-    transition: 'all 0.3s ease'
+  const styles = {
+    wrapper: {
+      backgroundColor: '#000000', // Pure black for professional theme
+      minHeight: '100vh',
+      paddingTop: '100px',
+      paddingBottom: '100px',
+      color: '#ffffff', // White text
+      fontFamily: 'sans-serif' // Changed to normal font
+    },
+    container: {
+      maxWidth: '800px',
+      margin: '0 auto',
+      padding: '0 20px',
+    },
+    title: {
+      fontSize: 'clamp(32px, 5vw, 48px)',
+      fontWeight: '900',
+      letterSpacing: '-0.03em',
+      marginBottom: '10px',
+      color: '#ffffff' // White title
+    },
+    sectionLabel: {
+      fontSize: '12px',
+      fontWeight: 900,
+      textTransform: 'uppercase',
+      color: '#ffffff', // White section labels instead of blue
+      letterSpacing: '2px'
+    },
+    divider: {
+      flex: 1,
+      height: '1px',
+      background: 'rgba(255,255,255,0.08)'
+    },
+    inputStyle: {
+      width: '100%',
+      padding: '18px',
+      background: 'rgba(255, 255, 255, 0.03)', // Subtle white overlay
+      border: 'none',
+      boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)',
+      fontSize: '14px',
+      outline: 'none',
+      borderRadius: '12px',
+      color: '#ffffff', // White text
+      transition: 'all 0.3s ease'
+    },
+    submitBtn: {
+      padding: '24px',
+      backgroundColor: '#ffffff', // White button
+      color: '#000000', // Black text
+      border: 'none',
+      borderRadius: '16px',
+      fontWeight: '800',
+      fontSize: '16px',
+      textTransform: 'uppercase',
+      letterSpacing: '1px',
+      cursor: loading ? 'not-allowed' : 'pointer',
+      boxShadow: '0 10px 30px rgba(255, 255, 255, 0.2)', // White shadow
+      transition: 'all 0.3s ease'
+    },
+    footer: {
+      marginTop: '60px',
+      textAlign: 'center',
+      borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      paddingTop: '40px'
+    }
   };
 
   return (
-    <div className="register-wrapper" style={{ paddingTop: '100px', paddingBottom: '100px', maxWidth: '800px', margin: '0 auto', paddingLeft: '20px', paddingRight: '20px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-        <h1 style={{ fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: '900', letterSpacing: '-0.02em' }}>
-          Join the Fleet<span>.</span>
-        </h1>
-        <p style={{ marginTop: '16px', color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px' }}>
-          Apply for executive membership
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '50px' }}>
-        
-        {/* Section 01: Identity */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', color: '#0f172a' }}>01. Identity</span>
-            <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
-          </div>
-          <div className="form-grid">
-            <input type="text" placeholder="Full Name" ref={nameRef} required style={inputStyle} />
-            <input type="email" placeholder="Email Address" ref={emailRef} required style={inputStyle} />
-          </div>
-          <div className="form-grid">
-            <input type="text" placeholder="Phone" ref={phone1Ref} required pattern="[0-9]{10}" style={inputStyle} />
-            <input type="password" placeholder="Access Password" ref={passwordRef} required minLength={6} style={inputStyle} />
-          </div>
+    <div style={styles.wrapper}>
+      <div style={styles.container}>
+        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+          <h1 style={styles.title}>Register<span style={{color: '#cccccc'}}>.</span></h1> {/* Light gray dot */}
         </div>
 
-        {/* Section 02: Coordinates */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', color: '#0f172a' }}>02. Coordinates</span>
-            <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }}></div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
+          
+          {/* Section 01: Identity */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <span style={styles.sectionLabel}>01. Identity</span>
+              <div style={styles.divider}></div>
+            </div>
+            <div className="form-grid">
+              <input type="text" placeholder="Full Name" ref={nameRef} required style={styles.inputStyle} />
+              <input type="email" placeholder="Email Address" ref={emailRef} required style={styles.inputStyle} />
+            </div>
+            <div className="form-grid">
+              <input type="text" placeholder="Phone" ref={phone1Ref} required pattern="[0-9]{10}" style={styles.inputStyle} />
+              <input type="password" placeholder="Password" ref={passwordRef} required minLength={6} style={styles.inputStyle} />
+            </div>
           </div>
-          <div className="form-grid">
-            <input type="text" placeholder="House / Flat No" ref={houseRef} required style={inputStyle} />
-            <input type="text" placeholder="Locality / Area" ref={galinoRef} required style={inputStyle} />
+
+          {/* Section 02: Coordinates */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <span style={styles.sectionLabel}>02. Coordinates</span>
+              <div style={styles.divider}></div>
+            </div>
+            <div className="form-grid">
+              <input type="text" placeholder="House / Flat No" ref={houseRef} required style={styles.inputStyle} />
+              <input type="text" placeholder="Locality / Area" ref={galinoRef} required style={styles.inputStyle} />
+            </div>
+            <div className="form-grid-three">
+              <input type="text" placeholder="City" ref={cityRef} required style={styles.inputStyle} />
+              <input type="text" placeholder="State" ref={stateRef} required style={styles.inputStyle} />
+              <input type="text" placeholder="Pincode" ref={pincodeRef} required pattern="[0-9]{6}" style={styles.inputStyle} />
+            </div>
           </div>
-          <div className="form-grid-three">
-            <input type="text" placeholder="City" ref={cityRef} required style={inputStyle} />
-            <input type="text" placeholder="State" ref={stateRef} required style={inputStyle} />
-            <input type="text" placeholder="Pincode" ref={pincodeRef} required pattern="[0-9]{6}" style={inputStyle} />
-          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading} 
+            style={styles.submitBtn}
+            onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
+            onMouseOut={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
+          >
+            {loading ? 'Transmitting Data...' : 'Confirm Membership'}
+          </button>
+        </form>
+
+        <div style={styles.footer}>
+          <p style={{ fontSize: '14px', color: '#cccccc' }}> {/* Light gray text */}
+            Already a member? <Link to="/login" style={{ color: '#ffffff', fontWeight: 900, textDecoration: 'none' }}>Sign In.</Link> {/* White link */}
+          </p>
         </div>
-
-        <button 
-          type="submit" 
-          disabled={loading} 
-          style={{ 
-            padding: '24px', 
-            backgroundColor: '#0f172a', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '12px', 
-            fontWeight: '700', 
-            fontSize: '16px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'background 0.3s'
-          }}
-        >
-          {loading ? 'Transmitting...' : 'Confirm Membership'}
-        </button>
-      </form>
-
-      <div style={{ marginTop: '60px', textAlign: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '40px' }}>
-        <p style={{ fontSize: '14px', color: '#64748b' }}>
-          Already a member? <Link to="/login" style={{ color: 'black', fontWeight: 900, textDecoration: 'none' }}>Sign In.</Link>
-        </p>
       </div>
 
       <style>{`
@@ -156,9 +200,8 @@ const Register = () => {
           }
         }
         input:focus {
-          border-color: #0ea5e9 !important;
-          background: #ffffff !important;
-          box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+          box-shadow: inset 0 0 0 1px #ffffff !important; /* White focus border */
+          background: rgba(255, 255, 255, 0.05) !important;
         }
       `}</style>
     </div>

@@ -277,6 +277,7 @@ const Checkout = () => {
         axios.get("http://localhost:5000/api/user/cart", { headers: { Authorization: `Bearer ${token}` } }),
         axios.get("http://localhost:5000/api/user/details", { headers: { Authorization: `Bearer ${token}` } })
       ]);
+      // console.log(cartRes)
 
       setCartItems(cartRes.data.items || []);
       setTotalAmount(cartRes.data.items?.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0);
@@ -331,25 +332,35 @@ const Checkout = () => {
     setIsEditing(!isEditing);
   };
 const handlePlaceOrder = async () => {
-    // ... validation checks ...
+    // 1. Validation check
+    if (isEditing) {
+        alert("Please save your delivery coordinates before proceeding.");
+        return;
+    }
+
+    if (cartItems.length === 0) {
+        alert("Your mission crate is empty.");
+        return;
+    }
 
     setLoading(true);
     try {
         const token = localStorage.getItem("token");
         
-        // FLATTENED PAYLOAD
+        // 2. Map items to include the explicit productName
         const orderPayload = {
             items: cartItems.map(item => ({
-                productId: item.productId?._id || item.productId,
+                productId: item.productId?._id || item.productId, // ID for DB reference
+                productname: item.productId?.name || "Kiteasm Unit", // Name for display reference
                 quantity: item.quantity,
                 price: item.price
             })),
             totalAmount,
-            name: formData.name,       // Sent at top level
-            email: formData.email,     // Sent at top level
-            phone1: formData.phone1,   // Sent at top level
-            phone2: formData.phone2,   // Sent at top level
-            address: formData.address, // Sent at top level
+            name: formData.name,
+            email: formData.email,
+            phone1: formData.phone1,
+            phone2: formData.phone2,
+            address: formData.address,
             paymentMethod
         };
 
@@ -357,11 +368,12 @@ const handlePlaceOrder = async () => {
             headers: { Authorization: `Bearer ${token}` }
         });
 
-        if (res.data.success) navigate("/orders");
+        if (res.data.success) {
+            navigate("/orders");
+        }
     } catch (err) {
-        // Detailed error logging to see WHY it failed
-        console.log("Server rejected with:", err.response?.data);
-        alert(`Checkout failed: ${err.response?.data?.message || "Check console"}`);
+        console.error("Checkout failed:", err.response?.data);
+        alert(`Deployment failed: ${err.response?.data?.message || "Check your connection"}`);
     } finally {
         setLoading(false);
     }

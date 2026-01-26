@@ -77,10 +77,74 @@ const UpdateProduct = () => {
     };
 
     const styles = {
-        container: { backgroundColor: '#f8fafc', minHeight: '100vh', padding: '140px 24px 100px' },
-        card: { maxWidth: '850px', margin: '0 auto', background: 'white', padding: '48px', borderRadius: '32px', border: '1px solid #f1f5f9', boxShadow: '0 20px 50px rgba(0,0,0,0.04)' },
-        input: { width: '100%', padding: '14px 18px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', fontSize: '14px', outline: 'none', marginBottom: '20px', transition: 'all 0.2s' },
-        label: { display: 'block', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#94a3b8', marginBottom: '8px', marginLeft: '4px' }
+        container: { 
+            backgroundColor: '#0b0f1a', 
+            minHeight: '100vh', 
+            padding: '140px 24px 100px',
+            color: '#fff'
+        },
+        card: { 
+            maxWidth: '850px', 
+            margin: '0 auto', 
+            background: 'rgba(255, 255, 255, 0.02)', 
+            padding: '48px', 
+            borderRadius: '32px', 
+            border: '1px solid rgba(255, 255, 255, 0.05)', 
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 40px 100px rgba(0,0,0,0.4)' 
+        },
+        input: { 
+            width: '100%', 
+            padding: '14px 18px', 
+            backgroundColor: 'rgba(255, 255, 255, 0.03)', 
+            border: 'none',
+            boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px', 
+            fontSize: '14px', 
+            outline: 'none', 
+            marginBottom: '20px', 
+            color: '#fff',
+            transition: 'all 0.3s ease' 
+        },
+        label: { 
+            display: 'block', 
+            fontSize: '11px', 
+            fontWeight: '800', 
+            textTransform: 'uppercase', 
+            letterSpacing: '1.5px', 
+            color: '#64748b', 
+            marginBottom: '8px', 
+            marginLeft: '4px' 
+        },
+        previewBox: { 
+            background: 'rgba(0,0,0,0.2)', 
+            border: '1px dashed rgba(255,255,255,0.1)', 
+            borderRadius: '16px', 
+            height: '108px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            overflow: 'hidden' 
+        },
+        submitBtn: { 
+            width: '100%', 
+            padding: '18px', 
+            background: '#0ea5e9', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '16px', 
+            fontSize: '14px', 
+            fontWeight: '800', 
+            letterSpacing: '1px', 
+            cursor: 'pointer', 
+            marginTop: '10px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            gap: '10px',
+            boxShadow: '0 10px 25px rgba(14, 165, 233, 0.3)',
+            transition: 'transform 0.2s ease'
+        }
     };
 
     if (loading) return (
@@ -92,7 +156,10 @@ const UpdateProduct = () => {
     return (
         <div style={styles.container}>
             <div style={{ maxWidth: '850px', margin: '0 auto', marginBottom: '32px' }}>
-                <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button 
+                    onClick={() => navigate(-1)} 
+                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px' }}
+                >
                     <ArrowLeftIcon width={16} /> Cancel Modification
                 </button>
             </div>
@@ -103,8 +170,12 @@ const UpdateProduct = () => {
                         <WrenchScrewdriverIcon style={{ width: '18px' }} />
                         <span style={{ fontSize: '11px', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase' }}>Engineering Dept</span>
                     </div>
-                    <h1 style={{ fontSize: '36px', fontWeight: '900', color: '#0f172a', margin: 0, letterSpacing: '-1.5px' }}>Modify Unit Specs<span style={{ color: '#0ea5e9' }}>.</span></h1>
-                    <p style={{ color: '#64748b', marginTop: '8px', fontSize: '15px' }}>Product Reference: {productId.slice(-6).toUpperCase()}</p>
+                    <h1 style={{ fontSize: '36px', fontWeight: '900', color: '#fff', margin: 0, letterSpacing: '-1.5px' }}>
+                        Modify Unit Specs<span style={{ color: '#0ea5e9' }}>.</span>
+                    </h1>
+                    <p style={{ color: '#94a3b8', marginTop: '8px', fontSize: '14px', letterSpacing: '0.5px' }}>
+                        PRODUCT REF: {productId ? productId.slice(-8).toUpperCase() : "N/A"}
+                    </p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -112,33 +183,48 @@ const UpdateProduct = () => {
                         {/* LEFT: Core Data */}
                         <div>
                             <label style={styles.label}>Identity</label>
-                            <input type="text" name="name" value={formData.name} onChange={handleChange} required style={styles.input} />
+                            <input 
+                                type="text" name="name" value={formData.name} 
+                                onChange={handleChange} required style={styles.input} 
+                            />
 
                             <label style={styles.label}>Valuation (₹)</label>
-                            <input type="number" name="price" value={formData.price} onChange={handleChange} required style={styles.input} />
+                            <input 
+                                type="number" name="price" value={formData.price} 
+                                onChange={handleChange} required style={styles.input} 
+                            />
 
                             <label style={styles.label}>Inventory Capacity</label>
-                            <input type="number" name="stock" value={formData.stock} onChange={handleChange} required style={styles.input} />
+                            <input 
+                                type="number" name="stock" value={formData.stock} 
+                                onChange={handleChange} required style={styles.input} 
+                            />
                         </div>
 
                         {/* RIGHT: Meta Data */}
                         <div>
                             <label style={styles.label}>Category</label>
-                            <select name="category" value={formData.category} onChange={handleChange} required style={styles.input}>
-                                <option value="Kites">Kites</option>
-                                <option value="Decor">Decor</option>
-                                <option value="Gear">Gear</option>
-                                <option value="Accessories">Accessories</option>
+                            <select 
+                                name="category" value={formData.category} 
+                                onChange={handleChange} required style={styles.input}
+                            >
+                                <option value="Kites" style={{background: '#0b0f1a'}}>Kites</option>
+                                <option value="Decor" style={{background: '#0b0f1a'}}>Decor</option>
+                                <option value="Gear" style={{background: '#0b0f1a'}}>Gear</option>
+                                <option value="Accessories" style={{background: '#0b0f1a'}}>Accessories</option>
                             </select>
 
                             <label style={styles.label}>Visual Manifest URL</label>
-                            <input type="url" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required style={styles.input} />
+                            <input 
+                                type="url" name="imageUrl" value={formData.imageUrl} 
+                                onChange={handleChange} required style={styles.input} 
+                            />
 
-                            <div style={{ background: '#f8fafc', border: '1px dashed #cbd5e1', borderRadius: '16px', height: '108px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <div style={styles.previewBox}>
                                 {formData.imageUrl ? (
                                     <img src={formData.imageUrl} alt="Preview" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
                                 ) : (
-                                    <PhotoIcon style={{ width: '32px', color: '#cbd5e1' }} />
+                                    <PhotoIcon style={{ width: '32px', color: '#334155' }} />
                                 )}
                             </div>
                         </div>
@@ -146,12 +232,18 @@ const UpdateProduct = () => {
 
                     <div style={{ marginTop: '32px' }}>
                         <label style={styles.label}>Technical Description</label>
-                        <textarea name="description" value={formData.description} onChange={handleChange} required style={{ ...styles.input, height: '120px', resize: 'none' }} />
+                        <textarea 
+                            name="description" value={formData.description} 
+                            onChange={handleChange} required 
+                            style={{ ...styles.input, height: '120px', resize: 'none' }} 
+                        />
                     </div>
 
                     <button 
                         type="submit" 
-                        style={{ width: '100%', padding: '18px', background: '#0f172a', color: 'white', border: 'none', borderRadius: '16px', fontSize: '14px', fontWeight: '800', letterSpacing: '1px', cursor: 'pointer', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                        style={styles.submitBtn}
+                        onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+                        onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
                     >
                         <ArrowPathIcon width={20} strokeWidth={2.5} /> COMMIT CHANGES TO DATABASE
                     </button>

@@ -28,35 +28,61 @@ const AdminDashboard = () => {
     });
 
     useEffect(() => {
-        const fetchRealTimeData = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const headers = { Authorization: `Bearer ${token}` };
+    const fetchRealTimeData = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const headers = { Authorization: `Bearer ${token}` };
 
-                const [ordersRes, productsRes] = await Promise.all([
-                    axios.get("http://localhost:5000/api/admin/orders", { headers }),
-                    axios.get("http://localhost:5000/api/admin/products", { headers })
-                ]);
+            const [ordersRes, productsRes] = await Promise.all([
+                axios.get("http://localhost:5000/api/admin/orders", { headers }),
+                axios.get("http://localhost:5000/api/admin/products", { headers })
+            ]);
 
-                const allOrders = Array.isArray(ordersRes.data) ? ordersRes.data : (ordersRes.data.orders || []);
-                const allProducts = Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data.products || []);
+            // Extraction based on your log: ordersRes.data.data
+            const allOrders = ordersRes.data.data || [];
+            const allProducts = productsRes.data.data || productsRes.data.products || [];
 
-                const totalRevenue = allOrders.reduce((acc, order) => acc + (Number(order.totalAmount) || 0), 0);
-                const activeCount = allOrders.filter(o => o.orderStatus === 'processing' || o.orderStatus === 'shipped').length;
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-                setMetrics({
-                    revenue: totalRevenue,
-                    activeOrders: activeCount,
-                    totalSkus: allProducts.length,
-                    loading: false
-                });
-            } catch (error) {
-                console.error("Telemetry Sync Error:", error);
-                setMetrics(prev => ({ ...prev, loading: false }));
-            }
-        };
-        fetchRealTimeData();
-    }, []);
+            // 🟢 Filter: Monthly Orders
+            const monthlyOrders = allOrders.filter(order => {
+                const created = new Date(order.createdAt || order.date);
+                return !isNaN(created) && created >= startOfMonth && created <= endOfMonth;
+            });
+
+            // 💰 Calculate: Monthly Revenue
+            const monthlyRevenue = monthlyOrders.reduce(
+                (sum, order) => sum + Number(order.totalAmount || 0), 0
+            );
+
+            // 🔄 Count: Processing
+            const processingOrders = allOrders.filter(
+                order => order.orderStatus?.toLowerCase() === "processing"
+            ).length;
+
+            // 🌍 Calculate: Total Revenue
+            const totalRevenue = allOrders.reduce(
+                (sum, order) => sum + Number(order.totalAmount || 0), 0
+            );
+
+            setMetrics({
+                revenue: totalRevenue,
+                activeOrders: processingOrders,
+                totalSkus: allProducts.length,
+                monthlyOrders: monthlyOrders.length,
+                monthlyRevenue,
+                loading: false
+            });
+
+        } catch (error) {
+            console.error("Telemetry Sync Error:", error);
+            setMetrics(prev => ({ ...prev, loading: false }));
+        }
+    };
+    fetchRealTimeData();
+}, []);
 
     // --- DOWNLOAD HANDLER ---
     const handleDownloadExcel =async () => {
@@ -89,12 +115,46 @@ const AdminDashboard = () => {
         link.parentNode.removeChild(link);
         window.URL.revokeObjectURL(url);
     };
+const stats = [
+  {
+    label: "Total Revenue",
+    value: `₹${(metrics.revenue ?? 0).toLocaleString()}`,
+    trend: "All Time",
+    icon: PresentationChartBarIcon,
+    color: "#0ea5e9"
+  },
+  {
+    label: "Orders This Month",
+    value: metrics.monthlyOrders,
+    trend: "Monthly",
+    icon: CalendarDaysIcon,
+    color: "#22c55e"
+  },
+  {
+    label: "Monthly Revenue",
+    value: `₹${(metrics.monthlyRevenue??0 ).toLocaleString()}`,
+    trend: "Profit",
+    icon: ArrowUpRightIcon,
+    color: "#10b981"
+  },
+  {
+    label: "Processing Orders",
+    value: metrics.activeOrders,
+    trend: "Live",
+    icon: ClipboardDocumentListIcon,
+    color: "#f59e0b"
+  },
+  {
+    label: "Total SKUs",
+    value: metrics.totalSkus,
+    trend: "Inventory",
+    icon: CubeIcon,
+    color: "#6366f1"
+  }
+];
 
-    const stats = [
-        { label: 'Revenue', value: `₹${metrics.revenue.toLocaleString()}`, trend: 'Live', icon: PresentationChartBarIcon, color: '#0ea5e9' },
-        { label: 'Active Orders', value: metrics.activeOrders, trend: 'In-Flight', icon: ClipboardDocumentListIcon, color: '#22c55e' },
-        { label: 'Total SKUs', value: metrics.totalSkus, trend: 'Global', icon: CubeIcon, color: '#6366f1' },
-    ];
+
+
 
     if (metrics.loading) return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc' }}>

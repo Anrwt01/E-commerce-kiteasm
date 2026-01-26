@@ -1,55 +1,127 @@
 import React from 'react';
-import { Wind, Target, Shield, Award, UserPlus, Instagram, Youtube, BookOpen, Quote } from 'lucide-react';
+import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const About = () => {
   const styles = {
-    container: { backgroundColor: '#ffffff', color: '#0f172a', minHeight: '100vh', fontFamily: '"Inter", sans-serif', overflowX: 'hidden' },
+    container: { 
+      backgroundColor: '#000000', // Pure black for professional theme
+      color: '#ffffff', // White text
+      minHeight: '100vh', 
+      fontFamily: '"Inter", sans-serif', 
+      overflowX: 'hidden' 
+    },
     section: { padding: '100px 24px', maxWidth: '1200px', margin: '0 auto' },
-    hero: { padding: '140px 24px 100px', textAlign: 'center', position: 'relative', borderBottom: '1px solid #f1f5f9' },
-    gradientText: { background: 'linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: 'clamp(3.5rem, 10vw, 7rem)', fontWeight: '900', letterSpacing: '-0.04em', lineHeight: '1.1' },
-    storyCard: { background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '32px', padding: '48px', position: 'relative', overflow: 'hidden' },
-    ownerGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '32px', marginTop: '40px' },
-    ownerCard: { background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '24px', padding: '40px', textAlign: 'center', transition: 'all 0.3s ease', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' },
-    socialLink: { display: 'inline-flex', alignItems: 'center', gap: '8px', color: '#64748b', textDecoration: 'none', margin: '0 12px', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' },
-    badge: { color: '#0ea5e9', fontSize: '12px', letterSpacing: '3px', fontWeight: '800', marginBottom: '24px', display: 'block' },
-    registerBtn: { backgroundColor: '#0f172a', color: '#ffffff', padding: '18px 40px', borderRadius: '50px', fontWeight: 'bold', border: 'none', cursor: 'pointer', fontSize: '18px', display: 'inline-flex', alignItems: 'center', gap: '12px', transition: 'all 0.3s' }
+    hero: { 
+      padding: '160px 24px 100px', 
+      textAlign: 'left', 
+      position: 'relative',
+      maxWidth: '1200px',
+      margin: '0 auto'
+    },
+    gradientText: { 
+      color: '#ffffff', // Plain white instead of gradient
+      fontSize: 'clamp(3rem, 8vw, 6rem)', 
+      fontWeight: '900', 
+      letterSpacing: '-0.04em', 
+      lineHeight: '1' 
+    },
+    storyCard: { 
+      background: 'rgba(255, 255, 255, 0.03)', // Subtle white overlay
+      border: '1px solid rgba(255,255,255,0.05)', 
+      borderRadius: '32px', 
+      padding: '60px', 
+      position: 'relative', 
+      overflow: 'hidden' 
+    },
+    ownerGrid: { 
+      display: 'grid', 
+      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+      gap: '32px', 
+      marginTop: '40px' 
+    },
+    ownerCard: { 
+      background: 'rgba(255, 255, 255, 0.02)', 
+      border: '1px solid rgba(255, 255, 255, 0.08)', 
+      borderRadius: '24px', 
+      padding: '40px', 
+      textAlign: 'center', 
+      transition: 'all 0.4s ease',
+      backdropFilter: 'blur(10px)'
+    },
+    socialLink: { 
+      display: 'inline-flex', 
+      alignItems: 'center', 
+      gap: '8px', 
+      color: '#ffffff', // White links
+      textDecoration: 'none', 
+      margin: '0 12px', 
+      fontSize: '14px', 
+      fontWeight: '600'
+    },
+    badge: { 
+      color: '#ffffff', // White badge
+      fontSize: '12px', 
+      letterSpacing: '4px', 
+      fontWeight: '800', 
+      marginBottom: '20px', 
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px'
+    },
+    registerBtn: { 
+      backgroundColor: '#ffffff', // White button
+      color: '#000000', // Black text
+      padding: '20px 48px', 
+      borderRadius: '16px', 
+      fontWeight: '800', 
+      border: 'none', 
+      cursor: 'pointer', 
+      fontSize: '16px', 
+      display: 'inline-flex', 
+      alignItems: 'center', 
+      gap: '12px', 
+      transition: 'all 0.3s',
+      boxShadow: '0 20px 40px rgba(255, 255, 255, 0.2)' // White shadow
+    }
   };
 
   return (
     <div style={styles.container}>
-      {/* 1. LIGHT HERO */}
+      {/* 1. HERO SECTION */}
       <section style={styles.hero}>
-        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', height: '400px', background: 'radial-gradient(circle, rgba(14,165,233,0.08) 0%, transparent 70%)', zIndex: 0 }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <span style={styles.badge}>ESTABLISHED 2024</span>
-          <h1 style={styles.gradientText}>Engineering <br />The Atmosphere.</h1>
-          <p style={{ color: '#475569', fontSize: '20px', maxWidth: '650px', margin: '30px auto', lineHeight: '1.6' }}>
-            We don't just build kites; we engineer instruments of freedom that turn the sky into your personal playground.
+          <span style={styles.badge}><Wind size={14} /> ESTABLISHED 2024</span>
+          <h1 style={styles.gradientText}>Elevating <br />Kite Flying.</h1>
+          <p style={{ color: '#cccccc', fontSize: '20px', maxWidth: '600px', margin: '30px 0', lineHeight: '1.6' }}> {/* Light gray text */}
+            At Kiteasm, we craft premium kites, durable manjha (thread), and essential accessories for enthusiasts and professionals alike.
           </p>
         </div>
       </section>
 
-      {/* 2. BUSINESS STORY SECTION */}
+      {/* 2. OUR STORY */}
       <section style={styles.section}>
         <div style={styles.storyCard}>
-          <div style={{ position: 'absolute', right: '-20px', top: '-20px', opacity: 0.1, color: '#0ea5e9' }}><BookOpen size={200} /></div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '48px', alignItems: 'center' }}>
+          <div style={{ position: 'absolute', right: '-40px', bottom: '-40px', opacity: 0.03, color: 'white' }}>
+            <BookOpen size={300} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center' }}>
             <div>
-              <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '24px', color: '#0f172a' }}>Our Story.</h2>
-              <p style={{ color: '#475569', fontSize: '18px', lineHeight: '1.8' }}>
-                KiteAsm started in a small workshop with one simple mission: to redefine high-performance flight. We found that traditional kites lacked the structural integrity needed for extreme conditions.
+              <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '24px', color: 'white' }}>Our Journey.</h2>
+              <p style={{ color: '#cccccc', fontSize: '18px', lineHeight: '1.8' }}> {/* Light gray text */}
+                Kiteasm started with a passion for the skies and a commitment to quality. We specialize in high-performance kites made from premium materials, strong manjha for competitive flying, and accessories that enhance every flight.
                 <br /><br />
-                Today, we use carbon-fiber technology and fluid dynamic modeling to create kites that are both art and machine.
+                Each product is designed with precision, ensuring durability, safety, and an unforgettable experience for kite lovers everywhere.
               </p>
             </div>
             <div style={{ position: 'relative' }}>
                <img 
                 src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070" 
-                alt="Workshop" 
-                style={{ width: '100%', borderRadius: '24px', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }} 
+                alt="Kite Flying" 
+                style={{ width: '100%', borderRadius: '24px', filter: 'grayscale(0.2) brightness(0.8)' }} 
                />
-               <div style={{ position: 'absolute', bottom: '-15px', left: '-15px', background: '#0ea5e9', padding: '15px', borderRadius: '12px' }}>
-                  <Quote size={24} color="white" />
+               <div style={{ position: 'absolute', top: '-20px', left: '-20px', background: '#ffffff', padding: '20px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}> {/* White quote box */}
+                  <Quote size={30} color="#000000" /> {/* Black quote icon */}
                </div>
             </div>
           </div>
@@ -58,54 +130,54 @@ const About = () => {
 
       {/* 3. OWNERS SECTION */}
       <section style={styles.section}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h2 style={{ fontSize: '48px', fontWeight: '800', color: '#0f172a' }}>The Visionaries.</h2>
-          <p style={{ color: '#64748b', fontSize: '18px' }}>The minds behind the flight dynamics.</p>
+        <div style={{ textAlign: 'left', marginBottom: '60px' }}>
+          <h2 style={{ fontSize: '48px', fontWeight: '800', color: 'white' }}>Meet the Team.</h2>
+          <div style={{ height: '4px', width: '80px', background: '#ffffff', marginTop: '15px' }}></div> {/* White underline */}
         </div>
 
         <div style={styles.ownerGrid}>
-          {/* OWNER 1 */}
-          <div style={styles.ownerCard}>
-            <div style={{ width: '120px', height: '120px', borderRadius: '50%', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '3px solid #0ea5e9', overflow: 'hidden' }}>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Owner" />
+          {/* Founder */}
+          <div style={styles.ownerCard} className="hover-card">
+            <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Founder" style={{ width: '100%' }} />
             </div>
-            <h3 style={{ fontSize: '24px', marginBottom: '4px', color: '#0f172a' }}>Alex Rivera</h3>
-            <p style={{ color: '#0ea5e9', fontWeight: '700', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px' }}>Lead Aero-Designer</p>
-            <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: '1.6' }}>Expert in fluid dynamics and carbon structures with 15 years of aero-engineering experience.</p>
-            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
-              <a href="#" style={styles.socialLink}><Instagram size={18} /> alex_kites</a>
-              <a href="#" style={styles.socialLink}><Youtube size={18} /> AlexVlogs</a>
+            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Rajesh Kumar</h3>
+            <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Founder & CEO</p>
+            <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>With over 15 years in the kite industry, Rajesh leads Kiteasm with a vision for innovation and quality.</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+              <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
+              <a href="#" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
 
-          {/* OWNER 2 */}
-          <div style={styles.ownerCard}>
-            <div style={{ width: '120px', height: '120px', borderRadius: '50%', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '3px solid #2563eb', overflow: 'hidden' }}>
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Owner" />
+          {/* Designer */}
+          <div style={styles.ownerCard} className="hover-card">
+            <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Designer" style={{ width: '100%' }} />
             </div>
-            <h3 style={{ fontSize: '24px', marginBottom: '4px', color: '#0f172a' }}>Sarah Chen</h3>
-            <p style={{ color: '#2563eb', fontWeight: '700', fontSize: '13px', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '16px' }}>Chief of Operations</p>
-            <p style={{ color: '#64748b', fontSize: '15px', marginBottom: '24px', lineHeight: '1.6' }}>Focused on sustainable manufacturing and scaling the global KiteAsm community.</p>
-            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
-              <a href="#" style={styles.socialLink}><Instagram size={18} /> sarah_asm</a>
-              <a href="#" style={styles.socialLink}><Youtube size={18} /> SkyTalks</a>
+            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Priya Sharma</h3>
+            <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Lead Designer</p>
+            <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>Priya designs our kites and accessories, focusing on aerodynamics and user experience for all skill levels.</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+              <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
+              <a href="#" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. FINAL CTA - REGISTER SECTION */}
-      <section style={{ textAlign: 'center', padding: '120px 24px', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
-        <h2 style={{ fontSize: '42px', fontWeight: '900', color: '#0f172a', marginBottom: '16px' }}>Ready to take off?</h2>
-        <p style={{ color: '#64748b', fontSize: '18px', marginBottom: '40px' }}>Join the KiteAsm flight squadron today and get exclusive early access.</p>
+      {/* 4. CTA */}
+      <section style={{ textAlign: 'center', padding: '120px 24px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <h2 style={{ fontSize: '48px', fontWeight: '900', color: 'white', marginBottom: '20px' }}>Join Our Community.</h2>
+        <p style={{ color: '#cccccc', fontSize: '18px', marginBottom: '50px', maxWidth: '600px', margin: '0 auto 50px' }}> {/* Light gray text */}
+          Sign up to explore our latest kites, manjha, and accessories. Get exclusive updates and offers.
+        </p>
         
-        <button 
-          style={styles.registerBtn}
-          onMouseOver={(e) => e.target.style.backgroundColor = '#334155'}
-          onMouseOut={(e) => e.target.style.backgroundColor = '#0f172a'}
-        >
-          <UserPlus size={20} /> REGISTER NOW
-        </button>
+        <Link to="/register" style={{ textDecoration: 'none' }}>
+          <button style={styles.registerBtn}>
+            <UserPlus size={20} /> CREATE AN ACCOUNT
+          </button>
+        </Link>
       </section>
     </div>
   );

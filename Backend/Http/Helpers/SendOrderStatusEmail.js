@@ -71,7 +71,7 @@ export const sendOrderStatusEmail = async ( email, name, order) => {
                     (item) => `
                   <tr>
                     <td style="padding:8px; border:1px solid #ddd;">
-                      ${item.productId?.name || "Product"}
+                      ${item.productname || "Product"}
                     </td>
                     <td style="padding:8px; border:1px solid #ddd;">
                       ${item.quantity}

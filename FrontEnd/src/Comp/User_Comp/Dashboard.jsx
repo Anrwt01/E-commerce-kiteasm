@@ -39,28 +39,21 @@ const Dashboard = () => {
         } catch (error) {
             localStorage.clear();
             navigate("/login");
-            console.log(error)
         }
     }, [navigate]);
-
-    // const getImageUrl = (images) => {
-    //     if (!images || images.length === 0) return 'https://images.unsplash.com/photo-1552010757-51d8bebb6a9c?w=500';
-    //     const url = images[0].url;
-    //     return url.startsWith('http') ? url : `http://localhost:5000${url}`;
-    // };
 
     if (loading || !user) return null;
 
     const owners = [
         {
             name: "Rahul Sharma",
-            role: "Chief Pilot",
+            role: "CHIEF PILOT",
             image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
             handle: "@rahul_aero"
         },
         {
             name: "Vikram Mehra",
-            role: "Aero Engineer",
+            role: "AERO ENGINEER",
             image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
             handle: "@vikram_tech"
         }
@@ -68,82 +61,91 @@ const Dashboard = () => {
 
     return (
         <div className="dash-container">
-            {/* Top Navigation Bar */}
+            {/* Animated Background */}
+            <div className="kiteasm-bg-overlay"></div>
+
+            {/* Top Navigation */}
             <nav className="top-nav">
                 <div className="nav-inner">
-                    <div className="logo"><span>.</span></div>
-                    <button onClick={() => { localStorage.clear(); navigate("/login"); }} className="power-btn">
-                        <PowerIcon style={{ width: '20px' }} />
-                    </button>
+                    <div className="logo-brand">KITEASM<span>.</span></div>
+                    <div className="nav-actions">
+                        <div className="user-badge">
+                            <div className="online-indicator"></div>
+                            {user.email}
+                        </div>
+                        <button onClick={() => { localStorage.clear(); navigate("/login"); }} className="power-btn">
+                            <PowerIcon style={{ width: '18px' }} />
+                        </button>
+                    </div>
                 </div>
             </nav>
 
             <div className="main-content">
-                <header className="hero-header">
-                    <div className="status-pill">
-                        <span className="status-dot"></span>
-                        LIVE FLIGHT DECK
-                    </div>
-                    <h1 className="hero-title">Welcome, {user.name?.split(" ")[0]}</h1>
-                    <p className="hero-subtitle">All systems are operational. Ready for departure.</p>
+                <header className="hero-section">
+                    <div className="status-label">SYSTEM_STATUS: ACTIVE</div>
+                    <h1 className="hero-title">Welcome Back, {user.name?.split(" ")[0]}</h1>
+                    <p className="hero-tagline">Your flight systems are configured and ready for deployment.</p>
                 </header>
 
-                {/* Quick Actions Grid */}
-                <div className="modern-grid">
+                {/* Quick Actions - Bento Grid */}
+                <div className="bento-grid">
                     {[
-                        { title: 'Hangar', path: '/products', icon: ShoppingBagIcon, color: '#0ea5e9' },
-                        { title: 'Logbook', path: '/orders', icon: CubeIcon, color: '#6366f1' },
-                        { title: 'Inventory', path: '/cart', icon: SparklesIcon, color: '#ec4899' },
-                        { title: 'Settings', path: '/user/update', icon: Cog6ToothIcon, color: '#64748b' },
+                        { title: 'COLLECTIONS', path: '/products', icon: ShoppingBagIcon, desc: 'View Inventory' },
+                        { title: 'MANIFEST', path: '/orders', icon: CubeIcon, desc: 'Track Orders' },
+                        { title: 'CARGO', path: '/cart', icon: SparklesIcon, desc: 'Active Cart' },
+                        { title: 'TERMINAL', path: '/user/update', icon: Cog6ToothIcon, desc: 'Adjust Params' },
                     ].map((item) => (
-                        <Link key={item.title} to={item.path} className="action-card">
-                            <div className="icon-wrapper" style={{ color: item.color }}>
-                                <item.icon style={{ width: '24px' }} />
+                        <Link key={item.title} to={item.path} className="bento-card">
+                            <div className="bento-icon-box">
+                                <item.icon style={{ width: '22px' }} />
                             </div>
-                            <span>{item.title}</span>
+                            <div className="bento-text">
+                                <span className="bento-title">{item.title}</span>
+                                <span className="bento-desc">{item.desc}</span>
+                            </div>
+                            <ChevronRightIcon className="bento-arrow" style={{ width: '14px' }} />
                         </Link>
                     ))}
                 </div>
 
-                {/* Featured Products */}
-                <section className="section-spacing">
-                    <div className="flex-header">
-                        <h2>New Arrivals</h2>
-                        <Link to="/products" className="view-all">Explore All <ChevronRightIcon style={{ width: '12px' }} /></Link>
+                {/* Arrivals Section */}
+                <section className="dashboard-section">
+                    <div className="section-header">
+                        <h2 className="section-title">New Arrivals</h2>
+                        <Link to="/products" className="view-link">EXP_ALL <ChevronRightIcon style={{ width: '12px' }} /></Link>
                     </div>
-                    <div className="product-grid">
+                    <div className="product-row">
                         {featuredProducts.map((p) => (
-                            <Link key={p._id} to={`/products/${p._id}`} className="product-card">
-                                <div className="img-holder">
-                                    {/* <img src={getImageUrl(p.images)} alt={p.name} /> */}
-                                    <img src={productImages[p.images?.[0]?.url]}  alt={p.name} />
+                            <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
+                                <div className="p-img-box">
+                                    <img src={productImages[p.images?.[0]?.url]} alt={p.name} />
+                                    <div className="p-overlay">VIEW_DETAILS</div>
                                 </div>
-                                <div className="info-holder">
+                                <div className="p-meta">
                                     <h4>{p.name}</h4>
-                                    <p>₹{p.price}</p>
+                                    <p>₹{p.price.toLocaleString()}</p>
                                 </div>
                             </Link>
                         ))}
                     </div>
                 </section>
 
-                {/* --- MODERN FOUNDERS LOUNGE --- */}
-                <section className="founders-lounge">
-                    <div className="lounge-header">
-                        <p className="overline">The Founding Team</p>
+                {/* Founders Command Section */}
+                <section className="command-center">
+                    <div className="command-header">
+                        <span className="accent-bar"></span>
                         <h3>Command Center</h3>
                     </div>
-                    
-                    <div className="founders-grid">
+                    <div className="founders-flex">
                         {owners.map((owner) => (
-                            <div key={owner.name} className="founder-card">
-                                <img src={owner.image} alt={owner.name} className="founder-img" />
-                                <div className="founder-info">
+                            <div key={owner.name} className="commander-card">
+                                <img src={owner.image} alt={owner.name} className="commander-img" />
+                                <div className="commander-details">
+                                    <span className="commander-role">{owner.role}</span>
                                     <h4>{owner.name}</h4>
-                                    <p>{owner.role}</p>
-                                    <div className="social-row">
-                                        <a href="#" className="soc-btn">YouTube</a>
-                                        <a href="#" className="soc-btn">Instagram</a>
+                                    <div className="commander-socials">
+                                        <a href="#">YT</a>
+                                        <a href="#">IG</a>
                                     </div>
                                 </div>
                             </div>
@@ -153,103 +155,132 @@ const Dashboard = () => {
             </div>
 
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+                @keyframes scrollBg {
+                    0% { background-position: 0 0; }
+                    100% { background-position: 500px 1000px; }
+                }
 
                 :root {
-                    --white: #ffffff;
-                    --bg-soft: #f8fafc;
-                    --text-main: #0f172a;
-                    --text-muted: #64748b;
-                    --accent: #0ea5e9;
-                    --border: #e2e8f0;
+                    --obsidian: #000000;
+                    --glass: rgba(255, 255, 255, 0.03);
+                    --glass-border: rgba(255, 255, 255, 0.08);
+                    --accent-blue: #0ea5e9;
+                    --text-primary: #ffffff;
+                    --text-secondary: #888888;
                 }
 
-                .dash-container { 
-                    background: var(--bg-soft); 
-                    min-height: 100vh; 
-                    color: var(--text-main); 
-                    font-family: 'Plus Jakarta Sans', sans-serif; 
+                .dash-container {
+                    background-color: var(--obsidian);
+                    min-height: 100vh;
+                    color: var(--text-primary);
+                    font-family: 'Inter', system-ui, sans-serif;
+                    position: relative;
                 }
-                
-                .top-nav { 
-                    position: fixed; top: 0; width: 100%; height: 80px; 
-                    background: rgba(255, 255, 255, 0.8); 
-                    backdrop-filter: blur(20px); z-index: 100; 
-                    border-bottom: 1px solid var(--border); 
+
+                .kiteasm-bg-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background-image: url('/path-to-your-kiteasm-image.jpg');
+                    background-size: 350px;
+                    opacity: 0.04;
+                    z-index: 0;
+                    animation: scrollBg 80s linear infinite;
+                    pointer-events: none;
                 }
-                .nav-inner { 
-                    max-width: 1100px; margin: 0 auto; height: 100%; 
-                    display: flex; align-items: center; justify-content: space-between; padding: 0 24px; 
+
+                .top-nav {
+                    position: fixed; top: 0; width: 100%; height: 70px;
+                    background: rgba(0,0,0,0.8);
+                    backdrop-filter: blur(15px); z-index: 100;
+                    border-bottom: 1px solid var(--glass-border);
                 }
-                .logo { font-weight: 800; font-size: 22px; letter-spacing: -0.5px; }
-                .logo span { color: var(--accent); }
+
+                .nav-inner {
+                    max-width: 1200px; margin: 0 auto; height: 100%;
+                    display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+                }
+
+                .logo-brand { font-weight: 900; font-size: 18px; letter-spacing: 2px; }
+                .logo-brand span { color: var(--accent-blue); }
+
+                .nav-actions { display: flex; align-items: center; gap: 20px; }
+                .user-badge { 
+                    font-size: 11px; color: var(--text-secondary); letter-spacing: 1px;
+                    display: flex; align-items: center; gap: 8px;
+                    background: var(--glass); padding: 8px 14px; border-radius: 4px;
+                }
+                .online-indicator { width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
+
                 .power-btn { 
-                    background: #f1f5f9; border: none; padding: 10px; 
-                    border-radius: 12px; color: var(--text-muted); 
-                    cursor: pointer; transition: 0.2s; 
+                    background: transparent; border: 1px solid #333; color: white;
+                    padding: 8px; cursor: pointer; border-radius: 4px; transition: 0.3s;
                 }
-                .power-btn:hover { background: #fee2e2; color: #ef4444; }
+                .power-btn:hover { border-color: #ff4444; color: #ff4444; }
 
-                .main-content { max-width: 1000px; margin: 0 auto; padding: 140px 24px 100px; }
-                
-                .status-pill { 
-                    display: inline-flex; align-items: center; gap: 8px; 
-                    background: white; padding: 6px 12px; border-radius: 100px; 
-                    font-size: 10px; font-weight: 800; color: var(--text-muted);
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 16px;
+                .main-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 130px 24px 100px; }
+
+                .status-label { font-size: 10px; font-weight: 800; letter-spacing: 3px; color: var(--accent-blue); margin-bottom: 15px; }
+                .hero-title { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin: 0; }
+                .hero-tagline { color: var(--text-secondary); margin-top: 10px; font-size: 16px; font-weight: 300; }
+
+                /* Bento Grid */
+                .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 50px 0; }
+                .bento-card {
+                    background: var(--glass); border: 1px solid var(--glass-border);
+                    padding: 24px; display: flex; align-items: center; gap: 15px;
+                    text-decoration: none; color: white; transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+                    position: relative;
                 }
-                .status-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; }
-                .hero-title { font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin: 0; }
-                .hero-subtitle { color: var(--text-muted); font-size: 16px; margin-top: 8px; }
+                .bento-card:hover { background: rgba(255,255,255,0.06); border-color: white; transform: translateY(-3px); }
+                .bento-icon-box { color: var(--accent-blue); }
+                .bento-title { display: block; font-size: 12px; font-weight: 900; letter-spacing: 1px; }
+                .bento-desc { display: block; font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+                .bento-arrow { position: absolute; right: 15px; opacity: 0.2; }
 
-                .modern-grid { 
-                    display: grid; grid-template-columns: repeat(4, 1fr); 
-                    gap: 16px; margin: 48px 0; 
+                /* Products */
+                .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; border-left: 3px solid white; padding-left: 15px; }
+                .section-title { font-size: 20px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+                .view-link { color: var(--text-secondary); font-size: 11px; text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+                .view-link:hover { color: white; }
+
+                .product-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+                .modern-p-card { text-decoration: none; color: white; transition: 0.4s; }
+                .p-img-box { 
+                    height: 200px; background: #111; position: relative; overflow: hidden;
+                    border: 1px solid var(--glass-border);
                 }
-                .action-card { 
-                    background: white; padding: 32px 16px; border-radius: 24px; 
-                    text-decoration: none; color: var(--text-main); 
-                    border: 1px solid var(--border); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    display: flex; flex-direction: column; align-items: center; gap: 12px;
+                .p-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+                .p-overlay { 
+                    position: absolute; inset: 0; background: rgba(14, 165, 233, 0.9);
+                    display: flex; align-items: center; justify-content: center;
+                    font-size: 10px; font-weight: 900; opacity: 0; transition: 0.3s;
                 }
-                .action-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
-                .icon-wrapper { padding: 12px; background: #f8fafc; border-radius: 16px; }
-                .action-card span { font-size: 13px; font-weight: 700; }
+                .modern-p-card:hover .p-overlay { opacity: 1; }
+                .modern-p-card:hover .p-img-box img { transform: scale(1.1); }
+                .p-meta { padding: 15px 0; }
+                .p-meta h4 { margin: 0; font-size: 14px; font-weight: 600; }
+                .p-meta p { color: var(--accent-blue); font-weight: 800; margin-top: 5px; font-size: 13px; }
 
-                .flex-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
-                .flex-header h2 { font-size: 22px; font-weight: 800; }
-                .view-all { color: var(--accent); font-size: 14px; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+                /* Founders */
+                .command-center { margin-top: 80px; padding: 40px; border: 1px solid var(--glass-border); background: linear-gradient(to right, #050505, #000); }
+                .command-header { display: flex; align-items: center; gap: 15px; margin-bottom: 35px; }
+                .accent-bar { width: 40px; height: 2px; background: var(--accent-blue); }
+                .command-header h3 { font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin: 0; }
 
-                .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-                .product-card { background: white; border-radius: 28px; overflow: hidden; text-decoration: none; color: inherit; border: 1px solid var(--border); }
-                .img-holder { height: 240px; background: #f1f5f9; }
-                .img-holder img { width: 100%; height: 100%; object-fit: cover; }
-                .info-holder { padding: 20px; }
-                .info-holder h4 { font-size: 16px; margin: 0; }
-                .info-holder p { color: var(--accent); font-weight: 800; margin-top: 6px; }
+                .founders-flex { display: flex; gap: 50px; }
+                .commander-card { display: flex; align-items: center; gap: 20px; }
+                .commander-img { width: 70px; height: 70px; border-radius: 2px; filter: grayscale(1); transition: 0.3s; }
+                .commander-card:hover .commander-img { filter: grayscale(0); transform: rotate(-3deg); }
+                .commander-role { font-size: 9px; color: var(--accent-blue); letter-spacing: 2px; font-weight: 800; }
+                .commander-details h4 { margin: 5px 0; font-size: 18px; }
+                .commander-socials { display: flex; gap: 12px; margin-top: 8px; }
+                .commander-socials a { font-size: 10px; color: var(--text-secondary); text-decoration: none; font-weight: 800; }
+                .commander-socials a:hover { color: white; }
 
-                .founders-lounge { margin-top: 80px; padding: 60px 40px; background: white; border-radius: 40px; border: 1px solid var(--border); }
-                .lounge-header { text-align: center; margin-bottom: 48px; }
-                .overline { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 800; }
-                .lounge-header h3 { font-size: 28px; font-weight: 800; margin-top: 8px; }
-
-                .founders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-                .founder-card { display: flex; gap: 20px; align-items: center; }
-                .founder-img { width: 90px; height: 90px; border-radius: 24px; object-fit: cover; }
-                .founder-info h4 { margin: 0; font-size: 18px; font-weight: 800; }
-                .founder-info p { color: var(--text-muted); font-size: 14px; margin: 4px 0 12px; }
-                .social-row { display: flex; gap: 8px; }
-                .soc-btn { 
-                    padding: 6px 12px; background: #f1f5f9; color: var(--text-main); 
-                    border-radius: 8px; text-decoration: none; font-size: 11px; font-weight: 700; 
-                }
-                .soc-btn:hover { background: var(--text-main); color: white; }
-
-                @media (max-width: 768px) {
-                    .modern-grid { grid-template-columns: repeat(2, 1fr); }
-                    .product-grid { grid-template-columns: 1fr; }
-                    .founders-grid { grid-template-columns: 1fr; }
-                    .hero-title { font-size: 32px; }
+                @media (max-width: 900px) {
+                    .bento-grid { grid-template-columns: repeat(2, 1fr); }
+                    .product-row { grid-template-columns: repeat(2, 1fr); }
+                    .founders-flex { flex-direction: column; gap: 30px; }
                 }
             `}</style>
         </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { CubeIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { CubeIcon, CalendarIcon, HashtagIcon } from "@heroicons/react/24/outline";
 
 const MyOrders = () => {
     const navigate = useNavigate();
@@ -29,70 +29,134 @@ const MyOrders = () => {
         }
     };
 
+    const styles = {
+        wrapper: {
+            backgroundColor: '#000000',
+            minHeight: '100vh',
+            color: 'white',
+            paddingTop: '140px',
+            paddingBottom: '100px',
+        },
+        container: { maxWidth: '1000px', margin: '0 auto', padding: '0 24px' },
+        headerSection: { marginBottom: '40px' },
+        tableContainer: {
+            background: 'rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(51, 40, 40, 0.05)',
+            borderRadius: '20px',
+            overflow: 'hidden', // Keeps corners rounded
+        },
+        table: {
+            width: '100%',
+            borderCollapse: 'collapse',
+            textAlign: 'left',
+        },
+        th: {
+            padding: '20px 24px',
+            fontSize: '11px',
+            fontWeight: '800',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            color: '#000000',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+        },
+        td: {
+            padding: '24px',
+            fontSize: '14px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
+            verticalAlign: 'top',
+        },
+        statusBadge: {
+            backgroundColor: 'rgba(65, 178, 230, 0.1)',
+            color: '#0ea5e9',
+            padding: '4px 12px',
+            borderRadius: '50px',
+            fontSize: '10px',
+            fontWeight: '900',
+            textTransform: 'uppercase',
+            border: '1px solid rgba(14, 165, 233, 0.2)',
+            display: 'inline-block'
+        },
+        productTag: {
+            display: 'block',
+            marginBottom: '4px',
+            fontWeight: '700',
+            color: '#87b4e0'
+        }
+    };
+
     if (loading) return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="serif italic">Syncing mission logs...</div>
+        <div style={{ ...styles.wrapper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ color: '#0ea5e9', letterSpacing: '2px', fontWeight: 800 }}>SYNCING LOGS...</div>
         </div>
     );
 
     return (
-        <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '1000px' }}>
-            <div style={{ marginBottom: '80px' }}>
-                <span className="text-xs uppercase tracking-widest text-muted">Order History</span>
-                <h1 className="serif" style={{ fontSize: '48px', marginTop: '16px' }}>Your Missions<span style={{ fontStyle: 'normal' }}>.</span></h1>
-                <p className="text-muted serif italic" style={{ fontSize: '18px', marginTop: '10px' }}>Details for all your Aero Kite deployments.</p>
-            </div>
-
-            {orders.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '100px 0', background: 'var(--gray-light)' }}>
-                    <CubeIcon style={{ width: 48, margin: '0 auto', color: 'var(--gray-mid)', opacity: 0.3 }} />
-                    <p className="serif italic text-muted" style={{ marginTop: '20px', fontSize: '20px' }}>No deployments recorded.</p>
-                    <button onClick={() => navigate('/products')} className="btn btn-black" style={{ marginTop: '40px' }}>Launch First Mission</button>
+        <div style={styles.wrapper}>
+            <div style={styles.container}>
+                <div style={styles.headerSection}>
+                    <h1 style={{ fontSize: '38px', fontWeight: 900, margin: '0 0 8px 0' }}>Order History</h1>
+                    <p style={{ color: '#94a3b8', fontSize: '15px' }}>Detailed breakdown of your deployments.</p>
                 </div>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                    {orders.map((order) => (
-                        <div key={order._id} style={{ border: '1px solid var(--gray-light)', padding: '40px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--gray-light)' }}>
-                                <div>
-                                    <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900 }}>MSN-{order._id.slice(-6).toUpperCase()}</span>
-                                    <p className="text-xs text-muted font-serif italic" style={{ marginTop: '8px' }}>
-                                        Established: {new Date(order.createdAt).toLocaleDateString().toUpperCase()}
-                                    </p>
-                                </div>
-                                <div style={{ textAlign: 'right' }}>
-                                    <p style={{ fontSize: '24px', fontWeight: 900 }}>₹{order.totalAmount}</p>
-                                    <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--accent)', fontWeight: 900 }}>{order.orderStatus || order.paymentStatus || 'Mission Active'}</span>
-                                </div>
-                            </div>
 
-                            {/* --- ITEMS LIST (TEXT ONLY) --- */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                                {order.items && order.items.map((item, index) => (
-                                    <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <h4 className="text-xs" style={{ fontWeight: 900, textTransform: 'uppercase', margin: 0 }}>
-                                                {item.productName || item.productId?.name || "Gear Unit"}
-                                            </h4>
-                                            <p className="text-xs text-muted" style={{ marginTop: '4px' }}>Deployment Quantity: {item.quantity}</p>
-                                        </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <p className="text-xs" style={{ fontWeight: 800 }}>₹{item.price * item.quantity}</p>
-                                        </div>
-                                    </div>
+                {orders.length === 0 ? (
+                    <div style={{ ...styles.tableContainer, textAlign: 'center', padding: '80px 20px' }}>
+                        <CubeIcon style={{ width: 40, margin: '0 auto', color: '#334155' }} />
+                        <p style={{ marginTop: '20px', color: '#94a3b8' }}>No records found.</p>
+                        <button onClick={() => navigate('/products')} style={{ marginTop: '24px', backgroundColor: '#0ea5e9', color: 'white', padding: '12px 24px', borderRadius: '50px', border: 'none', fontWeight: 900, cursor: 'pointer' }}>BROWSE STORE</button>
+                    </div>
+                ) : (
+                    <div style={styles.tableContainer}>
+                        <table style={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th style={styles.th}>Date & ID</th>
+                                    <th style={styles.th}>Products</th>
+                                    <th style={styles.th}>Total</th>
+                                    <th style={styles.th}>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {orders.map((order) => (
+                                    <tr key={order._id}>
+                                        <td style={styles.td}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f1f5f9', fontWeight: 600, marginBottom: '4px' }}>
+                                                <CalendarIcon width={14} color="#64748b" />
+                                                {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <HashtagIcon width={12} /> {order._id.slice(-8).toUpperCase()}
+                                            </div>
+                                        </td>
+                                        <td style={styles.td}>
+                                            {order.items?.map((item, index) => (
+                                                <div key={index} style={{ marginBottom: index === order.items.length - 1 ? 0 : '12px' }}>
+                                                    <span style={styles.productTag}>
+                                                        {item.productname || item.productName || item.productId?.name || "Kiteasm Gear"}
+                                                    </span>
+                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                                        QTY: {item.quantity} × ₹{item.price}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </td>
+                                        <td style={styles.td}>
+                                            <span style={{ fontWeight: 900, color: '#0ea5e9', fontSize: '16px' }}>
+                                                ₹{order.totalAmount}
+                                            </span>
+                                        </td>
+                                        <td style={styles.td}>
+                                            <span style={styles.statusBadge}>
+                                                {order.orderStatus || 'Active'}
+                                            </span>
+                                        </td>
+                                    </tr>
                                 ))}
-                            </div>
-
-                            <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid var(--gray-light)', display: 'flex', justifyContent: 'flex-end', gap: '30px' }}>
-                                <button className="text-xs uppercase tracking-widest text-muted" style={{ fontWeight: 900 }}>Manifest</button>
-                                <button className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    Track Delivery <ArrowRightIcon style={{ width: 14 }} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

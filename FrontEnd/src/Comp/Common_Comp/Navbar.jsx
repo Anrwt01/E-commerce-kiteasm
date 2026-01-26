@@ -5,52 +5,37 @@ import {
   UserIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+import kiteasm_logo from "../../assets/Photo/kiteasm_logo.jpg";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
- const getAuthFromStorage = () => {
-  const token = localStorage.getItem("token");
-  const userData = localStorage.getItem("user");
+  const getAuthFromStorage = () => {
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+    if (!userData) return { token: null, role: null };
+    try {
+      const parsedUser = JSON.parse(userData);
+      const role = parsedUser.role; 
+      return { token, role };
+    } catch (err) {
+      console.error("Error parsing user from storage:", err);
+      return { token, role: null };
+    }
+  };
 
-  // 1. If no user data exists, return null values early
-  if (!userData) return { token: null, role: null };
-
-  try {
-    // 2. You MUST parse the whole string first
-    const parsedUser = JSON.parse(userData);
-    
-    // 3. Now you can access the role property
-    const role = parsedUser.role; 
-    
-    return { token, role };
-  } catch (err) {
-    console.error("Error parsing user from storage:", err);
-    return { token, role: null };
-  }
-};
-
-   
-  // 2. Auth State
   const [authState, setAuthState] = useState(getAuthFromStorage());
-
-  // Derived variables (automatic)
   const isLoggedIn = !!authState.token;
   const role = authState.role;
-  // console.log(authState)
 
-  // 3. EFFECT: This is the "Automatic Sync" 
   useEffect(() => {
     const handleAuthChange = () => {
-      // console.log("Auth changed! Updating Navbar...");
-      setAuthState(getAuthFromStorage()); // This triggers the re-render
+      setAuthState(getAuthFromStorage());
     };
-
-    window.addEventListener('storage', handleAuthChange); // Updates if changed in another tab
-    window.addEventListener('authChange', handleAuthChange); // Updates if changed in this tab
-
+    window.addEventListener('storage', handleAuthChange);
+    window.addEventListener('authChange', handleAuthChange);
     return () => {
       window.removeEventListener('storage', handleAuthChange);
       window.removeEventListener('authChange', handleAuthChange);
@@ -66,38 +51,60 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.clear();
     setAuthState({ token: null, role: null });
-    window.dispatchEvent(new Event("authChange")); // Notify the app
+    window.dispatchEvent(new Event("authChange"));
     navigate("/login");
   };
 
   const styles = {
     nav: {
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      right: 0, 
+      zIndex: 1000,
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-      padding: scrolled ? '15px 24px' : '25px 24px',
-      backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
-      backdropFilter: scrolled ? 'blur(12px)' : 'none',
-      borderBottom: scrolled ? '1px solid #f1f5f9' : '1px solid transparent',
+      padding: scrolled ? '12px 24px' : '22px 24px',
+      backgroundColor: scrolled ? '#000000' : '#000000', // Pure black for both states
+      backdropFilter: 'blur(16px)', 
+      borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
     },
     container: { 
       maxWidth: '1200px', margin: '0 auto', 
       display: 'flex', alignItems: 'center', justifyContent: 'space-between' 
     },
     logo: { 
+      display: 'flex', 
+      alignItems: 'center', 
+      gap: '12px', 
       fontSize: '20px', fontWeight: '900', textTransform: 'uppercase', 
-      textDecoration: 'none', color: '#0f172a', letterSpacing: '-1px'
+      textDecoration: 'none', color: 'white', letterSpacing: '-0.5px'
+    },
+    logoImage: {
+      height: scrolled ? '38px' : '46px', 
+      width: scrolled ? '38px' : '46px',
+      borderRadius: '50%', 
+      objectFit: 'cover', 
+      border: '2px solid #ffffff', // White border instead of blue
+      transition: 'all 0.4s ease',
     },
     linksContainer: { 
       display: 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center'
     },
     link: (path) => ({ 
-      fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.5px', 
-      textDecoration: 'none', color: location.pathname === path ? '#0ea5e9' : '#64748b',
-      transition: 'color 0.2s', whiteSpace: 'nowrap'
+      fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.2px', 
+      textDecoration: 'none', 
+      color: location.pathname === path ? '#ffffff' : '#cccccc', // White for active, light gray for inactive
+      transition: 'all 0.2s', whiteSpace: 'nowrap'
     }),
     authGroup: {
-      display: 'flex', alignItems: 'center', backgroundColor: '#0f172a',
-      padding: '4px 4px 4px 18px', borderRadius: '50px', gap: '15px'
+      display: 'flex', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', // Subtle white overlay
+      padding: '4px 4px 4px 18px', borderRadius: '50px', gap: '15px',
+      border: '1px solid rgba(255,255,255,0.1)'
+    },
+    iconStyle: {
+      color: '#ffffff', // White icons
+      display: 'flex',
+      transition: 'color 0.2s'
     }
   };
 
@@ -105,10 +112,12 @@ const Navbar = () => {
     <nav style={styles.nav}>
       <div style={styles.container}>
         <Link to="/" style={styles.logo}>
-          AERO KITES<span style={{ color: '#0ea5e9' }}>.</span>
+          <img src={kiteasm_logo} alt="Kiteasm" style={styles.logoImage} />
+          <span style={{ color: '#cccccc' }}> {/* Light gray for logo text */}
+            Kiteasm<span style={{ color: '#cccccc' }}>.</span>
+          </span>
         </Link>
 
-        {/* --- CONDITIONAL LINKS START --- */}
         <ul style={styles.linksContainer}>
           {!isLoggedIn ? (
             <>
@@ -117,7 +126,7 @@ const Navbar = () => {
               <li><Link to="/contact" style={styles.link('/contact')}>Contact</Link></li>
               <li><Link to="/about" style={styles.link('/about')}>About</Link></li>
             </>
-          ) : role === "admin"  ? (
+          ) : role === "admin" ? (
             <>
               <li><Link to="/admin" style={styles.link('/admin')}>Admin Dashboard</Link></li>
               <li><Link to="/admin/orders" style={styles.link('/admin/orders')}>Orders</Link></li>
@@ -131,11 +140,10 @@ const Navbar = () => {
             </>
           )}
         </ul>
-        {/* --- CONDITIONAL LINKS END --- */}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           {(!isLoggedIn || role !== "admin") && (
-            <Link to="/cart" style={{ color: '#0f172a', display: 'flex' }}>
+            <Link to="/cart" style={styles.iconStyle}>
               <ShoppingBagIcon width={22} strokeWidth={2} />
             </Link>
           )}
@@ -143,18 +151,18 @@ const Navbar = () => {
           {isLoggedIn ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               {role !== "admin" && (
-                <Link to="/profile" style={{ color: '#0f172a', display: 'flex' }}>
+                <Link to="/profile" style={styles.iconStyle}>
                   <UserIcon width={22} strokeWidth={2} />
                 </Link>
               )}
-              <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444' }}>
+              <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff' }}> {/* White logout icon */}
                 <ArrowRightOnRectangleIcon width={22} strokeWidth={2} />
               </button>
             </div>
           ) : (
             <div style={styles.authGroup}>
-              <Link to="/login" style={{ fontSize: '10px', fontWeight: '800', textDecoration: 'none', color: 'white' }}>LOGIN</Link>
-              <Link to="/register" style={{ backgroundColor: 'white', color: '#0f172a', padding: '10px 22px', borderRadius: '50px', fontSize: '10px', fontWeight: '900', textDecoration: 'none' }}>REGISTER</Link>
+              <Link to="/login" style={{ fontSize: '10px', fontWeight: '800', textDecoration: 'none', color: '#ffffff' }}>LOGIN</Link> {/* White text */}
+              <Link to="/register" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '10px 22px', borderRadius: '50px', fontSize: '10px', fontWeight: '900', textDecoration: 'none' }}>REGISTER</Link> {/* White button with black text */}
             </div>
           )}
         </div>

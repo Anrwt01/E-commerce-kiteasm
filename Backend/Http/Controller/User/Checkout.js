@@ -101,7 +101,8 @@ export const Checkout = async (req, res) => {
         //     paymentMethod
         // };
         const userId = req.userId;
-        const { 
+        const {
+            productname, 
             items, 
             totalAmount, 
             address, 
@@ -112,6 +113,7 @@ export const Checkout = async (req, res) => {
             paymentMethod,
             paymentId // Passed from frontend if online payment
         } = req.body;
+        // console.log(req.body)
 
         // 1. Validate incoming data
         if (!email || !address || !items || items.length === 0) {
@@ -141,6 +143,7 @@ export const Checkout = async (req, res) => {
             userId,
             items: items.map(item => ({
                 productId: item.productId?._id || item.productId,
+                productname :item.productname,
                 quantity: item.quantity,
                 price: item.price
             })),

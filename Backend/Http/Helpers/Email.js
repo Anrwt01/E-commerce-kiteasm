@@ -47,7 +47,7 @@ export const sendOrderEmail = async (newOrder, user, paymentId) => {
             <tbody>
               ${newOrder.items.map(item => `
                 <tr>
-                  <td style="padding: 8px; border: 1px solid #ddd;">${item.productId}</td> 
+                  <td style="padding: 8px; border: 1px solid #ddd;">${item.productname}</td> 
                   <td style="padding: 8px; border: 1px solid #ddd;">${item.quantity}</td>
                   <td style="padding: 8px; border: 1px solid #ddd;">₹${item.price}</td>
                 </tr>

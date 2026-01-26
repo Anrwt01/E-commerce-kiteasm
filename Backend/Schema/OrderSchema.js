@@ -7,7 +7,11 @@ const orderSchema = new mongoose.Schema(
     items: [
       {
         productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-        quantity: { type: Number, required: true },
+         productname: {
+        type: String, 
+        required: true
+      },
+              quantity: { type: Number, required: true },
         price: { type: Number, required: true }
       }
     ],

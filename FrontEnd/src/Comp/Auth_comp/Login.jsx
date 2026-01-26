@@ -1,12 +1,14 @@
 import React, { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Lock, Mail, ShieldCheck } from "lucide-react";
+
 
 const Login = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Hook for smooth redirection
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,19 +23,15 @@ const Login = () => {
       const res = await axios.post("http://localhost:5000/api/auth/login", payload);
       
       if (res.data.token) {
-        // 1. Store Auth Data
-        // console.log(res)
         localStorage.setItem("token", res.data.token);
         if (res.data.user) {
           localStorage.setItem("user", JSON.stringify(res.data.user));
         }
 
-        // 2. Redirect based on Role (Optional but recommended)
-        // If your user object has a role, you can send admins to a different page
         if (res.data.user?.role === 'admin') {
           navigate("/admin");
         } else {
-          navigate("/dashboard"); // Smooth redirect without page reload
+          navigate("/dashboard");
         }
       }
     } catch (error) {
@@ -44,45 +42,141 @@ const Login = () => {
     }
   };
 
-  const inputStyle = {
-    width: '100%', padding: '20px', background: '#f8fafc',
-    border: '1px solid #e2e8f0', fontSize: '14px', outline: 'none',
-    marginBottom: '20px', borderRadius: '8px'
+  const styles = {
+    
+    wrapper: {
+      backgroundColor: '#000000',
+  
+      // Pure black for professional theme
+      minHeight: '100vh',
+      paddingTop: '160px',
+      paddingBottom: '100px',
+      color: 'white',
+      fontFamily: '"Inter", sans-serif'
+    },
+    container: {
+      maxWidth: '450px',
+      margin: '0 auto',
+      padding: '0 24px'
+    },
+    title: {
+      fontSize: '48px',
+      fontWeight: '900',
+      marginBottom: '10px',
+      letterSpacing: '-1.5px',
+      color: '#ffffff' // White title
+    },
+    subtitle: {
+      color: '#cccccc', // Light gray subtitle
+      fontSize: '12px',
+      textTransform: 'uppercase',
+      letterSpacing: '2px',
+      marginBottom: '50px',
+      display: 'block'
+    },
+    inputContainer: {
+      position: 'relative',
+      marginBottom: '20px'
+    },
+    input: {
+      width: '100%',
+      padding: '18px 20px 18px 50px',
+      background: 'rgba(255, 255, 255, 0.03)', // Subtle white overlay
+      border: 'none',
+      boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)',
+      fontSize: '14px',
+      outline: 'none',
+      borderRadius: '12px',
+      color: 'white',
+      transition: 'all 0.3s ease'
+    },
+    inputIcon: {
+      position: 'absolute',
+      left: '18px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: '#ffffff' // White icons
+    },
+    button: {
+      width: '100%',
+      padding: '18px',
+      backgroundColor: '#ffffff', // White button
+      color: '#000000', // Black text
+      border: 'none',
+      borderRadius: '12px',
+      fontWeight: '800',
+      fontSize: '14px',
+      textTransform: 'uppercase',
+      letterSpacing: '1px',
+      cursor: loading ? 'not-allowed' : 'pointer',
+      boxShadow: '0 10px 20px rgba(255, 255, 255, 0.2)', // White shadow
+      transition: 'all 0.3s ease'
+    },
+    footer: {
+      marginTop: '60px',
+      textAlign: 'center',
+      borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      paddingTop: '40px'
+    }
   };
 
   return (
-    <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '500px', margin: '0 auto' }}>
-      <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-        <h1 className="serif" style={{ fontSize: '48px', fontWeight: '900' }}>Welcome Back<span>.</span></h1>
-        <p style={{ marginTop: '16px', color: '#64748b', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px' }}>
-          Sign in to access your flight locker
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email Address" ref={emailRef} required style={inputStyle} />
-        <input type="password" placeholder="Password" ref={passwordRef} required style={inputStyle} />
-
-        <div style={{ textAlign: 'right', marginBottom: '40px' }}>
-          <Link to="/forgot-password" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'none', textTransform: 'uppercase' }}>Forgot Access?</Link>
+    <div style={styles.wrapper}>
+      <div style={styles.container}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={styles.title}>Welcome Back<span style={{ color: '#cccccc' }}>.</span></h1> {/* Light gray dot */}
+          <span style={styles.subtitle}>AERO IDENTITY VERIFICATION</span>
         </div>
 
-        <button 
-          type="submit" 
-          disabled={loading} 
-          style={{ 
-            width: '100%', padding: '20px', backgroundColor: 'black', color: 'white', 
-            border: 'none', borderRadius: '8px', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer' 
-          }}
-        >
-          {loading ? 'Verifying...' : 'Sign In'}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div style={styles.inputContainer}>
+            <Mail size={18} style={styles.inputIcon} />
+            <input 
+              type="email" 
+              placeholder="Email Address" 
+              ref={emailRef} 
+              required 
+              style={styles.input} 
+              onFocus={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px #ffffff'} // White focus border
+              onBlur={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'}
+            />
+          </div>
 
-      <div style={{ marginTop: '60px', textAlign: 'center', borderTop: '1px solid #e2e8f0', paddingTop: '40px' }}>
-        <p style={{ fontSize: '14px', color: '#64748b' }}>
-          New to the skies? <Link to="/register" style={{ color: 'black', fontWeight: 900, textDecoration: 'none' }}>Request Membership.</Link>
-        </p>
+          <div style={styles.inputContainer}>
+            <Lock size={18} style={styles.inputIcon} />
+            <input 
+              type="password" 
+              placeholder="Password" 
+              ref={passwordRef} 
+              required 
+              style={styles.input} 
+              onFocus={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px #ffffff'} // White focus border
+              onBlur={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'}
+            />
+          </div>
+
+          <div style={{ textAlign: 'right', marginBottom: '30px' }}>
+            <Link to="/forgot-password" style={{ fontSize: '11px', color: '#cccccc', textDecoration: 'none', fontWeight: '800', letterSpacing: '0.5px' }}> {/* Light gray link */}
+              FORGOT ACCESS?
+            </Link>
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={loading} 
+            style={styles.button}
+            onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
+            onMouseOut={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
+          >
+            {loading ? 'Verifying...' : 'Sign In'}
+          </button>
+        </form>
+
+        <div style={styles.footer}>
+          <p style={{ fontSize: '14px', color: '#cccccc' }}> {/* Light gray text */}
+            New to the skies? <Link to="/register" style={{ color: '#ffffff', fontWeight: 800, textDecoration: 'none' }}>Request Membership.</Link> {/* White link */}
+          </p>
+        </div>
       </div>
     </div>
   );

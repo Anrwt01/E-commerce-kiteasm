@@ -2,7 +2,8 @@ import { ProductModel } from "../../../Schema/Product_Schema.js";
 
 export const Update_prod = async (req, res) => {
   const { Prod_id } = req.params;
-  const { price, stock } = req.body;
+
+  const { name, description, price, stock, category } = req.body;
 
   try {
     const product = await ProductModel.findById(Prod_id);
@@ -10,12 +11,15 @@ export const Update_prod = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-
-    if (price !== undefined) product.price = price;
-
+    
+   if (name) product.name = name;
+    if (description) product.description = description;
+    if (category) product.category = category;
+    if (price !== undefined) product.price = Number(price);
+    
     if (stock !== undefined) {
-      product.stock = stock;
-      product.isActive = stock > 0; // 🔥 AUTO TOGGLE
+      product.stock = Number(stock);
+      product.isActive = product.stock > 0; // 🔥 AUTO TOGGLE
     }
 
     await product.save();

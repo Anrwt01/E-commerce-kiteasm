@@ -21,7 +21,6 @@ const AllOrders = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             
-            // Based on your console log, the data is in res.data.data
             const orderData = res.data.data || res.data.orders || [];
             setOrders(orderData);
             setLoading(false);
@@ -44,11 +43,13 @@ const AllOrders = () => {
 
     const styles = {
         container: { backgroundColor: '#f8fafc', minHeight: '100vh', padding: '120px 24px 80px' },
-        wrapper: { maxWidth: '1200px', margin: '0 auto' },
+        wrapper: { maxWidth: '1300px', margin: '0 auto' },
         header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' },
         tableCard: { backgroundColor: 'white', borderRadius: '24px', border: '1px solid #f1f5f9', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)', overflow: 'hidden' },
         th: { padding: '18px 24px', fontSize: '11px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #f1f5f9', textAlign: 'left' },
-        td: { padding: '20px 24px', fontSize: '14px', color: '#1e293b', borderBottom: '1px solid #f8fafc' },
+        td: { padding: '20px 24px', fontSize: '14px', color: '#1e293b', borderBottom: '1px solid #f8fafc', verticalAlign: 'middle' },
+        productName: { fontWeight: '700', color: '#0f172a', fontSize: '13px', display: 'block' },
+        productQty: { fontSize: '11px', color: '#94a3b8', fontWeight: '600' },
         statusBadge: (status) => {
             const style = getStatusStyles(status);
             return {
@@ -89,7 +90,7 @@ const AllOrders = () => {
                             <tr style={{ backgroundColor: '#fcfcfd' }}>
                                 <th style={styles.th}>ID</th>
                                 <th style={styles.th}>Customer</th>
-                                <th style={styles.th}>Date</th>
+                                <th style={styles.th}>Shipment Contents</th>
                                 <th style={styles.th}>Amount</th>
                                 <th style={styles.th}>Status</th>
                                 <th style={{ ...styles.th, textAlign: 'right' }}>Action</th>
@@ -100,42 +101,45 @@ const AllOrders = () => {
                                 orders.map((order) => (
                                     <tr key={order._id} style={{ transition: 'background 0.2s' }}>
                                         <td style={{ ...styles.td, fontFamily: 'monospace', color: '#64748b' }}>
-                                            #{order._id.slice(-6).toUpperCase()}
+                                            <div style={{ fontSize: '12px' }}>#{order._id.slice(-6).toUpperCase()}</div>
+                                            <div style={{ fontSize: '10px', marginTop: '4px' }}>
+                                                {new Date(order.createdAt).toLocaleDateString()}
+                                            </div>
                                         </td>
                                         <td style={styles.td}>
-                                            <div style={{ fontWeight: '700' }}>{order.customerDetails?.name || "N/A"}</div>
-                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>{order.customerDetails?.email}</div>
+                                            <div style={{ fontWeight: '700' }}>{order.customerDetails?.name || order.name || "N/A"}</div>
+                                            <div style={{ fontSize: '12px', color: '#94a3b8' }}>{order.customerDetails?.email || order.email}</div>
                                         </td>
                                         <td style={styles.td}>
-                                            {new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                            {order.items?.map((item, idx) => (
+                                                <div key={idx} style={{ marginBottom: idx !== order.items.length - 1 ? '8px' : 0 }}>
+                                                    <span style={styles.productName}>
+                                                        {item.productname || item.productName || item.productId?.name || "Product Unit"}
+                                                    </span>
+                                                    <span style={styles.productQty}>QTY: {item.quantity}</span>
+                                                </div>
+                                            ))}
                                         </td>
                                         <td style={{ ...styles.td, fontWeight: '800' }}>
                                             ₹{order.totalAmount?.toLocaleString()}
                                         </td>
                                         <td style={styles.td}>
                                             <span style={styles.statusBadge(order.orderStatus || order.paymentStatus)}>
-                                                {order.orderStatus || order.paymentStatus}
+                                                {order.orderStatus || order.paymentStatus || 'Processing'}
                                             </span>
                                         </td>
                                         <td style={{ ...styles.td, textAlign: 'right' }}>
-                                           <button 
-                                       onClick={() => navigate(`/admin/OrderDetails/${order._id}`)}
-                                        style={{ 
-                                            background: '#f1f5f9', 
-                                            border: 'none', 
-                                            padding: '8px 16px', 
-                                            borderRadius: '8px', 
-                                            color: '#0f172a', 
-                                            fontWeight: '700', 
-                                            fontSize: '12px', 
-                                            cursor: 'pointer',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '4px'
-                                        }}
-                                    >
-                                        DETAILS <ChevronRightIcon width={14} strokeWidth={3} />
-                                    </button>
+                                            <button 
+                                                onClick={() => navigate(`/admin/OrderDetails/${order._id}`)}
+                                                style={{ 
+                                                    background: '#f1f5f9', border: 'none', padding: '8px 16px', 
+                                                    borderRadius: '8px', color: '#0f172a', fontWeight: '700', 
+                                                    fontSize: '11px', cursor: 'pointer', display: 'inline-flex',
+                                                    alignItems: 'center', gap: '4px'
+                                                }}
+                                            >
+                                                MANAGE <ChevronRightIcon width={14} strokeWidth={3} />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
