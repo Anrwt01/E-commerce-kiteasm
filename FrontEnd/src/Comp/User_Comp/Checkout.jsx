@@ -331,27 +331,23 @@ const Checkout = () => {
     }
     setIsEditing(!isEditing);
   };
-const handlePlaceOrder = async () => {
-    // 1. Validation check
+  
+  
+  
+  const handlePlaceOrder = async () => {
     if (isEditing) {
-        alert("Please save your delivery coordinates before proceeding.");
-        return;
-    }
-
-    if (cartItems.length === 0) {
-        alert("Your mission crate is empty.");
+        alert("Please save your delivery coordinates.");
         return;
     }
 
     setLoading(true);
     try {
         const token = localStorage.getItem("token");
-        
-        // 2. Map items to include the explicit productName
+
         const orderPayload = {
             items: cartItems.map(item => ({
-                productId: item.productId?._id || item.productId, // ID for DB reference
-                productname: item.productId?.name || "Kiteasm Unit", // Name for display reference
+                productId: item.productId?._id || item.productId,
+                productname: item.productId?.name || "Kiteasm Unit",
                 quantity: item.quantity,
                 price: item.price
             })),
@@ -360,25 +356,81 @@ const handlePlaceOrder = async () => {
             email: formData.email,
             phone1: formData.phone1,
             phone2: formData.phone2,
-            address: formData.address,
+            address: {
+                house: formData.address.house,
+                Galino: formData.address.galino, // Backend expects capital 'G'
+                city: formData.address.city,
+                state: formData.address.state,
+                pincode: formData.address.pincode
+            },
             paymentMethod
         };
 
-        const res = await axios.post("http://localhost:5000/api/user/checkout", orderPayload, {
+      const res = await axios.post("http://localhost:5000/api/user/checkout", orderPayload, {
             headers: { Authorization: `Bearer ${token}` }
         });
 
         if (res.data.success) {
-            navigate("/orders");
+            const serverOrderId = res.data.orderId; 
+
+            if (paymentMethod === "Razorpay") {
+                // 2. Razorpay Order Creation - FIXED URL
+                const { data: pRes } = await axios.post(
+                    "http://localhost:5000/api/razorpay", // Matches app.use("/api", ...) + router.post("/razorpay")
+                    { orderId: serverOrderId },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const options = {
+                    key: pRes.key,
+                    amount: pRes.amount, 
+                    currency: "INR",
+                    name: "KITEASM",
+                    order_id: pRes.razorpayOrderId,
+                    handler: async (response) => {
+
+                      try{
+                                      // response only contains razorpay fields. We need to add our DB orderId.
+                             const verificationPayload = {
+                                    razorpay_order_id: response.razorpay_order_id,
+                                          razorpay_payment_id: response.razorpay_payment_id,
+                                          razorpay_signature: response.razorpay_signature,
+                                          orderId: serverOrderId // <--- THIS IS THE MISSING PIECE
+                                      };
+                                      console.log("Response from Razorpay:", response);
+                                
+                                const { data: vRes } = await axios.post(
+                                    "http://localhost:5000/api/verify", 
+                                    verificationPayload , 
+                                    { headers: { Authorization: `Bearer ${token}` } }
+                                );
+
+                            if (vRes.success) {
+                                navigate("/orders");
+                            }
+                        } catch (verifyErr) {
+                            console.error("VERIFICATION ERROR:", verifyErr);
+                            alert("Payment succeeded but verification failed. Check your orders page.");
+                        }
+                    },
+                    theme: { color: "#3b82f6" },
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+            } else {
+                navigate("/orders");
+            }
         }
     } catch (err) {
-        console.error("Checkout failed:", err.response?.data);
-        alert(`Deployment failed: ${err.response?.data?.message || "Check your connection"}`);
+        console.error("FULL ERROR OBJECT:", err);
+        // This will now show the real error message instead of 'undefined'
+        const errorMsg = err.response?.data?.message || err.message || "Unknown Deployment Error";
+        alert(`Checkout Failed: ${errorMsg}`);
     } finally {
         setLoading(false);
     }
 };
-
   return (
     <div style={styles.page}>
       <div style={styles.container}>
@@ -454,17 +506,44 @@ const handlePlaceOrder = async () => {
               )}
             </section>
 
-            <section style={styles.sectionCard}>
-              <div style={styles.iconHeading}><CreditCardIcon width={22} color="#3b82f6" /> <span>PAYMENT METHOD</span></div>
-              <div style={styles.payGrid}>
-                <div onClick={() => setPaymentMethod("COD")} style={{...styles.payOption, borderColor: paymentMethod === 'COD' ? '#3b82f6' : '#e2e8f0', backgroundColor: paymentMethod === 'COD' ? '#eff6ff' : '#fff'}}>
-                   <TruckIcon width={24} /> <div><b>COD</b><p style={{margin:0, fontSize:11}}>Pay on Delivery</p></div>
-                </div>
-                <div onClick={() => setPaymentMethod("Razorpay")} style={{...styles.payOption, borderColor: paymentMethod === 'Razorpay' ? '#3b82f6' : '#e2e8f0', backgroundColor: paymentMethod === 'Razorpay' ? '#eff6ff' : '#fff'}}>
-                   <ShieldCheckIcon width={24} /> <div><b>Online</b><p style={{margin:0, fontSize:11}}>Cards/UPI/Net</p></div>
-                </div>
-              </div>
-            </section>
+          <section style={styles.sectionCard}>
+  <div style={styles.iconHeading}>
+    <CreditCardIcon width={22} color="#3b82f6" /> <span>PAYMENT METHOD</span>
+  </div>
+  <div style={styles.payGrid}>
+    {/* Razorpay First */}
+    <div 
+      onClick={() => setPaymentMethod("Razorpay")} 
+      style={{
+        ...styles.payOption, 
+        borderColor: paymentMethod === 'Razorpay' ? '#3b82f6' : '#e2e8f0', 
+        backgroundColor: paymentMethod === 'Razorpay' ? '#eff6ff' : '#fff'
+      }}
+    >
+      <ShieldCheckIcon width={24} /> 
+      <div>
+        <b>Online Payment</b>
+        <p style={{margin:0, fontSize:11}}>UPI, Cards, NetBanking</p>
+      </div>
+    </div>
+
+    {/* COD Second */}
+    <div 
+      onClick={() => setPaymentMethod("COD")} 
+      style={{
+        ...styles.payOption, 
+        borderColor: paymentMethod === 'COD' ? '#3b82f6' : '#e2e8f0', 
+        backgroundColor: paymentMethod === 'COD' ? '#eff6ff' : '#fff'
+      }}
+    >
+      <TruckIcon width={24} /> 
+      <div>
+        <b>COD</b>
+        <p style={{margin:0, fontSize:11}}>Pay on Delivery</p>
+      </div>
+    </div>
+  </div>
+</section>
           </div>
 
           {/* Right Column: Summary */}

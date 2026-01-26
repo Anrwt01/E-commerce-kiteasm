@@ -35,7 +35,7 @@ export const updateUserDetails = async (req, res) => {
 
     // ✅ Update allowed fields only
     if (name !== undefined) user.name = name;
-    if (phone1 !== undefined) user.phone2 = phone2;
+    if (phone2 !== undefined) user.phone2 = phone2;
     if (address !== undefined) user.address = address;
 
 

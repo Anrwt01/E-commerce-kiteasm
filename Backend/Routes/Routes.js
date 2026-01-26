@@ -19,6 +19,7 @@ import { User_Single_prod } from "../Http/Controller/User/user1Prod.js"; // Rena
 import { updateUserDetails } from "../Http/Controller/User/updateUserDetails.js";
 import {getCart, removeFromCart , addToCart}  from "../Http/Controller/User/Cart_Controller.js"
 import { userDetails } from "../Http/Controller/User/userDetails.js";
+import {createRazorpayPayment, verifyPayment } from  "../Http/Controller/Payment/createRazorpayPayment.js"
 
 /* 📦 Order & Checkout Controllers */
 import { Checkout } from "../Http/Controller/User/Checkout.js";
@@ -26,10 +27,10 @@ import { SendContactEmail } from '../Http/Controller/Open_panel/ContactControlle
 import { All_product as UserOrders } from "../Http/Controller/User/All_orders.js";
 import {updateadd} from "../Http/Controller/User/new_add.js"
 
-/* 💳 Payment Controllers */
-import { createRazorpayPayment } from "../Http/Controller/Payment/createRazorpayPayment.js";
-// import { createStripePayment } from "../Http/Controller/User/Stripe.js";
-import { verifyPayment } from "../Http/Controller/Payment/VerifyPayment.js";
+// /* 💳 Payment Controllers */
+// import { createRazorpayPayment } from "../Http/Controller/Payment/createRazorpayPayment.js";
+// // import { createStripePayment } from "../Http/Controller/User/Stripe.js";
+// import { verifyPayment } from "../Http/Controller/Payment/VerifyPayment.js";
 
 /* 🛠 Admin Controllers */
 import { AdminALLorder } from "../Http/Controller/Admin_panel/allOrder.js";
@@ -92,9 +93,7 @@ router.get("/user/Details", verifyme,userDetails )
 /* ===========================
    PAYMENTS
 =========================== */
-router.post("/payment/razorpay", verifyme, createRazorpayPayment);
-// router.post("/payment/stripe", verifyme, createStripePayment);
-router.post("/payment/verify", verifyme, verifyPayment);
+
 
 /* ===========================
    ADMIN ORDERS
@@ -126,6 +125,10 @@ router.put("/user/profile/update", verifyme, updateUserDetails);
 router.put("/user/add-update", verifyme, updateadd);
 
 
+
+// Razorpay 
+router.post("/payment/create-order/", createRazorpayPayment)
+router.post("/payment/verify", verifyPayment)
 /* ===========================
    ADMIN PRODUCTS
 =========================== */

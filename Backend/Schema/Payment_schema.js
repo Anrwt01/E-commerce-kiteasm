@@ -12,4 +12,4 @@ status: String,
 createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model("Payment", paymentSchema);
+export const paymentSch = mongoose.model("Payment", paymentSchema);

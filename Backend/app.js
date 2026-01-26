@@ -4,6 +4,9 @@ import express from "express";
 import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
+// In server.js
+import paymentRoutes from './Routes/paymentRoutes.js';
+// app.use("/api", paymentRoutes);
 
 import cors from "cors";
 import mongoose from "mongoose";
@@ -32,6 +35,8 @@ console.log("RAZORPAY_KEY:", process.env.RAZORPAY_KEY);
 
 // 🚏 Routes
 app.use("/api", Routes);
+// server.js / app.js
+app.use("/api", paymentRoutes);
 
 // 404 Handler - Unmatched routes
 app.use((req, res) => {
