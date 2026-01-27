@@ -71,10 +71,10 @@ const Cart = () => {
 
     const styles = {
         container: { 
-            backgroundColor: "#000000", // Pure black for professional theme
+            backgroundColor: "#ffffff", // White background
             minHeight: "100vh", 
-            fontFamily: "sans-serif", // Normal font
-            color: "#ffffff" // White text
+            fontFamily: "sans-serif",
+            color: "#000000" // Black text
         },
         content: { maxWidth: "1000px", margin: "0 auto", padding: "140px 24px 80px" },
         header: { marginBottom: "40px" },
@@ -84,59 +84,59 @@ const Cart = () => {
             display: "flex", 
             alignItems: "center", 
             gap: "8px", 
-            color: "#cccccc", // Light gray
+            color: "#666666", // Dark gray
             fontWeight: "700", 
             cursor: "pointer", 
             fontSize: "14px", 
             padding: 0,
             transition: "color 0.3s"
         },
-        backBtnHover: { color: "#ffffff" }, // White on hover
+        backBtnHover: { color: "#000000" }, // Black on hover
         title: { 
             fontSize: "32px", 
             fontWeight: "900", 
-            color: "#ffffff", // White
+            color: "#000000", // Black
             marginTop: "16px", 
             letterSpacing: "-1px" 
         },
         grid: { display: "grid", gridTemplateColumns: "1fr 340px", gap: "32px" },
         itemCard: { 
-            background: "rgba(255, 255, 255, 0.03)", // Subtle white overlay
+            background: "rgba(0, 0, 0, 0.03)", // Subtle black overlay
             borderRadius: "24px", 
             padding: "20px", 
             display: "flex", 
             alignItems: "center", 
             gap: "20px", 
-            border: "1px solid rgba(255, 255, 255, 0.1)", // White border
+            border: "1px solid rgba(0, 0, 0, 0.1)", // Black border
             marginBottom: "16px",
             transition: "all 0.3s ease"
         },
         itemCardHover: { 
             transform: "translateY(-2px)", 
-            boxShadow: "0 8px 16px rgba(255, 255, 255, 0.2)" // White shadow
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)" // Black shadow
         },
         imgBox: { 
             width: "80px", 
             height: "80px", 
             borderRadius: "16px", 
-            backgroundColor: "rgba(255, 255, 255, 0.05)", // Subtle overlay
+            backgroundColor: "rgba(0, 0, 0, 0.05)", // Subtle overlay
             overflow: "hidden" 
         },
         summary: { 
-            background: "rgba(255, 255, 255, 0.03)", // Subtle overlay
+            background: "rgba(0, 0, 0, 0.03)", // Subtle overlay
             borderRadius: "32px", 
             padding: "30px", 
-            border: "1px solid rgba(255, 255, 255, 0.1)", // White border
+            border: "1px solid rgba(0, 0, 0, 0.1)", // Black border
             height: "fit-content", 
             position: "sticky", 
             top: "120px",
-            boxShadow: "0 4px 12px rgba(255, 255, 255, 0.1)" // Subtle shadow
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" // Subtle shadow
         },
         checkoutBtn: { 
             width: "100%", 
             padding: "18px", 
-            background: "#ffffff", // White button
-            color: "#000000", // Black text
+            background: "#000000", // Black button
+            color: "#ffffff", // White text
             border: "none", 
             borderRadius: "16px", 
             fontWeight: "800", 
@@ -147,18 +147,18 @@ const Cart = () => {
             gap: "10px", 
             marginTop: "24px",
             transition: "all 0.3s ease",
-            boxShadow: "0 4px 12px rgba(255, 255, 255, 0.2)" // White shadow
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)" // Black shadow
         },
         checkoutBtnHover: { 
             transform: "translateY(-2px)", 
-            boxShadow: "0 8px 20px rgba(255, 255, 255, 0.3)" // Enhanced shadow
+            boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)" // Enhanced shadow
         },
         emptyBox: { textAlign: "center", paddingTop: "60px" }
     };
 
     if (loading) return (
         <div style={{ ...styles.container, display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Loader2 className="animate-spin" color="#ffffff" size={40} /> {/* White loader */}
+            <Loader2 className="animate-spin" color="#000000" size={40} /> {/* Black loader */}
         </div>
     );
 
@@ -195,11 +195,11 @@ const Cart = () => {
                                         />
                                     </div>
                                     <div style={{ flex: 1 }}>
-                                        <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: "#ffffff" }}>{item.productId?.name}</h3>
-                                        <p style={{ color: "#ffffff", fontWeight: "900", margin: "4px 0" }}>₹{item.productId?.price}</p> {/* White price */}
+                                        <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: "#000000" }}>{item.productId?.name}</h3>
+                                        <p style={{ color: "#000000", fontWeight: "900", margin: "4px 0" }}>₹{item.productId?.price}</p> {/* Black price */}
                                         <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                                            <span style={{ fontSize: "12px", color: "#cccccc" }}>QTY: {item.quantity}</span> {/* Light gray */}
-                                            <span style={{ fontSize: "12px", color: "#cccccc", background: "rgba(255, 255, 255, 0.05)", padding: "2px 8px", borderRadius: "4px" }}>
+                                            <span style={{ fontSize: "12px", color: "#666666" }}>QTY: {item.quantity}</span> {/* Dark gray */}
+                                            <span style={{ fontSize: "12px", color: "#666666", background: "rgba(0, 0, 0, 0.05)", padding: "2px 8px", borderRadius: "4px" }}>
                                                 Logistics: ₹{item.quantity * 100}
                                             </span>
                                         </div>
@@ -207,9 +207,9 @@ const Cart = () => {
                                     <button 
                                         onClick={() => removeItem(item.productId?._id)} 
                                         disabled={deletingId === item.productId?._id}
-                                        style={{ background: "none", border: "none", color: "#ffffff", cursor: "pointer", transition: "color 0.3s" }} // White icon
-                                        onMouseOver={(e) => e.target.style.color = "#cccccc"} // Light gray on hover
-                                        onMouseOut={(e) => e.target.style.color = "#ffffff"}
+                                        style={{ background: "none", border: "none", color: "#000000", cursor: "pointer", transition: "color 0.3s" }} // Black icon
+                                        onMouseOver={(e) => e.target.style.color = "#666666"} // Dark gray on hover
+                                        onMouseOut={(e) => e.target.style.color = "#000000"}
                                     >
                                         {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
                                     </button>
@@ -218,20 +218,20 @@ const Cart = () => {
                         </div>
 
                         <aside style={styles.summary}>
-                            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "900", color: "#ffffff" }}>Order Summary</h3>
-                            <div style={{ marginTop: "24px", borderBottom: "1px solid rgba(255, 255, 255, 0.1)", paddingBottom: "16px" }}>
+                            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "900", color: "#000000" }}>Order Summary</h3>
+                            <div style={{ marginTop: "24px", borderBottom: "1px solid rgba(0, 0, 0, 0.1)", paddingBottom: "16px" }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-                                    <span style={{ color: "#cccccc" }}>Subtotal</span> {/* Light gray */}
-                                    <span style={{ fontWeight: "700", color: "#ffffff" }}>₹{subtotal}</span>
+                                    <span style={{ color: "#666666" }}>Subtotal</span> {/* Dark gray */}
+                                    <span style={{ fontWeight: "700", color: "#000000" }}>₹{subtotal}</span>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                    <span style={{ color: "#cccccc" }}>Logistics (₹100/item)</span> {/* Light gray */}
-                                    <span style={{ color: "#ffffff", fontWeight: "700" }}>₹{logistics}</span>
+                                    <span style={{ color: "#666666" }}>Logistics (₹100/item)</span> {/* Dark gray */}
+                                    <span style={{ color: "#000000", fontWeight: "700" }}>₹{logistics}</span>
                                 </div>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-                                <span style={{ fontWeight: "900", color: "#ffffff" }}>Total</span>
-                                <span style={{ fontWeight: "900", fontSize: "20px", color: "#ffffff" }}>₹{subtotal + logistics}</span> {/* White total */}
+                                <span style={{ fontWeight: "900", color: "#000000" }}>Total</span>
+                                <span style={{ fontWeight: "900", fontSize: "20px", color: "#000000" }}>₹{subtotal + logistics}</span> {/* Black total */}
                             </div>
                             <button 
                                 onClick={() => navigate("/checkout")} 
@@ -245,9 +245,9 @@ const Cart = () => {
                     </div>
                 ) : (
                     <div style={styles.emptyBox}>
-                        <ShoppingBag size={64} color="#cccccc" style={{ marginBottom: "20px" }} /> {/* Light gray icon */}
-                        <h2 style={{ fontWeight: "900", color: "#ffffff" }}>Hangar is Empty</h2>
-                        <Link to="/products" style={{ display: "inline-block", marginTop: "24px", color: "#ffffff", fontWeight: "800", textDecoration: "none" }}>
+                        <ShoppingBag size={64} color="#666666" style={{ marginBottom: "20px" }} /> {/* Dark gray icon */}
+                        <h2 style={{ fontWeight: "900", color: "#000000" }}>Hangar is Empty</h2>
+                        <Link to="/products" style={{ display: "inline-block", marginTop: "24px", color: "#000000", fontWeight: "800", textDecoration: "none" }}>
                             Browse the Fleet
                         </Link>
                     </div>

@@ -18,6 +18,7 @@ import Contact from "./Comp/Open_comp/Contact.jsx";
 // Auth Pages
 import Login from "./Comp/Auth_comp/Login.jsx";
 import Register from "./Comp/Auth_comp/Register.jsx";
+import  Profile  from "./Comp/User_Comp/profile.jsx";
 
 // User Secure Pages
 import Dashboard from "./Comp/User_Comp/Dashboard.jsx";
@@ -61,6 +62,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path= '/profile' element={<Profile/>} />
 
           {/* --- 🔒 PROTECTED USER ROUTES (Login Required) --- */}
           <Route element={<Protected_Route adminOnly={false} />}>

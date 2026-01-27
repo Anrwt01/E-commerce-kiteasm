@@ -9,38 +9,48 @@ import kiteasm_logo from "../../assets/Photo/kiteasm_logo.jpg";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  // const [authState, setAuthState] = useState(getAuthFromStorage());
   const location = useLocation();
   const navigate = useNavigate();
+   const [authState, setAuthState] = useState(getAuthFromStorage());
+  // const isLoggedIn = !!authState.token;
 
   const getAuthFromStorage = () => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
-    if (!userData) return { token: null, role: null };
-    try {
-      const parsedUser = JSON.parse(userData);
-      const role = parsedUser.role; 
-      return { token, role };
-    } catch (err) {
-      console.error("Error parsing user from storage:", err);
-      return { token, role: null };
-    }
-  };
+  const token = localStorage.getItem("token");
+  const userData = localStorage.getItem("user");
+  
+  if (!token || !userData) return { token: null, role: null };
+  
+  try {
+    const parsedUser = JSON.parse(userData);
+    return { token, role: parsedUser.role };
+  } catch (err) {
+    return { token: null, role: null };
+  }
+};
 
-  const [authState, setAuthState] = useState(getAuthFromStorage());
-  const isLoggedIn = !!authState.token;
+  // const [authState, setAuthState] = useState(getAuthFromStorage());
+  // const isLoggedIn = !!authState.token;
   const role = authState.role;
+   const isLoggedIn = !!authState.token;
 
-  useEffect(() => {
-    const handleAuthChange = () => {
+ useEffect(() => {
+    // 2. This function re-checks the storage
+    const syncAuth = () => {
       setAuthState(getAuthFromStorage());
     };
-    window.addEventListener('storage', handleAuthChange);
-    window.addEventListener('authChange', handleAuthChange);
+
+   
+    window.addEventListener("storage", syncAuth);
+  
+    window.addEventListener("authChange", syncAuth);
+    syncAuth();
+
     return () => {
-      window.removeEventListener('storage', handleAuthChange);
-      window.removeEventListener('authChange', handleAuthChange);
+      window.removeEventListener("storage", syncAuth);
+      window.removeEventListener("authChange", syncAuth);
     };
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
