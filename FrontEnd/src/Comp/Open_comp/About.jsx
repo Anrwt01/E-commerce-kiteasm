@@ -1,6 +1,7 @@
 import React from 'react';
 import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import kiteasm_logo from "../../assets/images/kiteasm_logo.jpg";
 
 const About = () => {
   const styles = {
@@ -91,7 +92,7 @@ const About = () => {
       {/* 1. HERO SECTION */}
       <section style={styles.hero}>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <span style={styles.badge}><Wind size={14} /> ESTABLISHED 2024</span>
+          <span style={styles.badge}><Wind size={14} /> ESTABLISHED 2020</span>
           <h1 style={styles.gradientText}>Elevating <br />Kite Flying.</h1>
           <p style={{ color: '#cccccc', fontSize: '20px', maxWidth: '600px', margin: '30px 0', lineHeight: '1.6' }}> {/* Light gray text */}
             At Kiteasm, we craft premium kites, durable manjha (thread), and essential accessories for enthusiasts and professionals alike.
@@ -109,14 +110,14 @@ const About = () => {
             <div>
               <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '24px', color: 'white' }}>Our Journey.</h2>
               <p style={{ color: '#cccccc', fontSize: '18px', lineHeight: '1.8' }}> {/* Light gray text */}
-                Kiteasm started with a passion for the skies and a commitment to quality. We specialize in high-performance kites made from premium materials, strong manjha for competitive flying, and accessories that enhance every flight.
+                Kiteasm started with a passion for the skies and a commitment to quality. We specialize in high-performance kites made from premium materials, strong manjha for competitive flying, and accessories that enhance every kite flying.
                 <br /><br />
                 Each product is designed with precision, ensuring durability, safety, and an unforgettable experience for kite lovers everywhere.
               </p>
             </div>
             <div style={{ position: 'relative' }}>
                <img 
-                src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070" 
+                src={kiteasm_logo} 
                 alt="Kite Flying" 
                 style={{ width: '100%', borderRadius: '24px', filter: 'grayscale(0.2) brightness(0.8)' }} 
                />
@@ -141,12 +142,12 @@ const About = () => {
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Founder" style={{ width: '100%' }} />
             </div>
-            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Rajesh Kumar</h3>
+            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Udit Sanwal</h3>
             <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Founder & CEO</p>
-            <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>With over 15 years in the kite industry, Rajesh leads Kiteasm with a vision for innovation and quality.</p>
+            {/* <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>With over 15 years in the kite industry, Rajesh leads Kiteasm with a vision for innovation and quality.</p> */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-              <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="#" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.instagram.com/_notrio_/" style={styles.socialLink}><Instagram size={20} /></a>
+              <a href="https://www.youtube.com/@RioTheExplorer" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
 
@@ -155,12 +156,12 @@ const About = () => {
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Designer" style={{ width: '100%' }} />
             </div>
-            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Priya Sharma</h3>
-            <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Lead Designer</p>
-            <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>Priya designs our kites and accessories, focusing on aerodynamics and user experience for all skill levels.</p>
+            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Shubham joshi</h3>
+            <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Manager & Marketing</p>
+            {/* <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>Priya designs our kites and accessories, focusing on aerodynamics and user experience for all skill levels.</p> */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
               <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="#" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.youtube.com/@RioTheExplorer" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
         </div>

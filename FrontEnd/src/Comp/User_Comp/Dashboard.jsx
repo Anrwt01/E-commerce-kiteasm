@@ -44,33 +44,34 @@ const Dashboard = () => {
 
     if (loading || !user) return null;
 
-    const owners = [
-        {
-            name: "Rahul Sharma",
-            role: "CHIEF PILOT",
-            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
-            handle: "@rahul_aero"
-        },
-        {
-            name: "Vikram Mehra",
-            role: "AERO ENGINEER",
-            image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
-            handle: "@vikram_tech"
-        }
-    ];
-
+   const owners = [
+    {
+        name: "Udit Sanwal",
+        role: "FOUNDER & CEO",
+        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh", // Placeholder avatar
+        instagram: "https://www.instagram.com/_notrio_/",
+        youtube: "https://www.youtube.com/@RioTheExplorer"
+    },
+    {
+        name: "Shubham Joshi",
+        role: "Manager & Marketing",
+        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya", // Placeholder avatar
+        instagram: "#",
+        youtube: "https://www.youtube.com/@RioTheExplorer"
+    }
+];
     return (
         <div className="dash-container">
-            {/* Animated Background */}
-            <div className="kiteasm-bg-overlay"></div>
+            {/* Soft Grid Background */}
+            <div className="grid-bg"></div>
 
-            {/* Top Navigation */}
+            {/* Premium Top Navigation */}
             <nav className="top-nav">
                 <div className="nav-inner">
                     <div className="logo-brand">KITEASM<span>.</span></div>
                     <div className="nav-actions">
                         <div className="user-badge">
-                            <div className="online-indicator"></div>
+                            <span className="online-dot"></span>
                             {user.email}
                         </div>
                         <button onClick={() => { localStorage.clear(); navigate("/login"); }} className="power-btn">
@@ -82,12 +83,11 @@ const Dashboard = () => {
 
             <div className="main-content">
                 <header className="hero-section">
-                    <div className="status-label">SYSTEM_STATUS: ACTIVE</div>
-                    <h1 className="hero-title">Welcome Back, {user.name?.split(" ")[0]}</h1>
-                    <p className="hero-tagline">Your flight systems are configured and ready for deployment.</p>
+                    {/* <div className="status-badge">SYSTEMS_NOMINAL</div> */}
+                    <h1 className="hero-title">Welcome, {user.name?.split(" ")[0]}</h1>
                 </header>
 
-                {/* Quick Actions - Bento Grid */}
+                {/* Bento Grid - Styled as floating panels */}
                 <div className="bento-grid">
                     {[
                         { title: 'COLLECTIONS', path: '/products', icon: ShoppingBagIcon, desc: 'View Inventory' },
@@ -97,7 +97,7 @@ const Dashboard = () => {
                     ].map((item) => (
                         <Link key={item.title} to={item.path} className="bento-card">
                             <div className="bento-icon-box">
-                                <item.icon style={{ width: '22px' }} />
+                                <item.icon style={{ width: '24px' }} strokeWidth={1.5} />
                             </div>
                             <div className="bento-text">
                                 <span className="bento-title">{item.title}</span>
@@ -108,18 +108,18 @@ const Dashboard = () => {
                     ))}
                 </div>
 
-                {/* Arrivals Section */}
+                {/* Featured Products */}
                 <section className="dashboard-section">
                     <div className="section-header">
-                        <h2 className="section-title">New Arrivals</h2>
-                        <Link to="/products" className="view-link">EXP_ALL <ChevronRightIcon style={{ width: '12px' }} /></Link>
+                        <h2 className="section-title">Latest Equipment</h2>
+                        <Link to="/products" className="view-link">VIEW ALL</Link>
                     </div>
                     <div className="product-row">
                         {featuredProducts.map((p) => (
                             <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
                                 <div className="p-img-box">
                                     <img src={productImages[p.images?.[0]?.url]} alt={p.name} />
-                                    <div className="p-overlay">VIEW_DETAILS</div>
+                                    <div className="p-overlay">SHOP_NOW</div>
                                 </div>
                                 <div className="p-meta">
                                     <h4>{p.name}</h4>
@@ -130,157 +130,282 @@ const Dashboard = () => {
                     </div>
                 </section>
 
-                {/* Founders Command Section */}
-                <section className="command-center">
-                    <div className="command-header">
-                        <span className="accent-bar"></span>
-                        <h3>Command Center</h3>
+               <section className="command-center">
+    <div className="command-header">
+        <span className="line"></span>
+        <h3>THE LEADERSHIP</h3>
+        <span className="line"></span>
+    </div>
+    
+    <div className="founders-grid">
+        {owners.map((owner) => (
+            <div key={owner.name} className="founder-card">
+                <div className="founder-img-wrapper">
+                    <img src={owner.image} alt={owner.name} className="founder-img" />
+                </div>
+                
+                <div className="founder-info">
+                    <h4 className="founder-name">{owner.name}</h4>
+                    <span className="founder-role">{owner.role}</span>
+                    <p className="founder-desc">{owner.desc}</p>
+                    
+                    <div className="founder-socials">
+                        <a href={owner.instagram} aria-label="Instagram">
+                            <svg className="social-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c.796 0 1.441.645 1.441 1.44s-.645 1.44-1.441 1.44-1.44-.645-1.44-1.44.645-1.44 1.44-1.44z"/></svg>
+                        </a>
+                        <a href={owner.youtube} aria-label="YouTube">
+                            <svg className="social-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
                     </div>
-                    <div className="founders-flex">
-                        {owners.map((owner) => (
-                            <div key={owner.name} className="commander-card">
-                                <img src={owner.image} alt={owner.name} className="commander-img" />
-                                <div className="commander-details">
-                                    <span className="commander-role">{owner.role}</span>
-                                    <h4>{owner.name}</h4>
-                                    <div className="commander-socials">
-                                        <a href="#">YT</a>
-                                        <a href="#">IG</a>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
+                </div>
+            </div>
+        ))}
+    </div>
+</section>
             </div>
 
             <style>{`
-                @keyframes scrollBg {
-                    0% { background-position: 0 0; }
-                    100% { background-position: 500px 1000px; }
-                }
+                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
+                /* Command Center Section */
+.command-center {
+    margin-top: 120px;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.command-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.command-header .line {
+    flex: 0 1 40px;
+    height: 1px;
+    background: #000;
+}
+
+.command-header h3 {
+    font-size: 12px;
+    letter-spacing: 4px;
+    font-weight: 800;
+    color: #000;
+}
+
+/* Founder Cards Grid */
+.founders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+}
+
+.founder-card {
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    border-radius: 24px;
+    padding: 50px 40px;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+}
+
+.founder-card:hover {
+    transform: translateY(-10px);
+    border-color: #000;
+    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1);
+}
+
+/* Image Styling */
+.founder-img-wrapper {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 30px;
+    border-radius: 40px; /* Squircle shape like screenshot */
+    padding: 5px;
+    border: 1px solid #000;
+    overflow: hidden;
+}
+
+.founder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 35px;
+    background: #f9f9f9;
+}
+
+/* Typography */
+.founder-name {
+    font-family: 'Playfair Display', 'Georgia', serif; /* Elegant Serif */
+    font-size: 32px;
+    font-weight: 500;
+    font-style: italic;
+    margin: 0 0 10px;
+}
+
+.founder-role {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    color: #000;
+}
+
+.founder-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    max-width: 320px;
+    margin: 0 auto 30px;
+}
+
+/* Social Icons */
+.founder-socials {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.social-icon {
+    width: 20px;
+    height: 20px;
+    color: #000;
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.2);
+    color: #666;
+}
+
+@media (max-width: 850px) {
+    .founders-grid { grid-template-columns: 1fr; }
+    .founder-card { padding: 40px 20px; }
+}
                 :root {
-                    --obsidian: #000000;
-                    --glass: rgba(255, 255, 255, 0.03);
-                    --glass-border: rgba(255, 255, 255, 0.08);
-                    --accent-blue: #0ea5e9;
-                    --text-primary: #ffffff;
-                    --text-secondary: #888888;
+                    --bg-main: #FDFDFD;
+                    --bg-subtle: #F3F4F6;
+                    --text-black: #000000;
+                    --text-muted: #6B7280;
+                    --accent: #000000;
+                    --card-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
                 }
 
                 .dash-container {
-                    background-color: var(--obsidian);
+                    background-color: var(--bg-main);
                     min-height: 100vh;
-                    color: var(--text-primary);
-                    font-family: 'Inter', system-ui, sans-serif;
+                    color: var(--text-black);
+                    font-family: 'Plus Jakarta Sans', sans-serif;
                     position: relative;
                 }
 
-                .kiteasm-bg-overlay {
+                /* Subtle Grid Overlay */
+                .grid-bg {
                     position: fixed;
                     inset: 0;
-                    background-image: url('/path-to-your-kiteasm-image.jpg');
-                    background-size: 350px;
-                    opacity: 0.04;
-                    z-index: 0;
-                    animation: scrollBg 80s linear infinite;
+                    background-image: radial-gradient(#e5e7eb 0.8px, transparent 0.8px);
+                    background-size: 24px 24px;
+                    opacity: 0.5;
                     pointer-events: none;
                 }
 
                 .top-nav {
-                    position: fixed; top: 0; width: 100%; height: 70px;
-                    background: rgba(0,0,0,0.8);
-                    backdrop-filter: blur(15px); z-index: 100;
-                    border-bottom: 1px solid var(--glass-border);
+                    position: fixed; top: 0; width: 100%; height: 80px;
+                    background: rgba(255,255,255,0.8);
+                    backdrop-filter: blur(10px); z-index: 100;
+                    border-bottom: 1px solid #E5E7EB;
                 }
 
                 .nav-inner {
                     max-width: 1200px; margin: 0 auto; height: 100%;
-                    display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+                    display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
                 }
 
-                .logo-brand { font-weight: 900; font-size: 18px; letter-spacing: 2px; }
-                .logo-brand span { color: var(--accent-blue); }
+                .logo-brand { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+                .logo-brand span { color: #6B7280; }
 
-                .nav-actions { display: flex; align-items: center; gap: 20px; }
+                .nav-actions { display: flex; align-items: center; gap: 24px; }
                 .user-badge { 
-                    font-size: 11px; color: var(--text-secondary); letter-spacing: 1px;
-                    display: flex; align-items: center; gap: 8px;
-                    background: var(--glass); padding: 8px 14px; border-radius: 4px;
+                    font-size: 12px; color: var(--text-black); font-weight: 600;
+                    display: flex; align-items: center; gap: 10px;
+                    background: var(--bg-subtle); padding: 8px 16px; border-radius: 100px;
                 }
-                .online-indicator { width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981; }
+                .online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
 
                 .power-btn { 
-                    background: transparent; border: 1px solid #333; color: white;
-                    padding: 8px; cursor: pointer; border-radius: 4px; transition: 0.3s;
-                }
-                .power-btn:hover { border-color: #ff4444; color: #ff4444; }
-
-                .main-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 130px 24px 100px; }
-
-                .status-label { font-size: 10px; font-weight: 800; letter-spacing: 3px; color: var(--accent-blue); margin-bottom: 15px; }
-                .hero-title { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin: 0; }
-                .hero-tagline { color: var(--text-secondary); margin-top: 10px; font-size: 16px; font-weight: 300; }
-
-                /* Bento Grid */
-                .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 50px 0; }
-                .bento-card {
-                    background: var(--glass); border: 1px solid var(--glass-border);
-                    padding: 24px; display: flex; align-items: center; gap: 15px;
-                    text-decoration: none; color: white; transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-                    position: relative;
-                }
-                .bento-card:hover { background: rgba(255,255,255,0.06); border-color: white; transform: translateY(-3px); }
-                .bento-icon-box { color: var(--accent-blue); }
-                .bento-title { display: block; font-size: 12px; font-weight: 900; letter-spacing: 1px; }
-                .bento-desc { display: block; font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
-                .bento-arrow { position: absolute; right: 15px; opacity: 0.2; }
-
-                /* Products */
-                .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; border-left: 3px solid white; padding-left: 15px; }
-                .section-title { font-size: 20px; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-                .view-link { color: var(--text-secondary); font-size: 11px; text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 5px; }
-                .view-link:hover { color: white; }
-
-                .product-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-                .modern-p-card { text-decoration: none; color: white; transition: 0.4s; }
-                .p-img-box { 
-                    height: 200px; background: #111; position: relative; overflow: hidden;
-                    border: 1px solid var(--glass-border);
-                }
-                .p-img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-                .p-overlay { 
-                    position: absolute; inset: 0; background: rgba(14, 165, 233, 0.9);
+                    background: var(--text-black); border: none; color: white;
+                    padding: 10px; cursor: pointer; border-radius: 50%; transition: 0.3s;
                     display: flex; align-items: center; justify-content: center;
-                    font-size: 10px; font-weight: 900; opacity: 0; transition: 0.3s;
                 }
-                .modern-p-card:hover .p-overlay { opacity: 1; }
-                .modern-p-card:hover .p-img-box img { transform: scale(1.1); }
-                .p-meta { padding: 15px 0; }
-                .p-meta h4 { margin: 0; font-size: 14px; font-weight: 600; }
-                .p-meta p { color: var(--accent-blue); font-weight: 800; margin-top: 5px; font-size: 13px; }
+                .power-btn:hover { transform: scale(1.1); background: #ef4444; }
 
-                /* Founders */
-                .command-center { margin-top: 80px; padding: 40px; border: 1px solid var(--glass-border); background: linear-gradient(to right, #050505, #000); }
-                .command-header { display: flex; align-items: center; gap: 15px; margin-bottom: 35px; }
-                .accent-bar { width: 40px; height: 2px; background: var(--accent-blue); }
-                .command-header h3 { font-size: 14px; letter-spacing: 4px; text-transform: uppercase; margin: 0; }
+                .main-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 140px 40px 100px; }
 
-                .founders-flex { display: flex; gap: 50px; }
-                .commander-card { display: flex; align-items: center; gap: 20px; }
-                .commander-img { width: 70px; height: 70px; border-radius: 2px; filter: grayscale(1); transition: 0.3s; }
-                .commander-card:hover .commander-img { filter: grayscale(0); transform: rotate(-3deg); }
-                .commander-role { font-size: 9px; color: var(--accent-blue); letter-spacing: 2px; font-weight: 800; }
-                .commander-details h4 { margin: 5px 0; font-size: 18px; }
-                .commander-socials { display: flex; gap: 12px; margin-top: 8px; }
-                .commander-socials a { font-size: 10px; color: var(--text-secondary); text-decoration: none; font-weight: 800; }
-                .commander-socials a:hover { color: white; }
+                .status-badge { 
+                    display: inline-block; font-size: 10px; font-weight: 800; 
+                    letter-spacing: 1px; color: white; background: #000; 
+                    padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; 
+                }
+                .hero-title { font-size: 56px; font-weight: 800; letter-spacing: -2px; margin: 0; }
+                .hero-tagline { color: var(--text-muted); margin-top: 12px; font-size: 18px; }
 
-                @media (max-width: 900px) {
-                    .bento-grid { grid-template-columns: repeat(2, 1fr); }
-                    .product-row { grid-template-columns: repeat(2, 1fr); }
-                    .founders-flex { flex-direction: column; gap: 30px; }
+                /* Bento Cards */
+                .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 60px 0; }
+                .bento-card {
+                    background: white; border: 1px solid #E5E7EB;
+                    padding: 30px 24px; display: flex; flex-direction: column; gap: 20px;
+                    text-decoration: none; color: var(--text-black); 
+                    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                    box-shadow: var(--card-shadow); border-radius: 16px;
+                }
+                .bento-card:hover { transform: translateY(-8px); border-color: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+                .bento-icon-box { 
+                    width: 48px; height: 48px; background: #F3F4F6; 
+                    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+                }
+                .bento-title { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; }
+                .bento-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+                .bento-arrow { opacity: 0.3; margin-top: auto; align-self: flex-end; }
+
+                /* Product Cards */
+                .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+                .section-title { font-size: 24px; font-weight: 800; margin: 0; }
+                .view-link { color: var(--text-black); font-size: 12px; text-decoration: underline; font-weight: 700; }
+
+                .product-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+                .modern-p-card { text-decoration: none; color: var(--text-black); }
+                .p-img-box { 
+                    aspect-ratio: 1/1; background: #F3F4F6; position: relative; overflow: hidden;
+                    border-radius: 12px; transition: 0.4s;
+                }
+                .p-img-box img { width: 100%; height: 100%; object-fit: cover; }
+                .p-overlay { 
+                    position: absolute; bottom: 0; left: 0; right: 0; background: #000; color: white;
+                    text-align: center; padding: 12px; font-size: 11px; font-weight: 800;
+                    transform: translateY(100%); transition: 0.3s;
+                }
+                .modern-p-card:hover .p-overlay { transform: translateY(0); }
+                .modern-p-card:hover .p-img-box { transform: scale(0.98); }
+                .p-meta h4 { margin: 15px 0 5px; font-size: 15px; font-weight: 700; }
+                .p-meta p { color: var(--text-muted); font-weight: 500; font-size: 14px; }
+
+                /* Commanders Section */
+                .command-center { margin-top: 100px; padding: 60px 0; border-top: 1px solid #E5E7EB; }
+                .command-header h3 { font-size: 12px; letter-spacing: 3px; color: var(--text-muted); margin-bottom: 40px; }
+                .founders-flex { display: flex; gap: 80px; }
+                .commander-card { display: flex; align-items: center; gap: 24px; }
+                .commander-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: var(--card-shadow); }
+                .commander-role { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; font-weight: 800; }
+                .commander-details h4 { margin: 4px 0; font-size: 20px; font-weight: 800; }
+
+                @media (max-width: 1000px) {
+                    .bento-grid, .product-row { grid-template-columns: repeat(2, 1fr); }
+                    .founders-flex { flex-direction: column; gap: 40px; }
                 }
             `}</style>
         </div>

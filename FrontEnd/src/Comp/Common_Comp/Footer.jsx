@@ -123,7 +123,7 @@ const Footer = () => {
             <li style={styles.contactText}>Call: +91 7011001801 (toll free)</li>
             <li style={styles.contactText}>WhatsApp: +91 7011001801</li>
             <li style={styles.contactText}>Email: kiteasm01@gmail.com</li>
-            <li style={styles.contactText}>Mon to Fri 11 PM - 7 AM (PST)</li>
+            <li style={styles.contactText}>Mon to Fri 11 PM - 7 AM (IST)</li>
             <li style={{ marginTop: "30px" }}>
               <h5 style={styles.title}>MY ACCOUNT</h5>
               <Link to="/login" style={{ ...styles.link, display: "block", marginBottom: "8px" }}>Log in</Link>

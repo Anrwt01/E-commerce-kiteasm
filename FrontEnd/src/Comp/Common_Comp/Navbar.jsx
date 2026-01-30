@@ -4,23 +4,15 @@ import {
   ShoppingBagIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import kiteasm_logo from "../../assets/Photo/kiteasm_logo.jpg";
 
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  // const [authState, setAuthState] = useState(getAuthFromStorage());
-  const location = useLocation();
-  const navigate = useNavigate();
-   const [authState, setAuthState] = useState(getAuthFromStorage());
-  // const isLoggedIn = !!authState.token;
-
-  const getAuthFromStorage = () => {
+const getAuthFromStorage = () => {
   const token = localStorage.getItem("token");
   const userData = localStorage.getItem("user");
-  
   if (!token || !userData) return { token: null, role: null };
-  
   try {
     const parsedUser = JSON.parse(userData);
     return { token, role: parsedUser.role };
@@ -29,23 +21,22 @@ const Navbar = () => {
   }
 };
 
-  // const [authState, setAuthState] = useState(getAuthFromStorage());
-  // const isLoggedIn = !!authState.token;
+const Navbar = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [authState, setAuthState] = useState(getAuthFromStorage());
+
   const role = authState.role;
-   const isLoggedIn = !!authState.token;
+  const isLoggedIn = !!authState.token;
 
- useEffect(() => {
-    // 2. This function re-checks the storage
-    const syncAuth = () => {
-      setAuthState(getAuthFromStorage());
-    };
-
-   
+  useEffect(() => {
+    const syncAuth = () => setAuthState(getAuthFromStorage());
     window.addEventListener("storage", syncAuth);
-  
     window.addEventListener("authChange", syncAuth);
     syncAuth();
-
     return () => {
       window.removeEventListener("storage", syncAuth);
       window.removeEventListener("authChange", syncAuth);
@@ -54,8 +45,13 @@ const Navbar = () => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -63,121 +59,192 @@ const Navbar = () => {
     setAuthState({ token: null, role: null });
     window.dispatchEvent(new Event("authChange"));
     navigate("/login");
+    setIsMenuOpen(false);
   };
 
   const styles = {
     nav: {
-      position: 'fixed', 
-      top: 0, 
-      left: 0, 
-      right: 0, 
-      zIndex: 1000,
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       padding: scrolled ? '12px 24px' : '22px 24px',
-      backgroundColor: scrolled ? '#000000' : '#000000', // Pure black for both states
-      backdropFilter: 'blur(16px)', 
+      backgroundColor: '#000000',
+      backdropFilter: 'blur(16px)',
       borderBottom: scrolled ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
     },
-    container: { 
-      maxWidth: '1200px', margin: '0 auto', 
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between' 
-    },
-    logo: { 
-      display: 'flex', 
-      alignItems: 'center', 
-      gap: '12px', 
-      fontSize: '20px', fontWeight: '900', textTransform: 'uppercase', 
-      textDecoration: 'none', color: 'white', letterSpacing: '-0.5px'
-    },
-    logoImage: {
-      height: scrolled ? '38px' : '46px', 
-      width: scrolled ? '38px' : '46px',
-      borderRadius: '50%', 
-      objectFit: 'cover', 
-      border: '2px solid #ffffff', // White border instead of blue
-      transition: 'all 0.4s ease',
-    },
-    linksContainer: { 
-      display: 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center'
-    },
-    link: (path) => ({ 
-      fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.2px', 
-      textDecoration: 'none', 
-      color: location.pathname === path ? '#ffffff' : '#cccccc', // White for active, light gray for inactive
-      transition: 'all 0.2s', whiteSpace: 'nowrap'
+    container: { maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+    logo: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '20px', fontWeight: '900', textTransform: 'uppercase', textDecoration: 'none', color: 'white' },
+    logoImage: { height: scrolled ? '38px' : '46px', width: scrolled ? '38px' : '46px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #ffffff', transition: '0.4s ease' },
+    linksContainer: { display: isMobile ? 'none' : 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center' },
+    link: (path) => ({
+      fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.2px',
+      textDecoration: 'none', color: location.pathname === path ? '#ffffff' : '#cccccc', transition: 'all 0.2s'
     }),
     authGroup: {
-      display: 'flex', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)', // Subtle white overlay
-      padding: '4px 4px 4px 18px', borderRadius: '50px', gap: '15px',
-      border: '1px solid rgba(255,255,255,0.1)'
+      display: isMobile ? 'none' : 'flex', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.05)',
+      padding: '4px 4px 4px 18px', borderRadius: '50px', gap: '15px', border: '1px solid rgba(255,255,255,0.1)',
     },
-    iconStyle: {
-      color: '#ffffff', // White icons
-      display: 'flex',
-      transition: 'color 0.2s'
-    }
+    // --- SIDEBAR DRAWER STYLES (Mobile Only) ---
+    sidebarOverlay: {
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100vh',
+      backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 2000,
+      display: isMenuOpen ? 'block' : 'none',
+    },
+    sidebarContainer: {
+      position: 'fixed', top: 0, right: 0, width: '280px', height: '100vh',
+      backgroundColor: '#000000', zIndex: 2001, padding: '40px 24px',
+      display: 'flex', flexDirection: 'column',
+      transform: isMenuOpen ? 'translateX(0)' : 'translateX(100%)',
+      transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+      borderLeft: '1px solid rgba(255,255,255,0.1)'
+    },
+    sidebarLink: (path) => ({
+      fontSize: '14px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.2px',
+      textDecoration: 'none', color: location.pathname === path ? '#ffffff' : '#888',
+      display: 'block', padding: '15px 0', borderBottom: '1px solid rgba(255,255,255,0.05)'
+    }),
+    sidebarAuthBtn: (isActive) => ({
+      backgroundColor: isActive ? '#333333' : '#ffffff', 
+      color: isActive ? '#ffffff' : '#000000', 
+      padding: '14px', borderRadius: '50px',
+      fontSize: '12px', fontWeight: '900', textAlign: 'center', textDecoration: 'none', marginTop: '10px',
+      border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none'
+    })
+  };
+
+  const renderLinks = (isSidebar = false) => {
+    const style = isSidebar ? styles.sidebarLink : styles.link;
+    const items = !isLoggedIn 
+      ? [{ p: '/', n: 'Home' }, { p: '/products', n: 'Products' }, { p: '/contact', n: 'Contact' }, { p: '/about', n: 'About' }]
+      : role === "admin"
+        ? [{ p: '/admin', n: 'Admin Dashboard' }, { p: '/admin/orders', n: 'Orders' }, { p: '/admin/products', n: 'Product' }]
+        : [{ p: '/dashboard', n: 'User Dashboard' }, { p: '/products', n: 'Products' }, { p: '/orders', n: 'Orders' }];
+
+    return items.map(item => (
+      <li key={item.p} style={{ listStyle: 'none' }}>
+        <Link to={item.p} style={style(item.p)} onClick={() => setIsMenuOpen(false)}>{item.n}</Link>
+      </li>
+    ));
   };
 
   return (
-    <nav style={styles.nav}>
-      <div style={styles.container}>
-        <Link to="/" style={styles.logo}>
-          <img src={kiteasm_logo} alt="Kiteasm" style={styles.logoImage} />
-          <span style={{ color: '#cccccc' }}> {/* Light gray for logo text */}
-            Kiteasm<span style={{ color: '#cccccc' }}>.</span>
-          </span>
-        </Link>
+    <>
+      <nav style={styles.nav}>
+        <div style={styles.container}>
+          {/* Logo */}
+          <Link to="/" style={styles.logo}>
+            <img src={kiteasm_logo} alt="Kiteasm" style={styles.logoImage} />
+            <span style={{ color: '#cccccc' }}>Kiteasm<span style={{ color: '#cccccc' }}>.</span></span>
+          </Link>
 
-        <ul style={styles.linksContainer}>
-          {!isLoggedIn ? (
-            <>
-              <li><Link to="/" style={styles.link('/')}>Home</Link></li>
-              <li><Link to="/products" style={styles.link('/products')}>Products</Link></li>
-              <li><Link to="/contact" style={styles.link('/contact')}>Contact</Link></li>
-              <li><Link to="/about" style={styles.link('/about')}>About</Link></li>
-            </>
-          ) : role === "admin" ? (
-            <>
-              <li><Link to="/admin" style={styles.link('/admin')}>Admin Dashboard</Link></li>
-              <li><Link to="/admin/orders" style={styles.link('/admin/orders')}>Orders</Link></li>
-              <li><Link to="/admin/products" style={styles.link('/admin/products')}>Product</Link></li>
-            </>
-          ) : (
-            <>
-              <li><Link to="/dashboard" style={styles.link('/dashboard')}>User Dashboard</Link></li>
-              <li><Link to="/products" style={styles.link('/products')}>Products</Link></li>
-              <li><Link to="/orders" style={styles.link('/orders')}>Orders</Link></li>
-            </>
-          )}
+          {/* Laptop Navigation Links */}
+          <ul style={styles.linksContainer}>
+            {renderLinks(false)}
+          </ul>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            {/* Cart Icon */}
+            {(!isLoggedIn || role !== "admin") && (
+              <Link to="/cart" style={{ color: '#ffffff' }}>
+                <ShoppingBagIcon width={22} strokeWidth={2} />
+              </Link>
+            )}
+
+            {/* Laptop Auth Group */}
+            {!isMobile && (
+              <div style={styles.authGroup}>
+                {!isLoggedIn ? (
+                  <>
+                    <Link 
+                      to="/login" 
+                      style={{ 
+                        fontSize: '10px', 
+                        fontWeight: '800', 
+                        textDecoration: 'none', 
+                        color: location.pathname === '/login' ? '#ffffff' : '#888888',
+                        transition: '0.3s' 
+                      }}
+                    >
+                      LOGIN
+                    </Link>
+                    <Link 
+                      to="/register" 
+                      style={{ 
+                        backgroundColor: location.pathname === '/register' ? '#333333' : '#ffffff', 
+                        color: location.pathname === '/register' ? '#ffffff' : '#000000', 
+                        padding: '10px 22px', 
+                        borderRadius: '50px', 
+                        fontSize: '10px', 
+                        fontWeight: '900', 
+                        textDecoration: 'none',
+                        border: location.pathname === '/register' ? '1px solid rgba(255,255,255,0.2)' : 'none',
+                        transition: '0.3s'
+                      }}
+                    >
+                      REGISTER
+                    </Link>
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px', paddingRight: '14px' }}>
+                    {role !== "admin" && (
+                      <Link to="/profile" style={{ color: location.pathname === '/profile' ? '#fff' : '#888' }}><UserIcon width={22} /></Link>
+                    )}
+                    <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#fff' }}>
+                      <ArrowRightOnRectangleIcon width={22} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mobile Hamburger */}
+            {isMobile && (
+              <div onClick={() => setIsMenuOpen(true)} style={{ cursor: 'pointer', color: '#ffffff' }}>
+                <Bars3Icon width={26} />
+              </div>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE SIDEBAR DRAWER */}
+      <div style={styles.sidebarOverlay} onClick={() => setIsMenuOpen(false)} />
+      <div style={styles.sidebarContainer}>
+        <div onClick={() => setIsMenuOpen(false)} style={{ alignSelf: 'flex-end', cursor: 'pointer', color: '#fff', marginBottom: '20px' }}>
+          <XMarkIcon width={30} />
+        </div>
+        
+        <ul style={{ padding: 0, margin: 0 }}>
+          {renderLinks(true)}
         </ul>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {(!isLoggedIn || role !== "admin") && (
-            <Link to="/cart" style={styles.iconStyle}>
-              <ShoppingBagIcon width={22} strokeWidth={2} />
-            </Link>
-          )}
-
-          {isLoggedIn ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              {role !== "admin" && (
-                <Link to="/profile" style={styles.iconStyle}>
-                  <UserIcon width={22} strokeWidth={2} />
-                </Link>
-              )}
-              <button onClick={handleLogout} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ffffff' }}> {/* White logout icon */}
-                <ArrowRightOnRectangleIcon width={22} strokeWidth={2} />
-              </button>
-            </div>
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {!isLoggedIn ? (
+            <>
+              {/* Login now styled as a button on mobile */}
+              <Link 
+                to="/login" 
+                style={styles.sidebarAuthBtn(location.pathname === '/login')} 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                LOGIN
+              </Link>
+              <Link 
+                to="/register" 
+                style={styles.sidebarAuthBtn(location.pathname === '/register')} 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                REGISTER
+              </Link>
+            </>
           ) : (
-            <div style={styles.authGroup}>
-              <Link to="/login" style={{ fontSize: '10px', fontWeight: '800', textDecoration: 'none', color: '#ffffff' }}>LOGIN</Link> {/* White text */}
-              <Link to="/register" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '10px 22px', borderRadius: '50px', fontSize: '10px', fontWeight: '900', textDecoration: 'none' }}>REGISTER</Link> {/* White button with black text */}
-            </div>
+            <>
+              <Link to="/profile" style={styles.sidebarLink('/profile')} onClick={() => setIsMenuOpen(false)}>My Profile</Link>
+              <button onClick={handleLogout} style={{ ...styles.sidebarAuthBtn(false), backgroundColor: 'transparent', color: '#ff4d4d', border: '1px solid #ff4d4d' }}>LOGOUT</button>
+            </>
           )}
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 

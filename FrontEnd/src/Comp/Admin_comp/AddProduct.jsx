@@ -15,7 +15,7 @@ const AddProduct = () => {
         price: "",
         stock: "",
         category: "",
-        imageUrl: "" ,
+        // imageUrl: "" ,
     });
 
     const handleChange = (e) => {
@@ -30,7 +30,7 @@ const AddProduct = () => {
         // Only include the images array if imageUrl actually has text
         const payload = {
             ...formData,
-            images: formData.imageUrl ? [{ url: formData.imageUrl }] : []
+            // images: formData.imageUrl ? [{ url: formData.imageUrl }] : []
         };
 
         const res = await axios.post("http://localhost:5000/api/admin/New/products", payload, {

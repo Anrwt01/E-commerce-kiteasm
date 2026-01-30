@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { CubeIcon, CalendarIcon, HashtagIcon } from "@heroicons/react/24/outline";
+import { CubeIcon, CalendarIcon, HashtagIcon, CurrencyRupeeIcon } from "@heroicons/react/24/outline";
 
 const MyOrders = () => {
     const navigate = useNavigate();
@@ -34,17 +34,17 @@ const MyOrders = () => {
             backgroundColor: '#000000',
             minHeight: '100vh',
             color: 'white',
-            paddingTop: '140px',
+            paddingTop: '100px',
             paddingBottom: '100px',
         },
-        container: { maxWidth: '1000px', margin: '0 auto', padding: '0 24px' },
+        container: { maxWidth: '1000px', margin: '0 auto', padding: '0 20px' },
         headerSection: { marginBottom: '40px' },
         tableContainer: {
-            background: 'rgba(0, 0, 0, 0.4)',
+            background: 'rgba(255, 255, 255, 0.02)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(51, 40, 40, 0.05)',
-            borderRadius: '20px',
-            overflow: 'hidden', // Keeps corners rounded
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            borderRadius: '24px',
+            overflow: 'hidden',
         },
         table: {
             width: '100%',
@@ -57,7 +57,7 @@ const MyOrders = () => {
             fontWeight: '800',
             textTransform: 'uppercase',
             letterSpacing: '1px',
-            color: '#000000',
+            color: '#94a3b8',
             borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
         },
         td: {
@@ -67,9 +67,9 @@ const MyOrders = () => {
             verticalAlign: 'top',
         },
         statusBadge: {
-            backgroundColor: 'rgba(65, 178, 230, 0.1)',
+            backgroundColor: 'rgba(14, 165, 233, 0.1)',
             color: '#0ea5e9',
-            padding: '4px 12px',
+            padding: '6px 14px',
             borderRadius: '50px',
             fontSize: '10px',
             fontWeight: '900',
@@ -81,7 +81,7 @@ const MyOrders = () => {
             display: 'block',
             marginBottom: '4px',
             fontWeight: '700',
-            color: '#87b4e0'
+            color: '#f1f5f9'
         }
     };
 
@@ -93,9 +93,38 @@ const MyOrders = () => {
 
     return (
         <div style={styles.wrapper}>
+            <style>{`
+                @media (max-width: 768px) {
+                    .order-table thead { display: none; }
+                    .order-table, .order-table tbody, .order-table tr, .order-table td { 
+                        display: block; 
+                        width: 100%; 
+                    }
+                    .order-table tr {
+                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                        padding: 20px 0;
+                    }
+                    .order-table td {
+                        padding: 10px 24px;
+                        border: none;
+                    }
+                    .mobile-label {
+                        display: block;
+                        font-size: 10px;
+                        font-weight: 800;
+                        color: #64748b;
+                        text-transform: uppercase;
+                        margin-bottom: 4px;
+                    }
+                }
+                @media (min-width: 769px) {
+                    .mobile-label { display: none; }
+                }
+            `}</style>
+
             <div style={styles.container}>
                 <div style={styles.headerSection}>
-                    <h1 style={{ fontSize: '38px', fontWeight: 900, margin: '0 0 8px 0' }}>Order History</h1>
+                    <h1 style={{ fontSize: 'clamp(28px, 5vw, 38px)', fontWeight: 900, margin: '0 0 8px 0' }}>Order History</h1>
                     <p style={{ color: '#94a3b8', fontSize: '15px' }}>Detailed breakdown of your deployments.</p>
                 </div>
 
@@ -107,7 +136,7 @@ const MyOrders = () => {
                     </div>
                 ) : (
                     <div style={styles.tableContainer}>
-                        <table style={styles.table}>
+                        <table className="order-table" style={styles.table}>
                             <thead>
                                 <tr>
                                     <th style={styles.th}>Date & ID</th>
@@ -120,8 +149,9 @@ const MyOrders = () => {
                                 {orders.map((order) => (
                                     <tr key={order._id}>
                                         <td style={styles.td}>
+                                            <span className="mobile-label">Deployment Info</span>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f1f5f9', fontWeight: 600, marginBottom: '4px' }}>
-                                                <CalendarIcon width={14} color="#64748b" />
+                                                <CalendarIcon width={14} color="#0ea5e9" />
                                                 {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                             </div>
                                             <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -129,6 +159,7 @@ const MyOrders = () => {
                                             </div>
                                         </td>
                                         <td style={styles.td}>
+                                            <span className="mobile-label">Inventory</span>
                                             {order.items?.map((item, index) => (
                                                 <div key={index} style={{ marginBottom: index === order.items.length - 1 ? 0 : '12px' }}>
                                                     <span style={styles.productTag}>
@@ -141,11 +172,13 @@ const MyOrders = () => {
                                             ))}
                                         </td>
                                         <td style={styles.td}>
-                                            <span style={{ fontWeight: 900, color: '#0ea5e9', fontSize: '16px' }}>
+                                            <span className="mobile-label">Payment</span>
+                                            <span style={{ fontWeight: 900, color: '#fff', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                 ₹{order.totalAmount}
                                             </span>
                                         </td>
                                         <td style={styles.td}>
+                                            <span className="mobile-label">Current Status</span>
                                             <span style={styles.statusBadge}>
                                                 {order.orderStatus || 'Active'}
                                             </span>

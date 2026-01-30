@@ -76,7 +76,6 @@ export const verifyPayment = async (req, res) => {
     }
     console.log("✅ STEP 1 PASSED: Signature Verified");
 
-    // STEP 2: FIND ORDER
     const order = await OrderModel.findById(orderId);
     if (!order) {
       console.log("❌ STEP 2 FAILED: Order ID not found in DB:", orderId);

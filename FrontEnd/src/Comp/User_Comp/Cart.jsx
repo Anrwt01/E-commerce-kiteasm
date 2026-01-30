@@ -4,6 +4,141 @@ import { productImages } from "../../utils/productImages";
 import axios from "axios";
 import { Trash2, ChevronLeft, ShoppingBag, ArrowRight, Loader2 } from "lucide-react";
 
+// Define styles object with responsive design
+const styles = {
+  container: {
+    backgroundColor: "#ffffff",
+    minHeight: "100vh",
+    color: "#000000",
+  },
+  main: {
+    maxWidth: "1000px",
+    margin: "0 auto",
+    padding: "140px 24px 80px",
+  },
+  header: {
+    marginBottom: "40px",
+  },
+  backButton: {
+    background: "none",
+    border: "none",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    cursor: "pointer",
+  },
+  title: {
+    fontSize: "32px",
+    fontWeight: "800",
+    marginTop: "16px",
+  },
+  cartGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr", // Default to single column for mobile
+    gap: "32px",
+    '@media (min-width: 768px)': { // Tablet and up
+      gridTemplateColumns: "1fr 340px",
+    },
+  },
+  cartItems: {
+    // No specific styles, just container
+  },
+  cartItem: {
+    background: "#F9F9F9",
+    borderRadius: "20px",
+    padding: "20px",
+    display: "flex",
+    alignItems: "center",
+    gap: "20px",
+    marginBottom: "16px",
+  },
+  itemImage: {
+    width: "80px",
+    height: "80px",
+    borderRadius: "12px",
+    overflow: "hidden",
+  },
+  itemDetails: {
+    flex: 1,
+  },
+  itemName: {
+    margin: 0,
+    fontSize: "16px",
+  },
+  itemPrice: {
+    fontWeight: "800",
+  },
+  itemQty: {
+    fontSize: "12px",
+    color: "#666666",
+  },
+  removeButton: {
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+  },
+  orderSummary: {
+    background: "#F9F9F9",
+    borderRadius: "24px",
+    padding: "30px",
+    height: "fit-content",
+  },
+  summaryTitle: {
+    fontWeight: "800",
+  },
+  summaryDetails: {
+    marginTop: "24px",
+    borderBottom: "1px solid #EEEEEE",
+    paddingBottom: "16px",
+  },
+  summaryRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "12px",
+  },
+  totalRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "20px",
+  },
+  totalAmount: {
+    fontWeight: "800",
+    fontSize: "20px",
+  },
+  checkoutButton: {
+    width: "100%",
+    padding: "18px",
+    background: "#000000",
+    color: "#ffffff",
+    borderRadius: "12px",
+    fontWeight: "700",
+    marginTop: "24px",
+    cursor: "pointer",
+  },
+  emptyCart: {
+    textAlign: "center",
+    paddingTop: "80px",
+  },
+  emptyIcon: {
+    color: "#CCCCCC",
+  },
+  emptyTitle: {
+    fontSize: "24px",
+    margin: "16px 0",
+  },
+  browseLink: {
+    color: "#000000",
+    fontWeight: "700",
+    textDecoration: "none",
+  },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+  },
+};
+
 const Cart = () => {
     const navigate = useNavigate();
     const [cart, setCart] = useState([]);
@@ -11,6 +146,66 @@ const Cart = () => {
     const [subtotal, setSubtotal] = useState(0);
     const [logistics, setLogistics] = useState(0);
     const [deletingId, setDeletingId] = useState(null);
+
+    const normalize = (s = "") => s.toLowerCase();
+
+    // FIXED: This function now safely handles the whole array
+    const getDeliveryCharge = (items = []) => {
+        // Safety check to ensure items is an array
+        if (!Array.isArray(items) || items.length === 0) return 0;
+
+        let kiteQty = 0;
+        let hasBag3 = false;
+        let hasBag6 = false;
+        let hasCover = false;
+        let hasOswal = false;
+        let hasStand = false;
+        let hasManjha = false;
+
+        const types = items.map(i =>
+            normalize(i.productId?.category || i.productId?.name || "")
+        );
+
+        const only = (key) => types.length > 0 && types.every(t => t.includes(key));
+        const has = (key) => types.some(t => t.includes(key));
+
+        items.forEach(item => {
+            const name = normalize(item.productId?.name || "");
+            const category = normalize(item.productId?.category || "");
+
+            if (category === "kite") kiteQty += item.quantity;
+            if (name.includes("3inch")) hasBag3 = true;
+            if (name.includes("6inch")) hasBag6 = true;
+            if (name.includes("Cover")) hasCover = true;
+            if (name.includes("Oswal")) hasOswal = true;
+            if (name.includes("Stand")) hasStand = true;
+            if (name.includes("manjha")) hasManjha = true;
+        });
+
+        // 1️⃣ Per-unit Manjha rule (ONLY manjha in cart)
+        if (only("manjha")) {
+            return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
+        }
+
+        // 2️⃣ Combination flat-rate rules
+        if (hasManjha && hasCover && hasOswal) return 200;
+        if (hasStand && hasCover) return 200;
+        if (hasOswal && hasCover) return 200;
+
+        // 3️⃣ Bag + Kite bulk rules
+        if (kiteQty > 0) {
+            if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
+            if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
+        }
+
+        // 4️⃣ Single-product flat cart rules
+        if (only("tape")) return 49;
+        if (only("cover")) return 99;
+        if (only("oswal")) return 149;
+        if (only("kite")) return 450;
+
+        return 250;
+    };
 
     const fetchCart = async () => {
         try {
@@ -21,6 +216,7 @@ const Cart = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
+            console.log(res)
             const items = res.data.cart?.items || res.data.items || [];
             setCart(items);
             calculateTotals(items);
@@ -31,16 +227,16 @@ const Cart = () => {
         }
     };
 
-    // Updated Calculation: ₹100 per product quantity
     const calculateTotals = (items) => {
+        if (!Array.isArray(items)) return;
+
         const itemTotal = items.reduce((acc, item) => {
             const price = item.productId?.price || 0;
             return acc + (price * item.quantity);
         }, 0);
 
-        const shipTotal = items.reduce((acc, item) => {
-            return acc + (item.quantity * 100); // ₹100 per item
-        }, 0);
+        // FIXED: Call the function ONCE for the whole cart
+        const shipTotal = getDeliveryCharge(items);
 
         setSubtotal(itemTotal);
         setLogistics(shipTotal);
@@ -69,147 +265,43 @@ const Cart = () => {
         }
     };
 
-    const styles = {
-        container: { 
-            backgroundColor: "#ffffff", // White background
-            minHeight: "100vh", 
-            fontFamily: "sans-serif",
-            color: "#000000" // Black text
-        },
-        content: { maxWidth: "1000px", margin: "0 auto", padding: "140px 24px 80px" },
-        header: { marginBottom: "40px" },
-        backBtn: { 
-            background: "none", 
-            border: "none", 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "8px", 
-            color: "#666666", // Dark gray
-            fontWeight: "700", 
-            cursor: "pointer", 
-            fontSize: "14px", 
-            padding: 0,
-            transition: "color 0.3s"
-        },
-        backBtnHover: { color: "#000000" }, // Black on hover
-        title: { 
-            fontSize: "32px", 
-            fontWeight: "900", 
-            color: "#000000", // Black
-            marginTop: "16px", 
-            letterSpacing: "-1px" 
-        },
-        grid: { display: "grid", gridTemplateColumns: "1fr 340px", gap: "32px" },
-        itemCard: { 
-            background: "rgba(0, 0, 0, 0.03)", // Subtle black overlay
-            borderRadius: "24px", 
-            padding: "20px", 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "20px", 
-            border: "1px solid rgba(0, 0, 0, 0.1)", // Black border
-            marginBottom: "16px",
-            transition: "all 0.3s ease"
-        },
-        itemCardHover: { 
-            transform: "translateY(-2px)", 
-            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)" // Black shadow
-        },
-        imgBox: { 
-            width: "80px", 
-            height: "80px", 
-            borderRadius: "16px", 
-            backgroundColor: "rgba(0, 0, 0, 0.05)", // Subtle overlay
-            overflow: "hidden" 
-        },
-        summary: { 
-            background: "rgba(0, 0, 0, 0.03)", // Subtle overlay
-            borderRadius: "32px", 
-            padding: "30px", 
-            border: "1px solid rgba(0, 0, 0, 0.1)", // Black border
-            height: "fit-content", 
-            position: "sticky", 
-            top: "120px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" // Subtle shadow
-        },
-        checkoutBtn: { 
-            width: "100%", 
-            padding: "18px", 
-            background: "#000000", // Black button
-            color: "#ffffff", // White text
-            border: "none", 
-            borderRadius: "16px", 
-            fontWeight: "800", 
-            cursor: "pointer", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center", 
-            gap: "10px", 
-            marginTop: "24px",
-            transition: "all 0.3s ease",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)" // Black shadow
-        },
-        checkoutBtnHover: { 
-            transform: "translateY(-2px)", 
-            boxShadow: "0 8px 20px rgba(0, 0, 0, 0.3)" // Enhanced shadow
-        },
-        emptyBox: { textAlign: "center", paddingTop: "60px" }
-    };
-
     if (loading) return (
-        <div style={{ ...styles.container, display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Loader2 className="animate-spin" color="#000000" size={40} /> {/* Black loader */}
+        <div style={styles.loading}>
+            <Loader2 className="animate-spin" size={40} />
         </div>
     );
 
     return (
         <div style={styles.container}>
-            <main style={styles.content}>
+            <main style={styles.main}>
                 <header style={styles.header}>
-                    <button 
-                        onClick={() => navigate("/products")} 
-                        style={styles.backBtn}
-                        onMouseOver={(e) => e.target.style.color = styles.backBtnHover.color}
-                        onMouseOut={(e) => e.target.style.color = styles.backBtn.color}
-                    >
+                    <button onClick={() => navigate("/products")} style={styles.backButton}>
                         <ChevronLeft size={18} /> Back to Catalog
                     </button>
                     <h1 style={styles.title}>Your Cart.</h1>
                 </header>
 
                 {cart.length > 0 ? (
-                    <div style={styles.grid}>
-                        <div>
+                    <div style={styles.cartGrid}>
+                        <div style={styles.cartItems}>
                             {cart.map((item) => (
-                                <div 
-                                    key={item.productId?._id} 
-                                    style={styles.itemCard}
-                                    onMouseOver={(e) => Object.assign(e.target.style, styles.itemCardHover)}
-                                    onMouseOut={(e) => Object.assign(e.target.style, styles.itemCard)}
-                                >
-                                    <div style={styles.imgBox}>
+                                <div key={item.productId?._id} style={styles.cartItem}>
+                                    <div style={styles.itemImage}>
                                         <img 
                                             src={productImages[item.productId?.images?.[0]?.url] || item.productId?.images?.[0]?.url}
                                             alt="product" 
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                                         />
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "800", color: "#000000" }}>{item.productId?.name}</h3>
-                                        <p style={{ color: "#000000", fontWeight: "900", margin: "4px 0" }}>₹{item.productId?.price}</p> {/* Black price */}
-                                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                                            <span style={{ fontSize: "12px", color: "#666666" }}>QTY: {item.quantity}</span> {/* Dark gray */}
-                                            <span style={{ fontSize: "12px", color: "#666666", background: "rgba(0, 0, 0, 0.05)", padding: "2px 8px", borderRadius: "4px" }}>
-                                                Logistics: ₹{item.quantity * 100}
-                                            </span>
-                                        </div>
+                                    <div style={styles.itemDetails}>
+                                        <h3 style={styles.itemName}>{item.productId?.name}</h3>
+                                        <p style={styles.itemPrice}>₹{item.productId?.price}</p>
+                                        <span style={styles.itemQty}>QTY: {item.quantity}</span>
                                     </div>
                                     <button 
                                         onClick={() => removeItem(item.productId?._id)} 
                                         disabled={deletingId === item.productId?._id}
-                                        style={{ background: "none", border: "none", color: "#000000", cursor: "pointer", transition: "color 0.3s" }} // Black icon
-                                        onMouseOver={(e) => e.target.style.color = "#666666"} // Dark gray on hover
-                                        onMouseOut={(e) => e.target.style.color = "#000000"}
+                                        style={styles.removeButton}
                                     >
                                         {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
                                     </button>
@@ -217,39 +309,32 @@ const Cart = () => {
                             ))}
                         </div>
 
-                        <aside style={styles.summary}>
-                            <h3 style={{ margin: 0, fontSize: "18px", fontWeight: "900", color: "#000000" }}>Order Summary</h3>
-                            <div style={{ marginTop: "24px", borderBottom: "1px solid rgba(0, 0, 0, 0.1)", paddingBottom: "16px" }}>
-                                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-                                    <span style={{ color: "#666666" }}>Subtotal</span> {/* Dark gray */}
-                                    <span style={{ fontWeight: "700", color: "#000000" }}>₹{subtotal}</span>
+                        <aside style={styles.orderSummary}>
+                            <h3 style={styles.summaryTitle}>Order Summary</h3>
+                            <div style={styles.summaryDetails}>
+                                <div style={styles.summaryRow}>
+                                    <span>Subtotal</span>
+                                    <span style={{ fontWeight: "600" }}>₹{subtotal}</span>
                                 </div>
-                                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                    <span style={{ color: "#666666" }}>Logistics (₹100/item)</span> {/* Dark gray */}
-                                    <span style={{ color: "#000000", fontWeight: "700" }}>₹{logistics}</span>
+                                <div style={styles.summaryRow}>
+                                    <span>Logistics</span>
+                                    <span style={{ fontWeight: "600" }}>₹{logistics}</span>
                                 </div>
                             </div>
-                            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-                                <span style={{ fontWeight: "900", color: "#000000" }}>Total</span>
-                                <span style={{ fontWeight: "900", fontSize: "20px", color: "#000000" }}>₹{subtotal + logistics}</span> {/* Black total */}
+                            <div style={styles.totalRow}>
+                                <span style={{ fontWeight: "800" }}>Total</span>
+                                <span style={styles.totalAmount}>₹{subtotal + logistics}</span>
                             </div>
-                            <button 
-                                onClick={() => navigate("/checkout")} 
-                                style={styles.checkoutBtn}
-                                onMouseOver={(e) => Object.assign(e.target.style, styles.checkoutBtnHover)}
-                                onMouseOut={(e) => Object.assign(e.target.style, styles.checkoutBtn)}
-                            >
-                                Proceed to Checkout <ArrowRight size={18} />
+                            <button onClick={() => navigate("/checkout")} style={styles.checkoutButton}>
+                                Proceed to Checkout
                             </button>
                         </aside>
                     </div>
                 ) : (
-                    <div style={styles.emptyBox}>
-                        <ShoppingBag size={64} color="#666666" style={{ marginBottom: "20px" }} /> {/* Dark gray icon */}
-                        <h2 style={{ fontWeight: "900", color: "#000000" }}>Hangar is Empty</h2>
-                        <Link to="/products" style={{ display: "inline-block", marginTop: "24px", color: "#000000", fontWeight: "800", textDecoration: "none" }}>
-                            Browse the Fleet
-                        </Link>
+                    <div style={styles.emptyCart}>
+                        <ShoppingBag size={48} style={styles.emptyIcon} />
+                        <h2 style={styles.emptyTitle}>Hangar is Empty</h2>
+                        <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
                     </div>
                 )}
             </main>

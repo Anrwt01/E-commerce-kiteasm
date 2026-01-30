@@ -30,8 +30,7 @@ export const Checkout = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing required order data." });
         }
 
-        // 2. Reduce Stock and Verify Availability
-        // We use a loop to update each product's stock
+        
         for (const item of items) {
             const product = await ProductModel.findById(item.productId?._id || item.productId);
             
