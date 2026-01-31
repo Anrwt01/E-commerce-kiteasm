@@ -143,17 +143,18 @@
 //     </div>
 //   );
 // };
+// 
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { productImages } from "../../utils/productImages";
 import axios from "axios";
-import { ChevronLeft, ShoppingCart, Minus, Plus, Loader2, Star, Zap } from "lucide-react";
+import { ChevronLeft, ShoppingCart, Minus, Plus, Loader2, Star, Zap, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
+  const [activeImage, setActiveImage] = useState("");
   const [suggestedProduct, setSuggestedProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -166,24 +167,21 @@ const ProductDetails = () => {
         const res = await axios.get(`http://localhost:5000/api/user/products/${id}`);
         const data = res.data.product || res.data;
         setProduct(data);
+        
+        // Default to main image
+        setActiveImage(`../uploads/${data._id}/main.jpg`);
 
-        // Logic: Only seek suggested bundle if product is a 'manjha'
         if (data.category?.toLowerCase() === "manjha") {
           const allRes = await axios.get(`http://localhost:5000/api/user/products`);
           const allProducts = allRes.data.products || [];
-          
           const saddi = allProducts.find(p => 
-            p.category?.toLowerCase() === "saddi" || 
-            p.name?.toLowerCase().includes("saddi") ||
-            p.name?.toLowerCase().includes("oswal")
+            p._id !== data._id && 
+            (p.category?.toLowerCase() === "saddi" || p.name?.toLowerCase().includes("saddi"))
           );
-          
           if (saddi) setSuggestedProduct(saddi);
-        } else {
-          setSuggestedProduct(null);
         }
       } catch (error) {
-        console.error("Initialization Error:", error);
+        console.error("Fetch Error:", error);
       } finally {
         setLoading(false);
       }
@@ -191,201 +189,193 @@ const ProductDetails = () => {
     fetchData();
   }, [id]);
 
-  const incrementQty = () => setQuantity(prev => prev + 1);
-  const decrementQty = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
-
-  const handleBundleAddToCart = async () => {
+  const handleAddToCart = async () => {
     setIsAdding(true);
     try {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
       const headers = { Authorization: `Bearer ${token}` };
 
-      // Add Main Product with chosen quantity
-      await axios.post(`http://localhost:5000/api/user/cart/add`, 
-        { productId: product._id, quantity }, { headers });
+      await axios.post(`http://localhost:5000/api/user/cart/add`, { 
+        productId: product._id, 
+        quantity 
+      }, { headers });
 
-      // If a suggested bundle product exists, add 1 of it
-      if (suggestedProduct) {
-        await axios.post(`http://localhost:5000/api/user/cart/add`, 
-          { productId: suggestedProduct._id, quantity: 1 }, { headers });
-      }
       navigate("/cart");
     } catch (err) {
-      console.error("Cart Error:", err);
+      alert("Failed to add to cart.");
     } finally {
       setIsAdding(false);
     }
   };
 
   if (loading) return (
-    <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      <Loader2 className="animate-spin" size={40} color="#2874f0" />
+    <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "#fff" }}>
+      <Loader2 className="animate-spin" size={40} color="#000" />
     </div>
   );
 
-  if (!product) return <div style={{ textAlign: "center", padding: "50px" }}>Product Not Found</div>;
+  if (!product) return <div style={{ textAlign: "center", padding: "100px" }}>Product Not Found</div>;
+
+  // We define the 3 secondary images based on your naming convention
+  const secondaryImages = [1, 2, 3]; 
 
   return (
-    <div style={{ 
-      backgroundColor: "#f7f9fa", 
-      minHeight: "100vh", 
-      display: "flex", 
-      flexDirection: "column" 
-    }}>
+    <div style={{ backgroundColor: "#ffffff", minHeight: "100vh", color: "#000", fontFamily: "Inter, sans-serif" }}>
       
-      {/* Content Wrapper */}
-      <div style={{ flex: "1 0 auto", padding: "120px 20px 40px" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          
-          {/* 1. BACK BUTTON */}
-          <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: "5px", color: "#2874f0", fontWeight: "600", cursor: "pointer", marginBottom: "20px" }}>
-            <ChevronLeft size={18} /> Back to Shop
-          </button>
+      <style>{`
+        @keyframes imageFadeIn {
+          from { opacity: 0.5; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .main-view-anim {
+          animation: imageFadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
 
-          {/* 2. MAIN PRODUCT SECTION */}
-          <div style={{ 
-            display: "grid", 
-            gridTemplateColumns: window.innerWidth > 992 ? "1fr 1.2fr" : "1fr", 
-            gap: "50px", 
-            background: "#fff",
-            padding: "40px",
-            borderRadius: "16px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-            marginBottom: "40px"
-          }}>
-            {/* Image Box */}
-            <div style={{ textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", background: "#fcfcfc", borderRadius: "12px", padding: "20px" }}>
-              <img 
-                src={productImages[product.images?.[0]?.url]} 
-                alt={product.name} 
-                style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }} 
-              />
+      <div style={{ maxWidth: "1250px", margin: "0 auto", padding: "120px 20px 60px" }}>
+        
+        <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: "8px", color: "#666", fontWeight: "500", cursor: "pointer", marginBottom: "30px" }}>
+          <ChevronLeft size={20} /> Back to Collection
+        </button>
+
+        <div style={{ display: "grid", gridTemplateColumns: window.innerWidth > 992 ? "1.2fr 1fr" : "1fr", gap: "60px" }}>
+          
+          {/* LEFT: IMAGE GALLERY */}
+          <div style={{ display: "flex", gap: "20px", flexDirection: window.innerWidth > 600 ? "row" : "column-reverse" }}>
+            
+            {/* Thumbnails */}
+            <div style={{ display: "flex", flexDirection: window.innerWidth > 600 ? "column" : "row", gap: "12px" }}>
+              
+              {/* Main Image Thumbnail */}
+              <div 
+                onMouseEnter={() => setActiveImage(`../uploads/${product._id}/main.jpg`)}
+                style={{ 
+                  width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
+                  border: activeImage === `../uploads/${product._id}/main.jpg` ? "2px solid #000" : "1px solid #eee",
+                  transition: "0.3s",
+                  transform: activeImage === `../uploads/${product._id}/main.jpg` ? "scale(1.08)" : "scale(1)"
+                }}
+              >
+                <img src={`../uploads/${product._id}/main.jpg`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="main-thumb" />
+              </div>
+
+              {/* 3 Secondary Image Thumbnails */}
+              {secondaryImages.map((num) => {
+                const imgPath = `../uploads/${product._id}/detail-${num}.jpg`;
+                return (
+                  <div 
+                    key={num}
+                    onMouseEnter={() => setActiveImage(imgPath)}
+                    style={{ 
+                      width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
+                      border: activeImage === imgPath ? "2px solid #000" : "1px solid #eee",
+                      transition: "0.3s",
+                      transform: activeImage === imgPath ? "scale(1.08)" : "scale(1)"
+                    }}
+                  >
+                    <img src={imgPath} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt={`detail-${num}`} />
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Product Details info */}
-            <div>
-              <h1 style={{ fontSize: "32px", fontWeight: "700", color: "#1a1a1b", marginBottom: "10px", letterSpacing: "-0.5px" }}>{product.name}</h1>
-              
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-                <div style={{ background: "#388e3c", color: "white", padding: "4px 10px", borderRadius: "6px", fontSize: "14px", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}>
-                  4.4 <Star size={14} fill="white" />
-                </div>
-                <span style={{ color: "#878787", fontWeight: "500" }}>6,119 Ratings</span>
-              </div>
-              
-              <div style={{ borderBottom: "1px solid #f0f0f0", paddingBottom: "20px", marginBottom: "20px" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>
-                  <span style={{ fontSize: "36px", fontWeight: "800", color: "#000" }}>₹{product.price}</span>
-                  <span style={{ color: "#388e3c", fontSize: "18px", fontWeight: "600" }}>Special Price</span>
-                </div>
-              </div>
-
-              <p style={{ color: "#4a4a4a", lineHeight: "1.7", fontSize: "16px", marginBottom: "30px" }}>{product.description}</p>
-              
-              {/* QUANTITY SELECTOR */}
-              <div style={{ marginBottom: "25px", display: "flex", alignItems: "center", gap: "20px" }}>
-                <span style={{ fontWeight: "600", color: "#878787", fontSize: "14px" }}>QUANTITY</span>
-                <div style={{ display: "flex", alignItems: "center", border: "1px solid #e0e0e0", borderRadius: "8px", overflow: "hidden" }}>
-                  <button 
-                    onClick={decrementQty}
-                    style={{ padding: "10px", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}
-                  >
-                    <Minus size={16} />
-                  </button>
-                  <div style={{ width: "40px", textAlign: "center", fontWeight: "700", fontSize: "16px" }}>
-                    {quantity}
-                  </div>
-                  <button 
-                    onClick={incrementQty}
-                    style={{ padding: "10px", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
-              </div>
-
-              {/* ACTION BUTTONS */}
-              <div style={{ display: "flex", gap: "15px" }}>
-                <button 
-                  onClick={handleBundleAddToCart} 
-                  disabled={isAdding}
-                  style={{ flex: 1, background: "#ff9f00", color: "white", padding: "20px", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "16px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}
-                >
-                  {isAdding ? <Loader2 className="animate-spin" /> : <><ShoppingCart size={20} /> ADD TO CART</>}
-                </button>
-                {/* <button style={{ flex: 1, background: "#fb641b", color: "white", padding: "20px", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "16px", cursor: "pointer" }}>
-                  BUY NOW
-                </button> */}
-              </div>
+            {/* Main Preview */}
+            <div style={{ flex: 1, background: "#f9f9f9", borderRadius: "16px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", minHeight: "550px" }}>
+              <img 
+                key={activeImage}
+                src={activeImage} 
+                alt={product.name} 
+                className="main-view-anim"
+                style={{ maxWidth: "100%", maxHeight: "500px", objectFit: "contain" }} 
+              />
             </div>
           </div>
 
-          {/* 3. BUNDLE SECTION */}
-          {suggestedProduct && (
-            <div style={{ 
-              background: "#fff", 
-              borderRadius: "16px", 
-              padding: "30px", 
-              boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-              border: "2px solid #e3f2fd",
-              position: "relative",
-              overflow: "hidden"
-            }}>
-              <div style={{ position: "absolute", top: 0, left: 0, height: "4px", width: "100%", background: "linear-gradient(90deg, #2874f0, #00d2ff)" }} />
-              
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-                <Zap size={20} fill="#ff9f00" color="#ff9f00" />
-                <h2 style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1b", margin: 0 }}>Frequently Bought Together</h2>
+          {/* RIGHT: PRODUCT INFO */}
+          <div>
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "#999", letterSpacing: "1px" }}>{product.category}</span>
+              <h1 style={{ fontSize: "36px", fontWeight: "800", margin: "8px 0", letterSpacing: "-1px" }}>{product.name}</h1>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "15px", margin: "15px 0" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#ff9f00" }}>
+                {[...Array(5)].map((_, i) => <Star key={i} size={18} fill={i < 4 ? "#ff9f00" : "none"} stroke={i < 4 ? "#ff9f00" : "#ccc"} />)}
               </div>
+              <span style={{ color: "#888", fontSize: "14px" }}>(120+ Reviews)</span>
+            </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "40px", flexWrap: "wrap" }}>
-                
-                <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-                  <div style={{ width: "120px", textAlign: "center" }}>
-                    <img src={productImages[product.images?.[0]?.url]} style={{ width: "100%", height: "100px", objectFit: "contain" }} alt="main-prod" />
-                    <p style={{ fontSize: "12px", color: "#878787", marginTop: "8px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{product.name}</p>
-                  </div>
-                  <Plus size={24} color="#bdbdbd" />
-                  <div style={{ width: "120px", textAlign: "center" }}>
-                    <img src={productImages[suggestedProduct.images?.[0]?.url]} style={{ width: "100%", height: "100px", objectFit: "contain" }} alt="bundle-prod" />
-                    <p style={{ fontSize: "12px", color: "#878787", marginTop: "8px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{suggestedProduct.name}</p>
-                  </div>
-                </div>
-
-                <div style={{ width: "1px", height: "80px", background: "#f0f0f0", display: window.innerWidth > 768 ? "block" : "none" }} />
-
-                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "30px" }}>
-                  <div>
-                    <span style={{ color: "#878787", fontSize: "14px", display: "block" }}>Bundle Total Price</span>
-                    <span style={{ fontSize: "24px", fontWeight: "800", color: "#000" }}>₹{product.price + suggestedProduct.price}</span>
-                  </div>
-                  <button 
-                    onClick={handleBundleAddToCart}
-                    disabled={isAdding}
-                    style={{ background: "#2874f0", color: "#fff", padding: "15px 35px", border: "none", borderRadius: "10px", fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 14px rgba(40, 116, 240, 0.3)" }}
-                  >
-                    {isAdding ? <Loader2 className="animate-spin" /> : "ADD BUNDLE TO CART"}
-                  </button>
-                </div>
+            <div style={{ margin: "30px 0" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+                <span style={{ fontSize: "42px", fontWeight: "900" }}>₹{product.price}</span>
+                <span style={{ color: product.stock > 0 ? "#388e3c" : "#d32f2f", fontWeight: "600" }}>
+                  {product.stock > 0 ? `In Stock: ${product.stock}` : "Out of Stock"}
+                </span>
               </div>
             </div>
-          )}
+
+            <p style={{ fontSize: "16px", color: "#444", lineHeight: "1.8", marginBottom: "40px", borderLeft: "3px solid #eee", paddingLeft: "20px" }}>
+              {product.description}
+            </p>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "40px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><ShieldCheck size={20} /> 100% Authentic</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><Truck size={20} /> Express Delivery</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><RotateCcw size={20} /> 7 Day Returns</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><Zap size={20} /> Competition Grade</div>
+            </div>
+
+            <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", border: "2px solid #000", borderRadius: "10px" }}>
+                <button onClick={() => setQuantity(q => Math.max(1, q-1))} style={{ padding: "12px 15px", background: "none", border: "none", cursor: "pointer" }}><Minus size={16}/></button>
+                <span style={{ width: "40px", textAlign: "center", fontWeight: "700" }}>{quantity}</span>
+                <button onClick={() => setQuantity(q => q+1)} style={{ padding: "12px 15px", background: "none", border: "none", cursor: "pointer" }}><Plus size={16}/></button>
+              </div>
+
+              <button 
+                onClick={handleAddToCart}
+                disabled={isAdding || product.stock <= 0}
+                style={{ 
+                  flex: 1, background: product.stock > 0 ? "#000" : "#ccc", color: "#fff", 
+                  padding: "15px", borderRadius: "10px", fontWeight: "700", border: "none", 
+                  cursor: product.stock > 0 ? "pointer" : "not-allowed" 
+                }}
+              >
+                {isAdding ? "ADDING..." : product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* BUNDLE SECTION */}
+        {suggestedProduct && (
+          <div style={{ marginTop: "80px", padding: "40px", borderRadius: "20px", background: "#fcfcfc", border: "1px solid #eee" }}>
+            <h3 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "30px", display: "flex", alignItems: "center", gap: "10px" }}>
+              <Zap size={20} color="#ff9f00" fill="#ff9f00" /> Complete Your Gear
+            </h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
+                <img src={`http://localhost:5000${product.mainImage}`} style={{ height: "100px", opacity: 0.6 }} alt="p1" />
+                <Plus size={24} color="#ccc" />
+                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                  <img src={`http://localhost:5000${suggestedProduct.mainImage}`} style={{ height: "100px" }} alt="p2" />
+                  <div>
+                    <p style={{ fontWeight: "700", margin: 0 }}>{suggestedProduct.name}</p>
+                    <p style={{ color: "#666", fontSize: "14px" }}>+ ₹{suggestedProduct.price}</p>
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={handleAddToCart}
+                style={{ background: "#fff", border: "2px solid #000", color: "#000", padding: "12px 30px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
+              >
+                Get Bundle (₹{product.price + suggestedProduct.price})
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-      
-      {/* 4. FOOTER */}
-      <footer style={{ 
-        flexShrink: 0, 
-        borderTop: "1px solid #e0e0e0", 
-        padding: "30px 20px", 
-        textAlign: "center", 
-        color: "#999", 
-        fontSize: "14px",
-        background: "#fff" 
-      }}>
-        © 2026 Kiteasm Inventory • High Performance Flying Gear
-      </footer>
     </div>
   );
 };

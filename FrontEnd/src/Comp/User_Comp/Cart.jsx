@@ -288,7 +288,7 @@ const Cart = () => {
                                 <div key={item.productId?._id} style={styles.cartItem}>
                                     <div style={styles.itemImage}>
                                         <img 
-                                            src={productImages[item.productId?.images?.[0]?.url] || item.productId?.images?.[0]?.url}
+                                            src={`../uploads/${item.productId._id}/main.jpg`}
                                             alt="product" 
                                             style={{ width: "100%", height: "100%", objectFit: "cover" }} 
                                         />

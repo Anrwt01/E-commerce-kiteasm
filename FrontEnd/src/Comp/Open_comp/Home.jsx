@@ -1,22 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { productImages } from "../../utils/productImages";
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ShieldCheck } from 'lucide-react';
+// import { API_BASE_URL } from "../../utils/config";
 
 import kiteasm_logo from "../../assets/Photo/kiteasm_logo.jpg";
 import kite_Pattern from "../../assets/Photo/kiteasm_pattern.jpg";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Derive the server root (e.g., http://localhost:5000) from the API URL
+ 
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/user/products');
-        setProducts(res.data.products?.slice(0, 8) || []);
+        setLoading(true);
+        const res = await axios.get(`http://localhost:5000/api/user/products`);
+        const allProducts = res.data.products || [];
+        console.log(res)
+        // Filter to show ONLY exclusive products
+        const exclusiveOnly = allProducts.filter(product => product.isExclusive === true);
+        
+        setProducts(exclusiveOnly.slice(0, 8));
       } catch (err) {
         console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProducts();
@@ -26,10 +38,10 @@ const Home = () => {
     <div className="home-wrapper">
       <style>{`
         .home-wrapper {
-          background-color: #000000; /* Pure black for a professional, monochromatic theme */
+          background-color: #000000;
           min-height: 100vh;
-          font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          color: #ffffff; /* White text as default */
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          color: #ffffff;
         }
 
         .nav-buffer { height: 80px; }
@@ -50,9 +62,9 @@ const Home = () => {
           top: 0; left: 0; right: 0; bottom: 0;
           background-image: url(${kite_Pattern});
           background-size: 300px;
-          opacity: 0.05; /* Very subtle for black/white theme */
+          opacity: 0.05;
           z-index: 0;
-          animation: backgroundScroll 150s linear infinite; /* Slower for professionalism */
+          animation: backgroundScroll 150s linear infinite;
           mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
           -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
         }
@@ -67,7 +79,7 @@ const Home = () => {
           z-index: 5;
           max-width: 700px;
           text-align: center;
-          animation: fadeIn 1.2s ease-out; /* Subtle fade-in, no upward motion for professionalism */
+          animation: fadeIn 1.2s ease-out;
         }
 
         @keyframes fadeIn {
@@ -75,69 +87,56 @@ const Home = () => {
           to { opacity: 1; }
         }
 
-        /* LOGO: Clean and minimal */
         .main-hero-logo {
           width: 100px;
           height: 100px;
           border-radius: 20px;
-          border: 1px solid #ffffff; /* White border for contrast */
+          border: 1px solid #ffffff;
           margin-bottom: 30px;
           object-fit: cover;
-          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1); /* Subtle white shadow */
-          transition: box-shadow 0.3s ease;
+          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
         }
 
-        .main-hero-logo:hover {
-          box-shadow: 0 6px 18px rgba(255, 255, 255, 0.2);
-        }
-
-        /* TITLE: Clean white text */
         .hero-title {
           font-size: clamp(2.5rem, 5vw, 4rem);
           font-weight: 700;
           color: #ffffff;
           margin: 0;
           letter-spacing: -1px;
-          line-height: 1.1;
         }
 
         .hero-tagline {
-          color: #cccccc; /* Light gray for subtlety */
+          color: #cccccc;
           margin: 20px 0 40px;
           font-size: 1.2rem;
-          font-weight: 400;
-          border-left: 2px solid #ffffff; /* White accent */
+          border-left: 2px solid #ffffff;
           padding-left: 20px;
           max-width: 500px;
           margin-left: auto;
           margin-right: auto;
         }
 
-        /* BUTTON: Minimalist white on black */
         .hero-btn {
           background-color: #ffffff;
           color: #000000;
           padding: 14px 30px;
           border-radius: 8px;
           font-weight: 600;
-          font-size: 1rem;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           gap: 10px;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
         }
 
         .hero-btn:hover {
-          background-color: #cccccc; /* Light gray on hover */
+          background-color: #cccccc;
           transform: translateY(-2px);
-          box-shadow: 0 6px 18px rgba(255, 255, 255, 0.2);
         }
 
-        /* PRODUCTS SECTION */
+        /* --- PRODUCTS SECTION --- */
         .products-section {
-          background-color: #000000; /* Consistent black */
+          background-color: #000000;
           padding: 100px 5%;
         }
 
@@ -158,7 +157,7 @@ const Home = () => {
           transform: translateX(-50%);
           width: 60px;
           height: 2px;
-          background-color: #ffffff; /* White underline */
+          background-color: #ffffff;
         }
 
         .products-grid {
@@ -170,119 +169,144 @@ const Home = () => {
         }
 
         .product-card {
-          background-color: #111111; /* Dark gray for cards */
+          background-color: #111111;
           border-radius: 16px;
           padding: 16px;
-          border: 1px solid #333333; /* Subtle gray border */
+          border: 1px solid #333333;
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+          display: flex;
+          flex-direction: column;
         }
 
         .product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-          border-color: #666666; /* Lighter gray on hover */
+          transform: translateY(-8px);
+          border-color: #ffffff;
+          box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .exclusive-badge {
+          position: absolute;
+          top: 25px;
+          right: 25px;
+          background: rgba(255, 255, 255, 0.9);
+          color: #000;
+          padding: 4px 10px;
+          border-radius: 6px;
+          font-size: 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          gap: 4px;
         }
 
         .product-image {
           width: 100%;
-          height: 240px;
+          height: 260px;
           border-radius: 12px;
           object-fit: cover;
-          transition: opacity 0.3s ease;
-        }
-
-        .product-card:hover .product-image {
-          opacity: 0.9; /* Subtle dim on hover */
+          background-color: #0a0a0a;
         }
 
         .product-info {
-          padding: 16px 8px 8px;
+          padding: 20px 8px 8px;
         }
 
         .product-name {
           color: #ffffff;
-          font-size: 1.15rem;
-          font-weight: 500;
+          font-size: 1.2rem;
+          font-weight: 600;
           margin: 0 0 8px;
         }
 
         .product-price {
-          color: #cccccc; /* Light gray for price */
-          font-weight: 600;
+          color: #888888;
+          font-weight: 500;
           font-size: 1.1rem;
           margin: 0;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
-          .hero-section {
-            height: 60vh;
-            padding: 0 5%;
-          }
-          .hero-content {
-            max-width: 100%;
-          }
-          .hero-title {
-            font-size: clamp(2rem, 8vw, 3rem);
-          }
-          .hero-tagline {
-            font-size: 1rem;
-            padding-left: 15px;
-          }
-          .products-section {
-            padding: 60px 5%;
-          }
-          .section-title {
-            font-size: 1.8rem;
-          }
-          .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-          }
+          .hero-section { height: 60vh; }
+          .products-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+          .product-image { height: 200px; }
         }
       `}</style>
 
       <div className="nav-buffer"></div>
 
+      {/* HERO */}
       <section className="hero-section">
         <div className="animated-pattern-bg"></div>
-        
         <div className="hero-content">
-          <img src={kiteasm_logo} alt="Kiteasm Logo" className="main-hero-logo" />
+          <img src={kiteasm_logo} alt="Logo" className="main-hero-logo" />
           <h1 className="hero-title">Kiteasm</h1>
           <p className="hero-tagline">
-            Giving You the Finest Quality of Kites and Thread
+            Exclusively Curation of Premium Competition-Grade Gear
           </p>
-          
           <Link to="/products" className="hero-btn">
-            View All Kites <ArrowRight size={18} />
+            Explore All <ArrowRight size={18} />
           </Link>
         </div>
       </section>
 
+      {/* EXCLUSIVE RELEASES */}
       <section className="products-section">
-        <h2 className="section-title">Latest Releases</h2>
-        <div className="products-grid">
-          {products.map((product) => (
-            <Link key={product._id} to={`/products/${product._id}`} style={{ textDecoration: 'none' }}>
-              <div className="product-card">
-                <img 
-                  src={productImages[product.images?.[0]?.url]} 
-                  alt={product.name} 
-                  className="product-image"
-                />
-                <div className="product-info">
-                  <h3 className="product-name">{product.name}</h3>
-                  <p className="product-price">₹{product.price}</p>
+        <h2 className="section-title">Exclusive Releases</h2>
+        
+        {loading ? (
+          <p style={{textAlign: 'center', color: '#666'}}>Curating collection...</p>
+        ) : (
+          <div className="products-grid">
+            {products.map((product) => (
+              <Link 
+                key={product._id} 
+                to={`/products/${product._id}`} 
+                style={{ textDecoration: 'none' }}
+              >
+                <div className="product-card">
+                  {/* Badge for exclusivity */}
+                  <div className="exclusive-badge">
+                    <ShieldCheck size={12} /> Exclusive
+                  </div>
+
+                  <img 
+                    src={`../uploads/${product._id}/main.jpg`} 
+                    alt={product.name} 
+                    className="product-image"
+                    onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Kiteasm+Premium"; }}
+                  />
+
+                  <div className="product-info">
+                    <h3 className="product-name">{product.name}</h3>
+                    <p className="product-price">₹{product.price}</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {!loading && products.length === 0 && (
+          <p style={{textAlign: 'center', color: '#444', marginTop: '40px'}}>
+            Check back soon for our limited edition drops.
+          </p>
+        )}
       </section>
+
+      <footer style={{ 
+        padding: "60px 20px", 
+        textAlign: "center", 
+        color: "#444", 
+        fontSize: "12px", 
+        letterSpacing: "1px",
+        borderTop: "1px solid #111" 
+      }}>
+        © 2026 KITEASM • AUTHENTIC KITE CULTURE
+      </footer>
     </div>
   );
 };

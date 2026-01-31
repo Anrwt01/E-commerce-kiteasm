@@ -154,7 +154,7 @@ const Checkout = () => {
                   verificationPayload,
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
-                if (vRes.success) navigate("/orders");
+                if (vRes.success) navigate("/orders", { replace: true });
               } catch (verifyErr) {
                 alert("Payment succeeded but verification failed.");
               }
@@ -164,7 +164,7 @@ const Checkout = () => {
           const rzp = new window.Razorpay(options);
           rzp.open();
         } else {
-          navigate("/orders");
+          navigate("/orders", { replace: true });
         }
       }
     } catch (err) {

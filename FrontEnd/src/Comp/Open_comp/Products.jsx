@@ -191,7 +191,7 @@ const Products = () => {
               >
                 <div style={styles.imgContainer}>
                   <img 
-                    src={getProductImage(product.mainImage)} 
+                   src={`../uploads/${product._id}/main.jpg`} 
                     alt={product.name} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                     onError={(e) => e.target.src = "https://via.placeholder.com/300"}
