@@ -81,9 +81,9 @@ const Products = () => {
   const styles = {
     pageWrapper: { 
       padding: "160px 5% 80px", 
-      backgroundColor: '#000000',
+      backgroundColor: '#fff4f4',
       minHeight: '100vh',
-      color: '#ffffff',
+      color: '#000000',
       width: '100%',
       boxSizing: 'border-box'
     },

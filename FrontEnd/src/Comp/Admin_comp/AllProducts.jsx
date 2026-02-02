@@ -110,7 +110,8 @@ const AllProducts = () => {
             return (
               <div key={p._id} style={s.card(isEditing)}>
                 <div style={s.imageWrapper}>
-                  <img src={productImages[p.images?.[0]?.url] || "https://via.placeholder.com/300"} alt={p.name} style={s.img} />
+                  <img  src={`../uploads/${p._id}/main.jpg`}
+                  alt={p.name} style={s.img} />
                   <span style={s.badge(p.stock)}>
                     {p.stock < 5 ? 'Low Stock: ' : ''}{p.stock} units
                   </span>

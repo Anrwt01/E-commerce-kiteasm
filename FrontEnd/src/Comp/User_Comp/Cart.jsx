@@ -275,7 +275,7 @@ const Cart = () => {
         <div style={styles.container}>
             <main style={styles.main}>
                 <header style={styles.header}>
-                    <button onClick={() => navigate("/products")} style={styles.backButton}>
+                    <button onClick={() => navigate("/dashboard")} style={styles.backButton}>
                         <ChevronLeft size={18} /> Back to Catalog
                     </button>
                     <h1 style={styles.title}>Your Cart.</h1>

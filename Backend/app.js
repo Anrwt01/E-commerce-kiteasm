@@ -60,7 +60,35 @@ mongoose
     console.log("⚠️ Server will continue to run to serve error pages.");
   });
 
-// 🚀 Start Server
+// // 🚀 Start Server with Clustering
+// import cluster from "cluster";
+// import os from "os";
+
+// const numCPUs = os.cpus().length;
+
+// if (cluster.isPrimary) {
+//   console.log(`Primary ${process.pid} is running`);
+//   console.log(`Forsking for ${numCPUs} CPUs...`);
+
+//   // Fork workers.
+//   for (let i = 0; i < numCPUs; i++) {
+//     cluster.fork();
+//   }
+
+//   cluster.on("exit", (worker, code, signal) => {
+//     console.log(`worker ${worker.process.pid} died`);
+//     // Optional: Restart worker on death
+//     cluster.fork();
+//   });
+// } else {
+//   const server = http.createServer(app);
+//   const PORT = process.env.PORT || 5000;
+
+//   server.listen(PORT, () => {
+//     console.log(`🚀 Worker ${process.pid} running server at http://localhost:${PORT}`);
+//   });
+
+// 🚀 Start Server (Simple mode without clustering)
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 

@@ -108,27 +108,35 @@ const Dashboard = () => {
                     ))}
                 </div>
 
-                {/* Featured Products */}
-                <section className="dashboard-section">
-                    <div className="section-header">
-                        <h2 className="section-title">Latest Equipment</h2>
-                        <Link to="/products" className="view-link">VIEW ALL</Link>
-                    </div>
-                    <div className="product-row">
-                        {featuredProducts.map((p) => (
-                            <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
-                                <div className="p-img-box">
-                                    <img src={productImages[p.images?.[0]?.url]} alt={p.name} />
-                                    <div className="p-overlay">SHOP_NOW</div>
-                                </div>
-                                <div className="p-meta">
-                                    <h4>{p.name}</h4>
-                                    <p>₹{p.price.toLocaleString()}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </section>
+              {/* Featured Products */}
+<section className="dashboard-section">
+  <div className="section-header">
+    <h2 className="section-title">Latest Equipment</h2>
+    <Link to="/products" className="view-link">VIEW ALL</Link>
+  </div>
+
+  <div className="product-row">
+    {featuredProducts
+      .filter(p => p.isExclusive === true)
+      .map((p) => (
+        <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
+          <div className="p-img-box">
+            <img
+              src={p.mainImage}   // better than manual path
+              alt={p.name}
+            />
+            <div className="p-overlay">SHOP NOW</div>
+          </div>
+
+          <div className="p-meta">
+            <h4>{p.name}</h4>
+            <p>₹{p.price.toLocaleString()}</p>
+          </div>
+        </Link>
+      ))}
+  </div>
+</section>
+
 
                <section className="command-center">
     <div className="command-header">

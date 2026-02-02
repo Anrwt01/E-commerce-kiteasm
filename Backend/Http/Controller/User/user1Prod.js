@@ -1,28 +1,17 @@
 import { ProductModel } from "../../../Schema/Product_Schema.js";
+import mongoose from "mongoose";
 
+export const User_Single_prod = async (req, res) => {
+  const { Prod_id } = req.params;
+  
 
-export const User_Single_prod =async (req,res)=>{
-    const {Prod_id} = req.params;
+  try {
+    // Try findById first
+    const product = await ProductModel.findById(Prod_id);
+    // console.log("📦 Product found with findById:", product ? "YES" : "NO");
 
-    try {
-const product = await ProductModel.findById(Prod_id);
-
-    // if (!product || !product.isActive) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "Product not found"
-    //   });
-    // }
-
-   return res.status(200).json({
-            Message : "Single Product DEtails",
-            product     
-           })
-    }  catch (error) {
-    console.error("Error fetching Products:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch Products"
-    });
+    return res.status(200).json({ product });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", error: err.message });
   }
-}
+};

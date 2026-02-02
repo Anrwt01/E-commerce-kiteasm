@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { CubeIcon, CalendarIcon, HashtagIcon, CurrencyRupeeIcon } from "@heroicons/react/24/outline";
+import { 
+    CubeIcon, 
+    CalendarIcon, 
+    HashtagIcon, 
+    ArrowLeftIcon,
+    ChevronRightIcon
+} from "@heroicons/react/24/outline";
 
 const MyOrders = () => {
     const navigate = useNavigate();
@@ -31,163 +37,165 @@ const MyOrders = () => {
 
     const styles = {
         wrapper: {
-            backgroundColor: '#000000',
+            backgroundColor: '#F8FAFC', // Very light grey/white background
             minHeight: '100vh',
-            color: 'white',
+            color: '#1E293B',
             paddingTop: '100px',
             paddingBottom: '100px',
+            fontFamily: "'Inter', sans-serif",
         },
         container: { maxWidth: '1000px', margin: '0 auto', padding: '0 20px' },
-        headerSection: { marginBottom: '40px' },
-        tableContainer: {
-            background: 'rgba(255, 255, 255, 0.02)',
-            backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            borderRadius: '24px',
+        headerSection: { 
+            marginBottom: '40px', 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'flex-end',
+            flexWrap: 'wrap',
+            gap: '20px'
+        },
+        card: {
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: '20px',
             overflow: 'hidden',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+            marginBottom: '16px'
         },
-        table: {
-            width: '100%',
-            borderCollapse: 'collapse',
-            textAlign: 'left',
-        },
-        th: {
-            padding: '20px 24px',
-            fontSize: '11px',
-            fontWeight: '800',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            color: '#94a3b8',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-        },
-        td: {
-            padding: '24px',
-            fontSize: '14px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
-            verticalAlign: 'top',
-        },
-        statusBadge: {
-            backgroundColor: 'rgba(14, 165, 233, 0.1)',
-            color: '#0ea5e9',
+        statusBadge: (status) => ({
+            backgroundColor: status?.toLowerCase() === 'delivered' ? '#DCFCE7' : '#F1F5F9',
+            color: status?.toLowerCase() === 'delivered' ? '#166534' : '#475569',
             padding: '6px 14px',
             borderRadius: '50px',
-            fontSize: '10px',
-            fontWeight: '900',
-            textTransform: 'uppercase',
-            border: '1px solid rgba(14, 165, 233, 0.2)',
-            display: 'inline-block'
-        },
-        productTag: {
-            display: 'block',
-            marginBottom: '4px',
+            fontSize: '11px',
             fontWeight: '700',
-            color: '#f1f5f9'
-        }
+            textTransform: 'uppercase',
+            display: 'inline-block'
+        })
     };
 
     if (loading) return (
-        <div style={{ ...styles.wrapper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ color: '#0ea5e9', letterSpacing: '2px', fontWeight: 800 }}>SYNCING LOGS...</div>
+        <div style={{ ...styles.wrapper, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
+            <div className="loader">SYNCING LOGS...</div>
         </div>
     );
 
     return (
         <div style={styles.wrapper}>
             <style>{`
+                .order-table { width: 100%; border-collapse: collapse; }
+                .order-table th { 
+                    text-align: left; padding: 16px 24px; font-size: 11px; 
+                    text-transform: uppercase; color: #64748B; letter-spacing: 1px;
+                }
+                .order-table td { padding: 24px; border-top: 1px solid #F1F5F9; }
+
+                /* RESPONSIVE LOGIC */
                 @media (max-width: 768px) {
-                    .order-table thead { display: none; }
-                    .order-table, .order-table tbody, .order-table tr, .order-table td { 
-                        display: block; 
-                        width: 100%; 
-                    }
-                    .order-table tr {
-                        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                        padding: 20px 0;
-                    }
-                    .order-table td {
-                        padding: 10px 24px;
-                        border: none;
-                    }
-                    .mobile-label {
-                        display: block;
-                        font-size: 10px;
-                        font-weight: 800;
-                        color: #64748b;
-                        text-transform: uppercase;
-                        margin-bottom: 4px;
-                    }
+                    .desktop-table { display: none; }
+                    .mobile-card-list { display: block; }
+                    .header-title { text-align: center; width: 100%; }
                 }
                 @media (min-width: 769px) {
-                    .mobile-label { display: none; }
+                    .mobile-card-list { display: none; }
                 }
+
+                .back-btn:hover { color: #000 !important; }
             `}</style>
 
             <div style={styles.container}>
+                {/* BACK BUTTON */}
+                <button 
+                    onClick={() => navigate('/dashboard')} 
+                    className="back-btn"
+                    style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600, fontSize: '14px', marginBottom: '20px' }}
+                >
+                    <ArrowLeftIcon width={16} /> Dashboard
+                </button>
+
                 <div style={styles.headerSection}>
-                    <h1 style={{ fontSize: 'clamp(28px, 5vw, 38px)', fontWeight: 900, margin: '0 0 8px 0' }}>Order History</h1>
-                    <p style={{ color: '#94a3b8', fontSize: '15px' }}>Detailed breakdown of your deployments.</p>
+                    <div className="header-title">
+                        <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Order History</h1>
+                        <p style={{ color: '#64748B', fontSize: '15px', marginTop: '5px' }}>Track and manage your previous gear deployments.</p>
+                    </div>
                 </div>
 
                 {orders.length === 0 ? (
-                    <div style={{ ...styles.tableContainer, textAlign: 'center', padding: '80px 20px' }}>
-                        <CubeIcon style={{ width: 40, margin: '0 auto', color: '#334155' }} />
-                        <p style={{ marginTop: '20px', color: '#94a3b8' }}>No records found.</p>
-                        <button onClick={() => navigate('/products')} style={{ marginTop: '24px', backgroundColor: '#0ea5e9', color: 'white', padding: '12px 24px', borderRadius: '50px', border: 'none', fontWeight: 900, cursor: 'pointer' }}>BROWSE STORE</button>
+                    <div style={{ ...styles.card, textAlign: 'center', padding: '80px 20px' }}>
+                        <CubeIcon style={{ width: 48, margin: '0 auto', color: '#CBD5E1' }} />
+                        <p style={{ marginTop: '20px', color: '#64748B', fontWeight: 500 }}>No orders found in your manifest.</p>
+                        <button onClick={() => navigate('/products')} style={{ marginTop: '24px', backgroundColor: '#000', color: 'white', padding: '14px 28px', borderRadius: '12px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>START SHOPPING</button>
                     </div>
                 ) : (
-                    <div style={styles.tableContainer}>
-                        <table className="order-table" style={styles.table}>
-                            <thead>
-                                <tr>
-                                    <th style={styles.th}>Date & ID</th>
-                                    <th style={styles.th}>Products</th>
-                                    <th style={styles.th}>Total</th>
-                                    <th style={styles.th}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {orders.map((order) => (
-                                    <tr key={order._id}>
-                                        <td style={styles.td}>
-                                            <span className="mobile-label">Deployment Info</span>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#f1f5f9', fontWeight: 600, marginBottom: '4px' }}>
-                                                <CalendarIcon width={14} color="#0ea5e9" />
-                                                {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                            </div>
-                                            <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                <HashtagIcon width={12} /> {order._id.slice(-8).toUpperCase()}
-                                            </div>
-                                        </td>
-                                        <td style={styles.td}>
-                                            <span className="mobile-label">Inventory</span>
-                                            {order.items?.map((item, index) => (
-                                                <div key={index} style={{ marginBottom: index === order.items.length - 1 ? 0 : '12px' }}>
-                                                    <span style={styles.productTag}>
-                                                        {item.productname || item.productName || item.productId?.name || "Kiteasm Gear"}
-                                                    </span>
-                                                    <span style={{ fontSize: '12px', color: '#64748b' }}>
-                                                        QTY: {item.quantity} × ₹{item.price}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </td>
-                                        <td style={styles.td}>
-                                            <span className="mobile-label">Payment</span>
-                                            <span style={{ fontWeight: 900, color: '#fff', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                ₹{order.totalAmount}
-                                            </span>
-                                        </td>
-                                        <td style={styles.td}>
-                                            <span className="mobile-label">Current Status</span>
-                                            <span style={styles.statusBadge}>
-                                                {order.orderStatus || 'Active'}
-                                            </span>
-                                        </td>
+                    <>
+                        {/* DESKTOP TABLE */}
+                        <div className="desktop-table" style={styles.card}>
+                            <table className="order-table">
+                                <thead style={{ backgroundColor: '#F8FAFC' }}>
+                                    <tr>
+                                        <th>Deployment Info</th>
+                                        <th>Inventory</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {orders.map((order) => (
+                                        <tr key={order._id}>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
+                                                    <CalendarIcon width={16} color="#64748B" />
+                                                    {new Date(order.createdAt).toLocaleDateString('en-GB')}
+                                                </div>
+                                                <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px', fontFamily: 'monospace' }}>
+                                                    ID: {order._id.toUpperCase()}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {order.items?.map((item, i) => (
+                                                    <div key={i} style={{ fontSize: '14px', fontWeight: 500, marginBottom: '2px' }}>
+                                                        {item.productName || "Kiteasm Gear"} <span style={{ color: '#94A3B8' }}>× {item.quantity}</span>
+                                                    </div>
+                                                ))}
+                                            </td>
+                                            <td style={{ fontWeight: 800, fontSize: '15px' }}>₹{order.totalAmount}</td>
+                                            <td>
+                                                <span style={styles.statusBadge(order.orderStatus)}>
+                                                    {order.orderStatus || 'Processing'}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* MOBILE CARD LIST */}
+                        <div className="mobile-card-list">
+                            {orders.map((order) => (
+                                <div key={order._id} style={styles.card}>
+                                    <div style={{ padding: '20px', borderBottom: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{new Date(order.createdAt).toLocaleDateString()}</div>
+                                            <div style={{ fontWeight: 800, fontSize: '14px' }}>Order #{order._id.slice(-6).toUpperCase()}</div>
+                                        </div>
+                                        <span style={styles.statusBadge(order.orderStatus)}>{order.orderStatus || 'Pending'}</span>
+                                    </div>
+                                    <div style={{ padding: '20px' }}>
+                                        {order.items?.map((item, i) => (
+                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '8px' }}>
+                                                <span>{item.productName} <small style={{ color: '#94A3B8' }}>x{item.quantity}</small></span>
+                                                <span style={{ fontWeight: 600 }}>₹{item.price * item.quantity}</span>
+                                            </div>
+                                        ))}
+                                        <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px dashed #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <span style={{ fontWeight: 700 }}>Total Paid</span>
+                                            <span style={{ fontWeight: 900, fontSize: '18px', color: '#000' }}>₹{order.totalAmount}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
         </div>
