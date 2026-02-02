@@ -1,5 +1,4 @@
-/* Editorial Minimalist Design System */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
 :root {
   --white: #FFFFFF;
@@ -10,8 +9,8 @@
   --accent: #007AFF;
   --accent-alt: #FF5E00;
 
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Roboto', sans-serif;
+  --font-serif: 'Roboto', sans-serif;
   --container-max: 1400px;
   --nav-height: 80px;
 }
@@ -77,8 +76,10 @@ h2,
 h3,
 .serif {
   font-family: var(--font-serif);
-  font-weight: 400;
-  font-style: italic;
+  font-weight: 700;
+  /* Adjusted for Gilroy heading style */
+  font-style: normal;
+  /* Removed italic which was for Playfair */
 }
 
 .uppercase {

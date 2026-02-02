@@ -9,7 +9,7 @@ const Footer = () => {
       color: "#ffffff", // White text
       padding: "80px 40px 40px",
       borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-      fontFamily: '"Inter", sans-serif'
+      fontFamily: '"Roboto", sans-serif'
     },
     container: {
       maxWidth: "1200px",
@@ -29,16 +29,16 @@ const Footer = () => {
     },
     list: { listStyle: "none", padding: 0, margin: 0 },
     listItem: { marginBottom: "14px" },
-    link: { 
+    link: {
       color: "#cccccc", // Light gray links
-      textDecoration: "none", 
+      textDecoration: "none",
       fontSize: "13px",
       transition: "0.3s",
     },
     contactText: { marginBottom: "12px", fontSize: "13px", color: "#cccccc" }, // Light gray contact text
-    inputGroup: { 
-      display: "flex", 
-      gap: "0", 
+    inputGroup: {
+      display: "flex",
+      gap: "0",
       marginTop: "15px",
       border: "1px solid rgba(255,255,255,0.1)",
       borderRadius: "4px",

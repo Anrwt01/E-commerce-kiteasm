@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 // import { API_BASE_URL } from "../../utils/config";
 
-import kiteasm_logo from "../../assets/Photo/kiteasm_logo.jpg";
+
 import kite_Pattern from "../../assets/Photo/kiteasm_pattern.jpg";
 
 const Home = () => {
@@ -12,7 +12,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   // Derive the server root (e.g., http://localhost:5000) from the API URL
- 
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -23,7 +23,7 @@ const Home = () => {
         console.log(res)
         // Filter to show ONLY exclusive products
         const exclusiveOnly = allProducts.filter(product => product.isExclusive === true);
-        
+
         setProducts(exclusiveOnly.slice(0, 8));
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -87,15 +87,7 @@ const Home = () => {
           to { opacity: 1; }
         }
 
-        .main-hero-logo {
-          width: 100px;
-          height: 100px;
-          border-radius: 20px;
-          border: 1px solid #ffffff;
-          margin-bottom: 30px;
-          object-fit: cover;
-          box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-        }
+
 
         .hero-title {
           font-size: clamp(2.5rem, 5vw, 4rem);
@@ -269,11 +261,20 @@ const Home = () => {
           color: #ffffff;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+          .hero-title { font-size: 3rem; }
+          .products-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        }
+
+        @media (max-width: 600px) {
           .hero-section { height: 60vh; }
-          .products-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
-          .product-image { height: 220px; }
-          .product-card { padding: 16px; }
+          .hero-title { font-size: 2.5rem; }
+          .hero-tagline { font-size: 1rem; padding: 0 10px; }
+          .products-section { padding: 60px 5%; }
+          .section-title { font-size: 1.8rem; }
+          /* Single column for very small screens if desired, or keep 2-col with smaller gaps */
+          .products-grid { grid-template-columns: 1fr; gap: 24px; } 
+          .product-image { height: auto; aspect-ratio: 1/1; }
         }
       `}</style>
 
@@ -283,7 +284,7 @@ const Home = () => {
       <section className="hero-section">
         <div className="animated-pattern-bg"></div>
         <div className="hero-content">
-          <img src={kiteasm_logo} alt="Logo" className="main-hero-logo" />
+
           <h1 className="hero-title">Kiteasm</h1>
           <p className="hero-tagline">
             Exclusively Curation of Premium Competition-Grade Gear
@@ -297,15 +298,15 @@ const Home = () => {
       {/* EXCLUSIVE RELEASES */}
       <section className="products-section">
         <h2 className="section-title">Exclusive Releases</h2>
-        
+
         {loading ? (
-          <p style={{textAlign: 'center', color: '#666'}}>Curating collection...</p>
+          <p style={{ textAlign: 'center', color: '#666' }}>Curating collection...</p>
         ) : (
           <div className="products-grid">
             {products.map((product) => (
-              <Link 
-                key={product._id} 
-                to={`/products/${product._id}`} 
+              <Link
+                key={product._id}
+                to={`/products/${product._id}`}
                 style={{ textDecoration: 'none' }}
               >
                 <div className="product-card">
@@ -314,9 +315,9 @@ const Home = () => {
                     <ShieldCheck size={12} /> Exclusive
                   </div>
 
-                  <img 
-                    src={`../uploads/${product._id}/main.jpg`} 
-                    alt={product.name} 
+                  <img
+                    src={`../uploads/${product._id}/main.jpg`}
+                    alt={product.name}
                     className="product-image"
                     onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Kiteasm+Premium"; }}
                   />
@@ -332,19 +333,19 @@ const Home = () => {
         )}
 
         {!loading && products.length === 0 && (
-          <p style={{textAlign: 'center', color: '#444', marginTop: '40px'}}>
+          <p style={{ textAlign: 'center', color: '#444', marginTop: '40px' }}>
             Check back soon for our limited edition drops.
           </p>
         )}
       </section>
 
-      <footer style={{ 
-        padding: "60px 20px", 
-        textAlign: "center", 
-        color: "#444", 
-        fontSize: "12px", 
+      <footer style={{
+        padding: "60px 20px",
+        textAlign: "center",
+        color: "#444",
+        fontSize: "12px",
         letterSpacing: "1px",
-        borderTop: "1px solid #111" 
+        borderTop: "1px solid #111"
       }}>
         © 2026 KITEASM • AUTHENTIC KITE CULTURE
       </footer>

@@ -10,7 +10,7 @@ const getProductImage = (dbPath) => {
   try {
     return new URL(`../../assets/products/${cleanPath}`, import.meta.url).href;
   } catch (err) {
-    return "https://via.placeholder.com/300"; 
+    return "https://via.placeholder.com/300";
   }
 };
 
@@ -27,8 +27,8 @@ const animationStyles = `
   }
   .product-card-hover:hover {
     transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.05) !important;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.03) !important;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
   }
   input:focus { outline: none !important; border: none !important; }
   
@@ -79,31 +79,31 @@ const Products = () => {
   }, [searchTerm, activeCategory, fetchProducts]);
 
   const styles = {
-    pageWrapper: { 
-      padding: "160px 5% 80px", 
-      backgroundColor: '#fff4f4',
+    pageWrapper: {
+      padding: "160px 5% 80px",
+      backgroundColor: '#ffffff',
       minHeight: '100vh',
       color: '#000000',
       width: '100%',
       boxSizing: 'border-box'
     },
     innerContent: { maxWidth: "1400px", margin: "0 auto" },
-    headerRow: { 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'flex-start', 
+    headerRow: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
       marginBottom: '60px',
     },
-    searchBox: { 
-      display: 'flex', 
-      alignItems: 'center', 
-      gap: '12px', 
-      background: 'rgba(255,255,255,0.05)', 
-      padding: '14px 22px', 
-      borderRadius: '16px', 
+    searchBox: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      background: 'rgba(0,0,0,0.05)',
+      padding: '14px 22px',
+      borderRadius: '16px',
       width: '100%',
       maxWidth: '400px',
-      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(0,0,0,0.1)',
       boxSizing: 'border-box'
     },
     catPill: (isActive) => ({
@@ -114,28 +114,28 @@ const Products = () => {
       cursor: "pointer",
       border: "none",
       transition: "0.3s all",
-      backgroundColor: isActive ? "#ffffff" : "rgba(255,255,255,0.05)",
-      color: isActive ? "#000000" : "#cccccc",
+      backgroundColor: isActive ? "#000000" : "rgba(0,0,0,0.05)",
+      color: isActive ? "#ffffff" : "#000000",
       textTransform: 'uppercase'
     }),
-    grid: { 
-      display: "grid", 
-      gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", 
-      gap: "25px" 
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+      gap: "25px"
     },
-    card: { 
-      background: "rgba(255,255,255,0.03)", 
-      borderRadius: "24px", 
-      padding: "12px", 
-      cursor: "pointer", 
-      backdropFilter: 'blur(8px)',
+    card: {
+      background: "#ffffff",
+      border: "1px solid rgba(0,0,0,0.08)",
+      borderRadius: "24px",
+      padding: "12px",
+      cursor: "pointer",
       boxSizing: 'border-box'
     },
-    imgContainer: { 
+    imgContainer: {
       aspectRatio: '1/1',
-      borderRadius: "18px", 
-      overflow: "hidden", 
-      background: '#111111',
+      borderRadius: "18px",
+      overflow: "hidden",
+      background: '#f5f5f7',
       width: '100%'
     }
   };
@@ -143,7 +143,7 @@ const Products = () => {
   return (
     <div style={styles.pageWrapper} className="page-wrapper">
       <style>{animationStyles}</style>
-      
+
       <div style={styles.innerContent}>
         {/* Header Section */}
         <div style={styles.headerRow} className="header-row">
@@ -151,22 +151,22 @@ const Products = () => {
             <span style={{ fontSize: "11px", fontWeight: "900", color: "#666", letterSpacing: "3px", textTransform: 'uppercase' }}>
               <Layers size={14} style={{ marginBottom: '-2px', marginRight: '5px' }} /> Premium Stock
             </span>
-            <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: "900", margin: "10px 0", letterSpacing: "-2px" }}>
-              The Collection<span style={{color: '#444'}}>.</span>
+            <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: "700", margin: "10px 0", letterSpacing: "-2px" }}>
+              The Collection<span style={{ color: '#444' }}>.</span>
             </h1>
           </header>
 
           <div className="search-section" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
             <div className="search-box" style={styles.searchBox}>
-              <Search size={18} color="#666" />
-              <input 
-                style={{ border: 'none', background: 'transparent', color: '#ffffff', width: '100%', fontSize: '14px' }}
+              <Search size={18} color="#000" />
+              <input
+                style={{ border: 'none', background: 'transparent', color: '#000000', width: '100%', fontSize: '14px' }}
                 placeholder="Search collection..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div style={{ display: 'flex', gap: '8px', marginTop: '15px', flexWrap: 'wrap' }}>
               {categories.map((cat) => (
                 <button key={cat} onClick={() => setActiveCategory(cat)} style={styles.catPill(activeCategory === cat)}>
@@ -180,20 +180,20 @@ const Products = () => {
         {/* Product Grid */}
         <div style={styles.grid}>
           {loading ? (
-             <p style={{ color: '#444' }}>Syncing Inventory...</p>
+            <p style={{ color: '#444' }}>Syncing Inventory...</p>
           ) : products.length > 0 ? (
             products.map((product, index) => (
-              <div 
-                key={product._id} 
+              <div
+                key={product._id}
                 className="product-card-anim product-card-hover"
-                style={{ ...styles.card, animationDelay: `${index * 0.05}s` }} 
+                style={{ ...styles.card, animationDelay: `${index * 0.05}s` }}
                 onClick={() => navigate(`/products/${product._id}`)}
               >
                 <div style={styles.imgContainer}>
-                  <img 
-                   src={`../uploads/${product._id}/main.jpg`} 
-                    alt={product.name} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  <img
+                    src={`../uploads/${product._id}/main.jpg`}
+                    alt={product.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     onError={(e) => e.target.src = "https://via.placeholder.com/300"}
                   />
                 </div>
@@ -202,16 +202,16 @@ const Products = () => {
                     <span style={{ fontSize: '9px', color: '#666', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>{product.category}</span>
                     {product.isExclusive && <span style={{ fontSize: '9px', color: '#0ea5e9', fontWeight: '900' }}>EXCLUSIVE</span>}
                   </div>
-                  <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 12px', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 12px', color: '#000000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {product.name}
                   </h3>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '18px', fontWeight: '900' }}>₹{product.price}</span>
-                    <button style={{ 
-                        background: "#ffffff", color: "#000", border: "none", borderRadius: "10px", 
-                        width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center"
+                    <span style={{ fontSize: '18px', fontWeight: '900', color: "#000000" }}>₹{product.price}</span>
+                    <button style={{
+                      background: "#000000", color: "#ffffff", border: "none", borderRadius: "10px",
+                      width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center"
                     }}>
-                        <Plus size={18} />
+                      <Plus size={18} />
                     </button>
                   </div>
                 </div>

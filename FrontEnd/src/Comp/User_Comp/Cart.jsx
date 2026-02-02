@@ -32,14 +32,7 @@ const styles = {
     fontWeight: "800",
     marginTop: "16px",
   },
-  cartGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr", // Default to single column for mobile
-    gap: "32px",
-    '@media (min-width: 768px)': { // Tablet and up
-      gridTemplateColumns: "1fr 340px",
-    },
-  },
+  // Styles moved to injected block for media query support
   cartItems: {
     // No specific styles, just container
   },
@@ -140,206 +133,206 @@ const styles = {
 };
 
 const Cart = () => {
-    const navigate = useNavigate();
-    const [cart, setCart] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [subtotal, setSubtotal] = useState(0);
-    const [logistics, setLogistics] = useState(0);
-    const [deletingId, setDeletingId] = useState(null);
+  const navigate = useNavigate();
+  const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [subtotal, setSubtotal] = useState(0);
+  const [logistics, setLogistics] = useState(0);
+  const [deletingId, setDeletingId] = useState(null);
 
-    const normalize = (s = "") => s.toLowerCase();
+  const normalize = (s = "") => s.toLowerCase();
 
-    // FIXED: This function now safely handles the whole array
-    const getDeliveryCharge = (items = []) => {
-        // Safety check to ensure items is an array
-        if (!Array.isArray(items) || items.length === 0) return 0;
+  // FIXED: This function now safely handles the whole array
+  const getDeliveryCharge = (items = []) => {
+    // Safety check to ensure items is an array
+    if (!Array.isArray(items) || items.length === 0) return 0;
 
-        let kiteQty = 0;
-        let hasBag3 = false;
-        let hasBag6 = false;
-        let hasCover = false;
-        let hasOswal = false;
-        let hasStand = false;
-        let hasManjha = false;
+    let kiteQty = 0;
+    let hasBag3 = false;
+    let hasBag6 = false;
+    let hasCover = false;
+    let hasOswal = false;
+    let hasStand = false;
+    let hasManjha = false;
 
-        const types = items.map(i =>
-            normalize(i.productId?.category || i.productId?.name || "")
-        );
-
-        const only = (key) => types.length > 0 && types.every(t => t.includes(key));
-        const has = (key) => types.some(t => t.includes(key));
-
-        items.forEach(item => {
-            const name = normalize(item.productId?.name || "");
-            const category = normalize(item.productId?.category || "");
-
-            if (category === "kite") kiteQty += item.quantity;
-            if (name.includes("3inch")) hasBag3 = true;
-            if (name.includes("6inch")) hasBag6 = true;
-            if (name.includes("Cover")) hasCover = true;
-            if (name.includes("Oswal")) hasOswal = true;
-            if (name.includes("Stand")) hasStand = true;
-            if (name.includes("manjha")) hasManjha = true;
-        });
-
-        // 1️⃣ Per-unit Manjha rule (ONLY manjha in cart)
-        if (only("manjha")) {
-            return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
-        }
-
-        // 2️⃣ Combination flat-rate rules
-        if (hasManjha && hasCover && hasOswal) return 200;
-        if (hasStand && hasCover) return 200;
-        if (hasOswal && hasCover) return 200;
-
-        // 3️⃣ Bag + Kite bulk rules
-        if (kiteQty > 0) {
-            if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
-            if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
-        }
-
-        // 4️⃣ Single-product flat cart rules
-        if (only("tape")) return 49;
-        if (only("cover")) return 99;
-        if (only("oswal")) return 149;
-        if (only("kite")) return 450;
-
-        return 250;
-    };
-
-    const fetchCart = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) return navigate("/login");
-
-            const res = await axios.get("http://localhost:5000/api/user/cart", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            console.log(res)
-            const items = res.data.cart?.items || res.data.items || [];
-            setCart(items);
-            calculateTotals(items);
-        } catch (err) {
-            console.error("Cart fetch error:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const calculateTotals = (items) => {
-        if (!Array.isArray(items)) return;
-
-        const itemTotal = items.reduce((acc, item) => {
-            const price = item.productId?.price || 0;
-            return acc + (price * item.quantity);
-        }, 0);
-
-        // FIXED: Call the function ONCE for the whole cart
-        const shipTotal = getDeliveryCharge(items);
-
-        setSubtotal(itemTotal);
-        setLogistics(shipTotal);
-    };
-
-    useEffect(() => {
-        fetchCart();
-    }, []);
-
-    const removeItem = async (productId) => {
-        if (!productId) return;
-        setDeletingId(productId);
-        try {
-            const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:5000/api/user/cart/remove/${productId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            const updatedCart = cart.filter(item => item.productId?._id !== productId);
-            setCart(updatedCart);
-            calculateTotals(updatedCart);
-        } catch (err) {
-            console.error("Remove item error:", err);
-        } finally {
-            setDeletingId(null);
-        }
-    };
-
-    if (loading) return (
-        <div style={styles.loading}>
-            <Loader2 className="animate-spin" size={40} />
-        </div>
+    const types = items.map(i =>
+      normalize(i.productId?.category || i.productId?.name || "")
     );
 
-    return (
-        <div style={styles.container}>
-            <main style={styles.main}>
-                <header style={styles.header}>
-                    <button onClick={() => navigate("/dashboard")} style={styles.backButton}>
-                        <ChevronLeft size={18} /> Back to Catalog
-                    </button>
-                    <h1 style={styles.title}>Your Cart.</h1>
-                </header>
+    const only = (key) => types.length > 0 && types.every(t => t.includes(key));
+    const has = (key) => types.some(t => t.includes(key));
 
-                {cart.length > 0 ? (
-                    <div style={styles.cartGrid}>
-                        <div style={styles.cartItems}>
-                            {cart.map((item) => (
-                                <div key={item.productId?._id} style={styles.cartItem}>
-                                    <div style={styles.itemImage}>
-                                        <img 
-                                            src={`../uploads/${item.productId._id}/main.jpg`}
-                                            alt="product" 
-                                            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                                        />
-                                    </div>
-                                    <div style={styles.itemDetails}>
-                                        <h3 style={styles.itemName}>{item.productId?.name}</h3>
-                                        <p style={styles.itemPrice}>₹{item.productId?.price}</p>
-                                        <span style={styles.itemQty}>QTY: {item.quantity}</span>
-                                    </div>
-                                    <button 
-                                        onClick={() => removeItem(item.productId?._id)} 
-                                        disabled={deletingId === item.productId?._id}
-                                        style={styles.removeButton}
-                                    >
-                                        {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
+    items.forEach(item => {
+      const name = normalize(item.productId?.name || "");
+      const category = normalize(item.productId?.category || "");
 
-                        <aside style={styles.orderSummary}>
-                            <h3 style={styles.summaryTitle}>Order Summary</h3>
-                            <div style={styles.summaryDetails}>
-                                <div style={styles.summaryRow}>
-                                    <span>Subtotal</span>
-                                    <span style={{ fontWeight: "600" }}>₹{subtotal}</span>
-                                </div>
-                                <div style={styles.summaryRow}>
-                                    <span>Logistics</span>
-                                    <span style={{ fontWeight: "600" }}>₹{logistics}</span>
-                                </div>
-                            </div>
-                            <div style={styles.totalRow}>
-                                <span style={{ fontWeight: "800" }}>Total</span>
-                                <span style={styles.totalAmount}>₹{subtotal + logistics}</span>
-                            </div>
-                            <button onClick={() => navigate("/checkout")} style={styles.checkoutButton}>
-                                Proceed to Checkout
-                            </button>
-                        </aside>
-                    </div>
-                ) : (
-                    <div style={styles.emptyCart}>
-                        <ShoppingBag size={48} style={styles.emptyIcon} />
-                        <h2 style={styles.emptyTitle}>Hangar is Empty</h2>
-                        <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
-                    </div>
-                )}
-            </main>
-        </div>
-    );
+      if (category === "kite") kiteQty += item.quantity;
+      if (name.includes("3inch")) hasBag3 = true;
+      if (name.includes("6inch")) hasBag6 = true;
+      if (name.includes("Cover")) hasCover = true;
+      if (name.includes("Oswal")) hasOswal = true;
+      if (name.includes("Stand")) hasStand = true;
+      if (name.includes("manjha")) hasManjha = true;
+    });
+
+    // 1️⃣ Per-unit Manjha rule (ONLY manjha in cart)
+    if (only("manjha")) {
+      return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
+    }
+
+    // 2️⃣ Combination flat-rate rules
+    if (hasManjha && hasCover && hasOswal) return 200;
+    if (hasStand && hasCover) return 200;
+    if (hasOswal && hasCover) return 200;
+
+    // 3️⃣ Bag + Kite bulk rules
+    if (kiteQty > 0) {
+      if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
+      if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
+    }
+
+    // 4️⃣ Single-product flat cart rules
+    if (only("tape")) return 49;
+    if (only("cover")) return 99;
+    if (only("oswal")) return 149;
+    if (only("kite")) return 450;
+
+    return 250;
+  };
+
+  const fetchCart = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+
+      const res = await axios.get("http://localhost:5000/api/user/cart", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log(res)
+      const items = res.data.cart?.items || res.data.items || [];
+      setCart(items);
+      calculateTotals(items);
+    } catch (err) {
+      console.error("Cart fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateTotals = (items) => {
+    if (!Array.isArray(items)) return;
+
+    const itemTotal = items.reduce((acc, item) => {
+      const price = item.productId?.price || 0;
+      return acc + (price * item.quantity);
+    }, 0);
+
+    // FIXED: Call the function ONCE for the whole cart
+    const shipTotal = getDeliveryCharge(items);
+
+    setSubtotal(itemTotal);
+    setLogistics(shipTotal);
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const removeItem = async (productId) => {
+    if (!productId) return;
+    setDeletingId(productId);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/user/cart/remove/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const updatedCart = cart.filter(item => item.productId?._id !== productId);
+      setCart(updatedCart);
+      calculateTotals(updatedCart);
+    } catch (err) {
+      console.error("Remove item error:", err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  if (loading) return (
+    <div style={styles.loading}>
+      <Loader2 className="animate-spin" size={40} />
+    </div>
+  );
+
+  return (
+    <div style={styles.container}>
+      <main style={styles.main}>
+        <header style={styles.header}>
+          <button onClick={() => navigate("/dashboard")} style={styles.backButton}>
+            <ChevronLeft size={18} /> Back to Catalog
+          </button>
+          <h1 style={styles.title}>Your Cart.</h1>
+        </header>
+
+        {cart.length > 0 ? (
+          <div style={styles.cartGrid}>
+            <div style={styles.cartItems}>
+              {cart.map((item) => (
+                <div key={item.productId?._id} style={styles.cartItem}>
+                  <div style={styles.itemImage}>
+                    <img
+                      src={`../uploads/${item.productId._id}/main.jpg`}
+                      alt="product"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  </div>
+                  <div style={styles.itemDetails}>
+                    <h3 style={styles.itemName}>{item.productId?.name}</h3>
+                    <p style={styles.itemPrice}>₹{item.productId?.price}</p>
+                    <span style={styles.itemQty}>QTY: {item.quantity}</span>
+                  </div>
+                  <button
+                    onClick={() => removeItem(item.productId?._id)}
+                    disabled={deletingId === item.productId?._id}
+                    style={styles.removeButton}
+                  >
+                    {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <aside style={styles.orderSummary}>
+              <h3 style={styles.summaryTitle}>Order Summary</h3>
+              <div style={styles.summaryDetails}>
+                <div style={styles.summaryRow}>
+                  <span>Subtotal</span>
+                  <span style={{ fontWeight: "600" }}>₹{subtotal}</span>
+                </div>
+                <div style={styles.summaryRow}>
+                  <span>Logistics</span>
+                  <span style={{ fontWeight: "600" }}>₹{logistics}</span>
+                </div>
+              </div>
+              <div style={styles.totalRow}>
+                <span style={{ fontWeight: "800" }}>Total</span>
+                <span style={styles.totalAmount}>₹{subtotal + logistics}</span>
+              </div>
+              <button onClick={() => navigate("/checkout")} style={styles.checkoutButton}>
+                Proceed to Checkout
+              </button>
+            </aside>
+          </div>
+        ) : (
+          <div style={styles.emptyCart}>
+            <ShoppingBag size={48} style={styles.emptyIcon} />
+            <h2 style={styles.emptyTitle}>Hangar is Empty</h2>
+            <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 };
 
 export default Cart;

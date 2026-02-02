@@ -38,7 +38,7 @@ const Register = () => {
 
     try {
       const res = await axios.post("http://localhost:5000/api/auth/register", payload);
-      
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         if (res.data.user) {
@@ -63,7 +63,7 @@ const Register = () => {
       paddingTop: '100px',
       paddingBottom: '100px',
       color: '#ffffff', // White text
-      fontFamily: 'sans-serif' // Changed to normal font
+      fontFamily: '"Roboto", sans-serif'
     },
     container: {
       maxWidth: '800px',
@@ -127,11 +127,11 @@ const Register = () => {
     <div style={styles.wrapper}>
       <div style={styles.container}>
         <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h1 style={styles.title}>Register<span style={{color: '#cccccc'}}>.</span></h1> {/* Light gray dot */}
+          <h1 style={styles.title}>Register<span style={{ color: '#cccccc' }}>.</span></h1> {/* Light gray dot */}
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '60px' }}>
-          
+
           {/* Section 01: Identity */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -165,9 +165,9 @@ const Register = () => {
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            disabled={loading} 
+          <button
+            type="submit"
+            disabled={loading}
             style={styles.submitBtn}
             onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
@@ -198,6 +198,7 @@ const Register = () => {
           .form-grid, .form-grid-three {
             grid-template-columns: 1fr;
           }
+          .register-wrapper { padding-top: 100px !important; }
         }
         input:focus {
           box-shadow: inset 0 0 0 1px #ffffff !important; /* White focus border */

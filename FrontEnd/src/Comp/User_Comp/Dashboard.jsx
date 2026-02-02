@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { productImages } from "../../utils/productImages";
 import axios from "axios";
-import { 
-    ShoppingBagIcon, SparklesIcon, Cog6ToothIcon, 
-    CubeIcon, ChevronRightIcon, PowerIcon 
+import {
+    ShoppingBagIcon, SparklesIcon, Cog6ToothIcon,
+    CubeIcon, ChevronRightIcon, PowerIcon
 } from "@heroicons/react/24/outline";
 
 const Dashboard = () => {
@@ -44,26 +44,34 @@ const Dashboard = () => {
 
     if (loading || !user) return null;
 
-   const owners = [
-    {
-        name: "Udit Sanwal",
-        role: "FOUNDER & CEO",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh", // Placeholder avatar
-        instagram: "https://www.instagram.com/_notrio_/",
-        youtube: "https://www.youtube.com/@RioTheExplorer"
-    },
-    {
-        name: "Shubham Joshi",
-        role: "Manager & Marketing",
-        image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya", // Placeholder avatar
-        instagram: "#",
-        youtube: "https://www.youtube.com/@RioTheExplorer"
-    }
-];
+    const owners = [
+        {
+            name: "Udit Sanwal",
+            role: "FOUNDER & CEO",
+            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh", // Placeholder avatar
+            instagram: "https://www.instagram.com/_notrio_/",
+            youtube: "https://www.youtube.com/@RioTheExplorer"
+        },
+        {
+            name: "Shubham Joshi",
+            role: "Manager & Marketing",
+            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya", // Placeholder avatar
+            instagram: "#",
+            youtube: "https://www.youtube.com/@RioTheExplorer"
+        },
+        {
+            name: "Anuj Rawat",
+            role: "Lead Developer",
+            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jack", // Placeholder avatar
+            instagram: "https://www.instagram.com/anujjrawtt",
+            youtube: "https://www.youtube.com/@RioTheExplorer"
+        },
+
+    ];
     return (
         <div className="dash-container">
             {/* Soft Grid Background */}
-            <div className="grid-bg"></div>
+            {/* <div className="grid-bg"></div> */}
 
             {/* Premium Top Navigation */}
             <nav className="top-nav">
@@ -90,10 +98,10 @@ const Dashboard = () => {
                 {/* Bento Grid - Styled as floating panels */}
                 <div className="bento-grid">
                     {[
-                        { title: 'COLLECTIONS', path: '/products', icon: ShoppingBagIcon, desc: 'View Inventory' },
-                        { title: 'MANIFEST', path: '/orders', icon: CubeIcon, desc: 'Track Orders' },
-                        { title: 'CARGO', path: '/cart', icon: SparklesIcon, desc: 'Active Cart' },
-                        { title: 'TERMINAL', path: '/user/update', icon: Cog6ToothIcon, desc: 'Adjust Params' },
+                        { title: 'Products', path: '/products', icon: ShoppingBagIcon, desc: 'View Inventory' },
+                        { title: 'Orders', path: '/orders', icon: CubeIcon, desc: 'Track Orders' },
+                        { title: 'Cart', path: '/cart', icon: SparklesIcon, desc: 'Active Cart' },
+                        { title: 'Profile', path: '/user/update', icon: Cog6ToothIcon, desc: 'Adjust Params' },
                     ].map((item) => (
                         <Link key={item.title} to={item.path} className="bento-card">
                             <div className="bento-icon-box">
@@ -108,72 +116,72 @@ const Dashboard = () => {
                     ))}
                 </div>
 
-              {/* Featured Products */}
-<section className="dashboard-section">
-  <div className="section-header">
-    <h2 className="section-title">Latest Equipment</h2>
-    <Link to="/products" className="view-link">VIEW ALL</Link>
-  </div>
-
-  <div className="product-row">
-    {featuredProducts
-      .filter(p => p.isExclusive === true)
-      .map((p) => (
-        <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
-          <div className="p-img-box">
-            <img
-              src={p.mainImage}   // better than manual path
-              alt={p.name}
-            />
-            <div className="p-overlay">SHOP NOW</div>
-          </div>
-
-          <div className="p-meta">
-            <h4>{p.name}</h4>
-            <p>₹{p.price.toLocaleString()}</p>
-          </div>
-        </Link>
-      ))}
-  </div>
-</section>
-
-
-               <section className="command-center">
-    <div className="command-header">
-        <span className="line"></span>
-        <h3>THE LEADERSHIP</h3>
-        <span className="line"></span>
-    </div>
-    
-    <div className="founders-grid">
-        {owners.map((owner) => (
-            <div key={owner.name} className="founder-card">
-                <div className="founder-img-wrapper">
-                    <img src={owner.image} alt={owner.name} className="founder-img" />
-                </div>
-                
-                <div className="founder-info">
-                    <h4 className="founder-name">{owner.name}</h4>
-                    <span className="founder-role">{owner.role}</span>
-                    <p className="founder-desc">{owner.desc}</p>
-                    
-                    <div className="founder-socials">
-                        <a href={owner.instagram} aria-label="Instagram">
-                            <svg className="social-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c.796 0 1.441.645 1.441 1.44s-.645 1.44-1.441 1.44-1.44-.645-1.44-1.44.645-1.44 1.44-1.44z"/></svg>
-                        </a>
-                        <a href={owner.youtube} aria-label="YouTube">
-                            <svg className="social-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        </a>
+                {/* Featured Products */}
+                <section className="dashboard-section">
+                    <div className="section-header">
+                        <h2 className="section-title">Latest Equipment</h2>
+                        <Link to="/products" className="view-link">VIEW ALL</Link>
                     </div>
-                </div>
-            </div>
-        ))}
-    </div>
-</section>
+
+                    <div className="product-row">
+                        {featuredProducts
+                            .filter(p => p.isExclusive === true)
+                            .map((p) => (
+                                <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
+                                    <div className="p-img-box">
+                                        <img
+                                            src={p.mainImage}   // better than manual path
+                                            alt={p.name}
+                                        />
+                                        <div className="p-overlay">SHOP NOW</div>
+                                    </div>
+
+                                    <div className="p-meta">
+                                        <h4>{p.name}</h4>
+                                        <p>₹{p.price.toLocaleString()}</p>
+                                    </div>
+                                </Link>
+                            ))}
+                    </div>
+                </section>
+
+
+                <section className="command-center">
+                    <div className="command-header">
+                        <span className="line"></span>
+                        <h3>THE LEADERSHIP</h3>
+                        <span className="line"></span>
+                    </div>
+
+                    <div className="founders-grid">
+                        {owners.map((owner) => (
+                            <div key={owner.name} className="founder-card">
+                                <div className="founder-img-wrapper">
+                                    <img src={owner.image} alt={owner.name} className="founder-img" />
+                                </div>
+
+                                <div className="founder-info">
+                                    <h4 className="founder-name">{owner.name}</h4>
+                                    <span className="founder-role">{owner.role}</span>
+                                    <p className="founder-desc">{owner.desc}</p>
+
+                                    <div className="founder-socials">
+                                        <a href={owner.instagram} aria-label="Instagram">
+                                            <svg className="social-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c.796 0 1.441.645 1.441 1.44s-.645 1.44-1.441 1.44-1.44-.645-1.44-1.44.645-1.44 1.44-1.44z" /></svg>
+                                        </a>
+                                        <a href={owner.youtube} aria-label="YouTube">
+                                            <svg className="social-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             </div>
 
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
 
                 /* Command Center Section */
 .command-center {
@@ -206,7 +214,7 @@ const Dashboard = () => {
 /* Founder Cards Grid */
 .founders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 30px;
 }
 
@@ -248,7 +256,7 @@ const Dashboard = () => {
 
 /* Typography */
 .founder-name {
-    font-family: 'Playfair Display', 'Georgia', serif; /* Elegant Serif */
+    font-family: 'Roboto', sans-serif;
     font-size: 32px;
     font-weight: 500;
     font-style: italic;
@@ -308,7 +316,7 @@ const Dashboard = () => {
                     background-color: var(--bg-main);
                     min-height: 100vh;
                     color: var(--text-black);
-                    font-family: 'Plus Jakarta Sans', sans-serif;
+                    font-family: 'Roboto', sans-serif;
                     position: relative;
                 }
 
@@ -414,6 +422,14 @@ const Dashboard = () => {
                 @media (max-width: 1000px) {
                     .bento-grid, .product-row { grid-template-columns: repeat(2, 1fr); }
                     .founders-flex { flex-direction: column; gap: 40px; }
+                }
+
+                @media (max-width: 600px) {
+                    .bento-grid, .product-row, .founders-grid { grid-template-columns: 1fr; }
+                    .main-content { padding: 120px 20px 60px; }
+                    .hero-title { font-size: 36px; }
+                    .nav-inner { padding: 0 20px; }
+                    .founder-card { padding: 30px 20px; }
                 }
             `}</style>
         </div>

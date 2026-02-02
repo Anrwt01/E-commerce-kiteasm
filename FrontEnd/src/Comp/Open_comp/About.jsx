@@ -1,87 +1,87 @@
 import React from 'react';
-import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap } from 'lucide-react';
+import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import kiteasm_logo from "../../assets/images/kiteasm_logo.jpg";
 
 const About = () => {
   const styles = {
-    container: { 
+    container: {
       backgroundColor: '#000000', // Pure black for professional theme
       color: '#ffffff', // White text
-      minHeight: '100vh', 
-      fontFamily: '"Inter", sans-serif', 
-      overflowX: 'hidden' 
+      minHeight: '100vh',
+      fontFamily: '"Roboto", sans-serif',
+      overflowX: 'hidden'
     },
     section: { padding: '100px 24px', maxWidth: '1200px', margin: '0 auto' },
-    hero: { 
-      padding: '160px 24px 100px', 
-      textAlign: 'left', 
+    hero: {
+      padding: '160px 24px 100px',
+      textAlign: 'left',
       position: 'relative',
       maxWidth: '1200px',
       margin: '0 auto'
     },
-    gradientText: { 
+    gradientText: {
       color: '#ffffff', // Plain white instead of gradient
-      fontSize: 'clamp(3rem, 8vw, 6rem)', 
-      fontWeight: '900', 
-      letterSpacing: '-0.04em', 
-      lineHeight: '1' 
+      fontSize: 'clamp(3rem, 8vw, 6rem)',
+      fontWeight: '500',
+      letterSpacing: '-0.04em',
+      lineHeight: '1'
     },
-    storyCard: { 
+    storyCard: {
       background: 'rgba(255, 255, 255, 0.03)', // Subtle white overlay
-      border: '1px solid rgba(255,255,255,0.05)', 
-      borderRadius: '32px', 
-      padding: '60px', 
-      position: 'relative', 
-      overflow: 'hidden' 
+      border: '1px solid rgba(255,255,255,0.05)',
+      borderRadius: '32px',
+      padding: '60px',
+      position: 'relative',
+      overflow: 'hidden'
     },
-    ownerGrid: { 
-      display: 'grid', 
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
-      gap: '32px', 
-      marginTop: '40px' 
+    ownerGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+      gap: '32px',
+      marginTop: '40px'
     },
-    ownerCard: { 
-      background: 'rgba(255, 255, 255, 0.02)', 
-      border: '1px solid rgba(255, 255, 255, 0.08)', 
-      borderRadius: '24px', 
-      padding: '40px', 
-      textAlign: 'center', 
+    ownerCard: {
+      background: 'rgba(255, 255, 255, 0.02)',
+      border: '1px solid rgba(255, 255, 255, 0.08)',
+      borderRadius: '24px',
+      padding: '40px',
+      textAlign: 'center',
       transition: 'all 0.4s ease',
       backdropFilter: 'blur(10px)'
     },
-    socialLink: { 
-      display: 'inline-flex', 
-      alignItems: 'center', 
-      gap: '8px', 
+    socialLink: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '8px',
       color: '#ffffff', // White links
-      textDecoration: 'none', 
-      margin: '0 12px', 
-      fontSize: '14px', 
+      textDecoration: 'none',
+      margin: '0 12px',
+      fontSize: '14px',
       fontWeight: '600'
     },
-    badge: { 
+    badge: {
       color: '#ffffff', // White badge
-      fontSize: '12px', 
-      letterSpacing: '4px', 
-      fontWeight: '800', 
-      marginBottom: '20px', 
+      fontSize: '12px',
+      letterSpacing: '4px',
+      fontWeight: '800',
+      marginBottom: '20px',
       display: 'flex',
       alignItems: 'center',
       gap: '10px'
     },
-    registerBtn: { 
+    registerBtn: {
       backgroundColor: '#ffffff', // White button
       color: '#000000', // Black text
-      padding: '20px 48px', 
-      borderRadius: '16px', 
-      fontWeight: '800', 
-      border: 'none', 
-      cursor: 'pointer', 
-      fontSize: '16px', 
-      display: 'inline-flex', 
-      alignItems: 'center', 
-      gap: '12px', 
+      padding: '20px 48px',
+      borderRadius: '16px',
+      fontWeight: '800',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '16px',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '12px',
       transition: 'all 0.3s',
       boxShadow: '0 20px 40px rgba(255, 255, 255, 0.2)' // White shadow
     }
@@ -89,6 +89,14 @@ const About = () => {
 
   return (
     <div style={styles.container}>
+      <style>{`
+        @media (max-width: 768px) {
+           section { padding: 60px 20px !important; }
+           h1 { font-size: 3rem !important; }
+           h2 { font-size: 2.5rem !important; }
+           .hover-card { padding: 30px !important; }
+        }
+      `}</style>
       {/* 1. HERO SECTION */}
       <section style={styles.hero}>
         <div style={{ position: 'relative', zIndex: 1 }}>
@@ -116,14 +124,14 @@ const About = () => {
               </p>
             </div>
             <div style={{ position: 'relative' }}>
-               <img 
-                src={kiteasm_logo} 
-                alt="Kite Flying" 
-                style={{ width: '100%', borderRadius: '24px', filter: 'grayscale(0.2) brightness(0.8)' }} 
-               />
-               <div style={{ position: 'absolute', top: '-20px', left: '-20px', background: '#ffffff', padding: '20px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}> {/* White quote box */}
-                  <Quote size={30} color="#000000" /> {/* Black quote icon */}
-               </div>
+              <img
+                src={kiteasm_logo}
+                alt="Kite Flying"
+                style={{ width: '100%', borderRadius: '24px', filter: 'grayscale(0.2) brightness(0.8)' }}
+              />
+              <div style={{ position: 'absolute', top: '-20px', left: '-20px', background: '#ffffff', padding: '20px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}> {/* White quote box */}
+                <Quote size={30} color="#000000" /> {/* Black quote icon */}
+              </div>
             </div>
           </div>
         </div>
@@ -140,7 +148,7 @@ const About = () => {
           {/* Founder */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Founder" style={{ width: '100%' }} />
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Founder" style={{ width: '100%' }} />
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Udit Sanwal</h3>
             <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Founder & CEO</p>
@@ -154,7 +162,7 @@ const About = () => {
           {/* Designer */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Designer" style={{ width: '100%' }} />
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Designer" style={{ width: '100%' }} />
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Shubham joshi</h3>
             <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Manager & Marketing</p>
@@ -164,6 +172,35 @@ const About = () => {
               <a href="https://www.youtube.com/@RioTheExplorer" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
+
+          {/* Developer */}
+          <div style={styles.ownerCard} className="hover-card">
+            <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#111111', margin: '0 auto 24px', border: '2px solid #ffffff', overflow: 'hidden' }}> {/* White border */}
+              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jack" alt="Developer" style={{ width: '100%' }} />
+            </div>
+            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'white' }}>Anuj Sharma</h3>
+            <p style={{ color: '#ffffff', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px' }}>Lead Developer</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+              <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
+              <a href="#" style={styles.socialLink}><Youtube size={20} /></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3.5 BECOME A SELLER */}
+      <section style={{ ...styles.section, textAlign: 'center', backgroundColor: '#111111', borderRadius: '32px', margin: '40px auto' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ width: '80px', height: '80px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 30px' }}>
+            <Briefcase size={32} color="#ffffff" />
+          </div>
+          <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '20px', color: 'white' }}>Become a Seller.</h2>
+          <p style={{ color: '#cccccc', fontSize: '18px', lineHeight: '1.8', marginBottom: '40px' }}>
+            Join the fastest growing kite marketplace. Whether you craft artisanal kites or produce high-quality manjha, reach thousands of enthusiasts directly. We provide the platform, logistics, and community — you provide the passion.
+          </p>
+          <button style={{ ...styles.registerBtn, backgroundColor: 'transparent', border: '2px solid white', color: 'white', boxShadow: 'none' }}>
+            START SELLING
+          </button>
         </div>
       </section>
 
@@ -173,7 +210,7 @@ const About = () => {
         <p style={{ color: '#cccccc', fontSize: '18px', marginBottom: '50px', maxWidth: '600px', margin: '0 auto 50px' }}> {/* Light gray text */}
           Sign up to explore our latest kites, manjha, and accessories. Get exclusive updates and offers.
         </p>
-        
+
         <Link to="/register" style={{ textDecoration: 'none' }}>
           <button style={styles.registerBtn}>
             <UserPlus size={20} /> CREATE AN ACCOUNT

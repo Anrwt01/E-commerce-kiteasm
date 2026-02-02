@@ -27,17 +27,17 @@ const Profile = () => {
   }, []);
 
   if (loading) return (
-    <div style={{ 
-      height: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      backgroundColor: '#000', 
-      color: '#fff', 
-      letterSpacing: '0.5em', 
-      fontSize: '10px', 
+    <div style={{
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#000',
+      color: '#fff',
+      letterSpacing: '0.5em',
+      fontSize: '10px',
       fontWeight: 'bold',
-      fontFamily: '"Inter", -apple-system, sans-serif'
+      fontFamily: '"Roboto", sans-serif'
     }}>
       INITIALIZING IDENTITY...
     </div>
@@ -48,7 +48,7 @@ const Profile = () => {
       minHeight: '100vh',
       backgroundColor: '#000',
       color: '#fff',
-      fontFamily: '"Inter", -apple-system, sans-serif',
+      fontFamily: '"Roboto", sans-serif',
       padding: '0 5vw',
       overflowX: 'hidden',
       position: 'relative'
@@ -107,11 +107,11 @@ const Profile = () => {
       color: '#666',
     },
     valText: {
-        fontSize: 'clamp(18px, 4vw, 24px)', 
-        fontWeight: '300', 
-        letterSpacing: '-0.02em', 
-        color: '#fff',
-        wordBreak: 'break-all'
+      fontSize: 'clamp(18px, 4vw, 24px)',
+      fontWeight: '300',
+      letterSpacing: '-0.02em',
+      color: '#fff',
+      wordBreak: 'break-all'
     },
     btnBlack: (isHovered) => ({
       backgroundColor: isHovered ? '#fff' : '#000',
@@ -180,8 +180,8 @@ const Profile = () => {
       `}</style>
 
       <nav style={styles.nav}>
-        <button 
-          style={styles.backBtn} 
+        <button
+          style={styles.backBtn}
           onClick={() => navigate("/dashboard")}
         >
           <ArrowLeft size={16} /> INDEX
@@ -238,15 +238,15 @@ const Profile = () => {
           </div>
 
           <div className="action-buttons" style={{ marginTop: '60px', display: 'flex', gap: '16px', flexDirection: 'column' }}>
-            <button 
+            <button
               onMouseEnter={() => setHoveredBtn('history')}
               onMouseLeave={() => setHoveredBtn(null)}
-              style={styles.btnBlack(hoveredBtn === 'history')} 
+              style={styles.btnBlack(hoveredBtn === 'history')}
               onClick={() => navigate("/orders")}
             >
               VIEW ORDER HISTORY
             </button>
-            <button 
+            <button
               onMouseEnter={() => setHoveredBtn('edit')}
               onMouseLeave={() => setHoveredBtn(null)}
               style={styles.btnOutline(hoveredBtn === 'edit')}

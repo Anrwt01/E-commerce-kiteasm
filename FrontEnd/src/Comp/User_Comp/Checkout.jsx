@@ -30,6 +30,59 @@ const Checkout = () => {
     }
   });
 
+  const [logisticsCost, setLogisticsCost] = useState(0);
+
+  const normalize = (s = "") => s.toLowerCase();
+
+  const getDeliveryCharge = (items = []) => {
+    if (!Array.isArray(items) || items.length === 0) return 0;
+
+    let kiteQty = 0;
+    let hasBag3 = false;
+    let hasBag6 = false;
+    let hasCover = false;
+    let hasOswal = false;
+    let hasStand = false;
+    let hasManjha = false;
+
+    const types = items.map(i =>
+      normalize(i.productId?.category || i.productId?.name || "")
+    );
+
+    const only = (key) => types.length > 0 && types.every(t => t.includes(key));
+    const has = (key) => types.some(t => t.includes(key));
+
+    items.forEach(item => {
+      const name = normalize(item.productId?.name || "");
+      const category = normalize(item.productId?.category || "");
+
+      if (category === "kite") kiteQty += item.quantity;
+      if (name.includes("3inch")) hasBag3 = true;
+      if (name.includes("6inch")) hasBag6 = true;
+      if (name.includes("Cover")) hasCover = true;
+      if (name.includes("Oswal")) hasOswal = true;
+      if (name.includes("Stand")) hasStand = true;
+      if (name.includes("manjha")) hasManjha = true;
+    });
+
+    if (only("manjha")) return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
+    if (hasManjha && hasCover && hasOswal) return 200;
+    if (hasStand && hasCover) return 200;
+    if (hasOswal && hasCover) return 200;
+
+    if (kiteQty > 0) {
+      if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
+      if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
+    }
+
+    if (only("tape")) return 49;
+    if (only("cover")) return 99;
+    if (only("oswal")) return 149;
+    if (only("kite")) return 450;
+
+    return 250;
+  };
+
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -38,8 +91,14 @@ const Checkout = () => {
         axios.get("http://localhost:5000/api/user/details", { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
-      setCartItems(cartRes.data.items || []);
-      setTotalAmount(cartRes.data.items?.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0);
+      const items = cartRes.data.items || [];
+      setCartItems(items);
+
+      const sub = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+      const ship = getDeliveryCharge(items);
+
+      setLogisticsCost(ship);
+      setTotalAmount(sub + ship);
 
       const user = userRes.data.user;
       const addr = user?.address?.[0] || {};
@@ -186,8 +245,12 @@ const Checkout = () => {
           .info-row { grid-template-columns: 1fr !important; }
           .pay-grid { grid-template-columns: 1fr !important; }
         }
+        @media (max-width: 600px) {
+          .main-title { font-size: 28px !important; }
+          .section-card { padding: 20px !important; }
+        }
       `}</style>
-      
+
       <div style={styles.container}>
         <button onClick={() => navigate(-1)} style={styles.backBtn}>
           <ArrowLeftIcon width={14} /> RETURN TO STORE
@@ -306,33 +369,42 @@ const Checkout = () => {
               <div style={styles.cartList}>
                 {cartItems.map((item, i) => (
                   <div key={i} style={styles.cartItem}>
-                    <span style={{flex: 1}}>{item.productId?.name} <small style={{color: '#64748b'}}>x{item.quantity}</small></span>
-                    <span style={{fontWeight: 700, color: '#fff'}}>₹{item.price * item.quantity}</span>
+                    <span style={{ flex: 1 }}>{item.productId?.name} <small style={{ color: '#64748b' }}>x{item.quantity}</small></span>
+                    <span style={{ fontWeight: 700, color: '#fff' }}>₹{item.price * item.quantity}</span>
                   </div>
                 ))}
               </div>
-              
+
               <div style={styles.divider} />
-              
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                <span style={{ fontSize: 13, color: '#94a3b8' }}>Subtotal</span>
+                <span style={{ fontWeight: 700, color: '#fff' }}>₹{totalAmount - logisticsCost}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
+                <span style={{ fontSize: 13, color: '#94a3b8' }}>Logistics & Handling</span>
+                <span style={{ fontWeight: 700, color: '#fff' }}>₹{logisticsCost}</span>
+              </div>
+
               <div style={styles.totalRow}>
-                <div style={{display: 'flex', flexDirection: 'column'}}>
-                    <span style={{fontSize: 10, color: '#64748b', fontWeight: 800}}>TOTAL PAYABLE</span>
-                    <span style={{ fontSize: 28, fontWeight: 900, color: '#fff' }}>₹{totalAmount}</span>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: 10, color: '#64748b', fontWeight: 800 }}>TOTAL PAYABLE</span>
+                  <span style={{ fontSize: 28, fontWeight: 900, color: '#fff' }}>₹{totalAmount}</span>
                 </div>
               </div>
 
-              <button 
-                onClick={handlePlaceOrder} 
-                disabled={loading || isEditing} 
+              <button
+                onClick={handlePlaceOrder}
+                disabled={loading || isEditing}
                 style={{ ...styles.orderBtn, opacity: (loading || isEditing) ? 0.6 : 1 }}
               >
                 {loading ? "PROCESSING..." : (
                   paymentMethod === "COD" ? "CONFIRM ORDER" : "AUTHORIZE PAYMENT"
                 )}
               </button>
-              
+
               <p style={styles.secureNote}>
-                <LockClosedIcon width={14} /> 
+                <LockClosedIcon width={14} />
                 <span>SECURE CHECKOUT GATEWAY</span>
               </p>
             </div>

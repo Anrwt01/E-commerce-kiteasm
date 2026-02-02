@@ -73,7 +73,7 @@ const Navbar = () => {
     },
     container: { maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     logo: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '20px', fontWeight: '900', textTransform: 'uppercase', textDecoration: 'none', color: 'white' },
-    logoImage: { height: scrolled ? '38px' : '46px', width: scrolled ? '38px' : '46px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #ffffff', transition: '0.4s ease' },
+    logoImage: { height: scrolled ? '38px' : '46px', width: scrolled ? '38px' : '46px', objectFit: 'cover', transition: '0.4s ease' },
     linksContainer: { display: isMobile ? 'none' : 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center' },
     link: (path) => ({
       fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.2px',
@@ -103,8 +103,8 @@ const Navbar = () => {
       display: 'block', padding: '15px 0', borderBottom: '1px solid rgba(255,255,255,0.05)'
     }),
     sidebarAuthBtn: (isActive) => ({
-      backgroundColor: isActive ? '#333333' : '#ffffff', 
-      color: isActive ? '#ffffff' : '#000000', 
+      backgroundColor: isActive ? '#333333' : '#ffffff',
+      color: isActive ? '#ffffff' : '#000000',
       padding: '14px', borderRadius: '50px',
       fontSize: '12px', fontWeight: '900', textAlign: 'center', textDecoration: 'none', marginTop: '10px',
       border: isActive ? '1px solid rgba(255,255,255,0.2)' : 'none'
@@ -113,7 +113,7 @@ const Navbar = () => {
 
   const renderLinks = (isSidebar = false) => {
     const style = isSidebar ? styles.sidebarLink : styles.link;
-    const items = !isLoggedIn 
+    const items = !isLoggedIn
       ? [{ p: '/', n: 'Home' }, { p: '/products', n: 'Products' }, { p: '/contact', n: 'Contact' }, { p: '/about', n: 'About' }]
       : role === "admin"
         ? [{ p: '/admin', n: 'Admin Dashboard' }, { p: '/admin/orders', n: 'Orders' }, { p: '/admin/products', n: 'Product' }]
@@ -154,27 +154,27 @@ const Navbar = () => {
               <div style={styles.authGroup}>
                 {!isLoggedIn ? (
                   <>
-                    <Link 
-                      to="/login" 
-                      style={{ 
-                        fontSize: '10px', 
-                        fontWeight: '800', 
-                        textDecoration: 'none', 
+                    <Link
+                      to="/login"
+                      style={{
+                        fontSize: '10px',
+                        fontWeight: '800',
+                        textDecoration: 'none',
                         color: location.pathname === '/login' ? '#ffffff' : '#888888',
-                        transition: '0.3s' 
+                        transition: '0.3s'
                       }}
                     >
                       LOGIN
                     </Link>
-                    <Link 
-                      to="/register" 
-                      style={{ 
-                        backgroundColor: location.pathname === '/register' ? '#333333' : '#ffffff', 
-                        color: location.pathname === '/register' ? '#ffffff' : '#000000', 
-                        padding: '10px 22px', 
-                        borderRadius: '50px', 
-                        fontSize: '10px', 
-                        fontWeight: '900', 
+                    <Link
+                      to="/register"
+                      style={{
+                        backgroundColor: location.pathname === '/register' ? '#333333' : '#ffffff',
+                        color: location.pathname === '/register' ? '#ffffff' : '#000000',
+                        padding: '10px 22px',
+                        borderRadius: '50px',
+                        fontSize: '10px',
+                        fontWeight: '900',
                         textDecoration: 'none',
                         border: location.pathname === '/register' ? '1px solid rgba(255,255,255,0.2)' : 'none',
                         transition: '0.3s'
@@ -212,7 +212,7 @@ const Navbar = () => {
         <div onClick={() => setIsMenuOpen(false)} style={{ alignSelf: 'flex-end', cursor: 'pointer', color: '#fff', marginBottom: '20px' }}>
           <XMarkIcon width={30} />
         </div>
-        
+
         <ul style={{ padding: 0, margin: 0 }}>
           {renderLinks(true)}
         </ul>
@@ -221,16 +221,16 @@ const Navbar = () => {
           {!isLoggedIn ? (
             <>
               {/* Login now styled as a button on mobile */}
-              <Link 
-                to="/login" 
-                style={styles.sidebarAuthBtn(location.pathname === '/login')} 
+              <Link
+                to="/login"
+                style={styles.sidebarAuthBtn(location.pathname === '/login')}
                 onClick={() => setIsMenuOpen(false)}
               >
                 LOGIN
               </Link>
-              <Link 
-                to="/register" 
-                style={styles.sidebarAuthBtn(location.pathname === '/register')} 
+              <Link
+                to="/register"
+                style={styles.sidebarAuthBtn(location.pathname === '/register')}
                 onClick={() => setIsMenuOpen(false)}
               >
                 REGISTER

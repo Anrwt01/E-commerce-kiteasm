@@ -54,7 +54,7 @@
 //   return (
 //     <div style={{ backgroundColor: "#f8fafc", minHeight: "100vh", padding: "120px 24px 80px" }}>
 //       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        
+
 //         {/* Navigation Breadcrumb */}
 //         <button 
 //           onClick={() => navigate(-1)} 
@@ -66,7 +66,7 @@
 //         </button>
 
 //         <div style={{ display: "grid", gridTemplateColumns: window.innerWidth > 992 ? "1.1fr 0.9fr" : "1fr", gap: "60px", alignItems: "start" }}>
-          
+
 //           {/* LEFT: Image Section with Shadow Depth */}
 //           <div style={{ position: "relative" }}>
 //             <div style={{ background: "white", borderRadius: "40px", padding: "40px", border: "1px solid rgba(255,255,255,0.8)", boxShadow: "0 20px 40px -10px rgba(0,0,0,0.05)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
@@ -97,7 +97,7 @@
 
 //             <h1 style={{ fontSize: "48px", fontWeight: "900", color: "#0f172a", margin: "0 0 16px 0", letterSpacing: "-1.5px", lineHeight: "1.1" }}>{product.name}</h1>
 //             <p style={{ fontSize: "32px", fontWeight: "300", color: isOutOfStock ? "#cbd5e1" : "#0f172a", marginBottom: "32px" }}>₹{product.price.toLocaleString()}</p>
-            
+
 //             <div style={{ marginBottom: "40px" }}>
 //                 <h4 style={{ fontSize: "12px", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "2px", marginBottom: "16px" }}>Technical Specs</h4>
 //                 <p style={{ color: "#64748b", lineHeight: "1.8", fontSize: "16px", maxWidth: "500px" }}>{product.description || "Designed for ultimate performance and refined aesthetics, using industry-leading materials."}</p>
@@ -167,16 +167,16 @@ const ProductDetails = () => {
         const res = await axios.get(`http://localhost:5000/api/user/products/${id}`);
         const data = res.data.product || res.data;
         setProduct(data);
-        
+
         // Default to main image
         setActiveImage(`../uploads/${data._id}/main.jpg`);
 
         if (data.category?.toLowerCase() === "manjha") {
           const allRes = await axios.get(`http://localhost:5000/api/user/products`);
           const allProducts = allRes.data.products || [];
-          const saddi = allProducts.find(p => 
-            p._id !== data._id && 
-            (p.category?.toLowerCase() === "saddi" || p.name?.toLowerCase().includes("saddi"))
+          const saddi = allProducts.find(p =>
+            p._id !== data._id &&
+            (p.name?.toLowerCase() === "saddi" || p.name?.toLowerCase().includes("saddi"))
           );
           if (saddi) setSuggestedProduct(saddi);
         }
@@ -196,9 +196,9 @@ const ProductDetails = () => {
       if (!token) return navigate("/login");
       const headers = { Authorization: `Bearer ${token}` };
 
-      await axios.post(`http://localhost:5000/api/user/cart/add`, { 
-        productId: product._id, 
-        quantity 
+      await axios.post(`http://localhost:5000/api/user/cart/add`, {
+        productId: product._id,
+        quantity
       }, { headers });
 
       navigate("/cart");
@@ -218,11 +218,11 @@ const ProductDetails = () => {
   if (!product) return <div style={{ textAlign: "center", padding: "100px" }}>Product Not Found</div>;
 
   // We define the 3 secondary images based on your naming convention
-  const secondaryImages = [1, 2, 3]; 
+  const secondaryImages = [1, 2, 3];
 
   return (
-    <div style={{ backgroundColor: "#ffffff", minHeight: "100vh", color: "#000", fontFamily: "Inter, sans-serif" }}>
-      
+    <div style={{ backgroundColor: "#ffffff", minHeight: "100vh", color: "#000", fontFamily: "Roboto, sans-serif" }}>
+
       <style>{`
         @keyframes imageFadeIn {
           from { opacity: 0.5; transform: translateY(5px); }
@@ -231,26 +231,68 @@ const ProductDetails = () => {
         .main-view-anim {
           animation: imageFadeIn 0.3s ease-out forwards;
         }
+
+        .details-grid {
+           display: grid;
+           grid-template-columns: 1.2fr 1fr;
+           gap: 60px;
+        }
+        .image-gallery-flex {
+           display: flex;
+           gap: 20px;
+           flex-direction: row;
+        }
+        .thumbs-flex {
+           display: flex;
+           flex-direction: column;
+           gap: 12px;
+        }
+        .bundle-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        @media (max-width: 992px) {
+           .details-grid {
+              grid-template-columns: 1fr;
+           }
+        }
+        @media (max-width: 600px) {
+           .image-gallery-flex {
+              flex-direction: column-reverse;
+           }
+           .thumbs-flex {
+              flex-direction: row;
+              overflow-x: auto;
+           }
+           .bundle-flex {
+              flex-direction: column;
+              align-items: flex-start;
+           }
+        }
       `}</style>
 
       <div style={{ maxWidth: "1250px", margin: "0 auto", padding: "120px 20px 60px" }}>
-        
+
         <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: "8px", color: "#666", fontWeight: "500", cursor: "pointer", marginBottom: "30px" }}>
           <ChevronLeft size={20} /> Back to Collection
         </button>
 
-        <div style={{ display: "grid", gridTemplateColumns: window.innerWidth > 992 ? "1.2fr 1fr" : "1fr", gap: "60px" }}>
-          
+        <div className="details-grid">
+
           {/* LEFT: IMAGE GALLERY */}
-          <div style={{ display: "flex", gap: "20px", flexDirection: window.innerWidth > 600 ? "row" : "column-reverse" }}>
-            
+          <div className="image-gallery-flex">
+
             {/* Thumbnails */}
-            <div style={{ display: "flex", flexDirection: window.innerWidth > 600 ? "column" : "row", gap: "12px" }}>
-              
+            <div className="thumbs-flex">
+
               {/* Main Image Thumbnail */}
-              <div 
+              <div
                 onMouseEnter={() => setActiveImage(`../uploads/${product._id}/main.jpg`)}
-                style={{ 
+                style={{
                   width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
                   border: activeImage === `../uploads/${product._id}/main.jpg` ? "2px solid #000" : "1px solid #eee",
                   transition: "0.3s",
@@ -264,10 +306,10 @@ const ProductDetails = () => {
               {secondaryImages.map((num) => {
                 const imgPath = `../uploads/${product._id}/detail-${num}.jpg`;
                 return (
-                  <div 
+                  <div
                     key={num}
                     onMouseEnter={() => setActiveImage(imgPath)}
-                    style={{ 
+                    style={{
                       width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
                       border: activeImage === imgPath ? "2px solid #000" : "1px solid #eee",
                       transition: "0.3s",
@@ -282,12 +324,12 @@ const ProductDetails = () => {
 
             {/* Main Preview */}
             <div style={{ flex: 1, background: "#f9f9f9", borderRadius: "16px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", minHeight: "550px" }}>
-              <img 
+              <img
                 key={activeImage}
-                src={activeImage} 
-                alt={product.name} 
+                src={activeImage}
+                alt={product.name}
                 className="main-view-anim"
-                style={{ maxWidth: "100%", maxHeight: "500px", objectFit: "contain" }} 
+                style={{ maxWidth: "100%", maxHeight: "500px", objectFit: "contain" }}
               />
             </div>
           </div>
@@ -328,18 +370,31 @@ const ProductDetails = () => {
 
             <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
               <div style={{ display: "flex", alignItems: "center", border: "2px solid #000", borderRadius: "10px" }}>
-                <button onClick={() => setQuantity(q => Math.max(1, q-1))} style={{ padding: "12px 15px", background: "none", border: "none", cursor: "pointer" }}><Minus size={16}/></button>
+                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ padding: "12px 15px", background: "none", border: "none", cursor: "pointer" }}><Minus size={16} /></button>
                 <span style={{ width: "40px", textAlign: "center", fontWeight: "700" }}>{quantity}</span>
-                <button onClick={() => setQuantity(q => q+1)} style={{ padding: "12px 15px", background: "none", border: "none", cursor: "pointer" }}><Plus size={16}/></button>
+                <button
+                  onClick={() => {
+                    if (quantity < product.stock) setQuantity(q => q + 1);
+                  }}
+                  style={{
+                    padding: "12px 15px",
+                    background: "none",
+                    border: "none",
+                    cursor: quantity >= product.stock ? "not-allowed" : "pointer",
+                    opacity: quantity >= product.stock ? 0.3 : 1
+                  }}
+                >
+                  <Plus size={16} />
+                </button>
               </div>
 
-              <button 
+              <button
                 onClick={handleAddToCart}
                 disabled={isAdding || product.stock <= 0}
-                style={{ 
-                  flex: 1, background: product.stock > 0 ? "#000" : "#ccc", color: "#fff", 
-                  padding: "15px", borderRadius: "10px", fontWeight: "700", border: "none", 
-                  cursor: product.stock > 0 ? "pointer" : "not-allowed" 
+                style={{
+                  flex: 1, background: product.stock > 0 ? "#000" : "#ccc", color: "#fff",
+                  padding: "15px", borderRadius: "10px", fontWeight: "700", border: "none",
+                  cursor: product.stock > 0 ? "pointer" : "not-allowed"
                 }}
               >
                 {isAdding ? "ADDING..." : product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
@@ -354,7 +409,7 @@ const ProductDetails = () => {
             <h3 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "30px", display: "flex", alignItems: "center", gap: "10px" }}>
               <Zap size={20} color="#ff9f00" fill="#ff9f00" /> Complete Your Gear
             </h3>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "20px" }}>
+            <div className="bundle-flex">
               <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
                 <img src={`http://localhost:5000${product.mainImage}`} style={{ height: "100px", opacity: 0.6 }} alt="p1" />
                 <Plus size={24} color="#ccc" />
@@ -366,7 +421,7 @@ const ProductDetails = () => {
                   </div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleAddToCart}
                 style={{ background: "#fff", border: "2px solid #000", color: "#000", padding: "12px 30px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
               >

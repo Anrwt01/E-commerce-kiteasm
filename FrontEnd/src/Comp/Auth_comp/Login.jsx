@@ -21,7 +21,7 @@ const Login = () => {
 
     try {
       const res = await axios.post("http://localhost:5000/api/auth/login", payload);
-      
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         if (res.data.user) {
@@ -43,16 +43,16 @@ const Login = () => {
   };
 
   const styles = {
-    
+
     wrapper: {
       backgroundColor: '#000000',
-  
+
       // Pure black for professional theme
       minHeight: '100vh',
       paddingTop: '160px',
       paddingBottom: '100px',
       color: 'white',
-      fontFamily: '"Inter", sans-serif'
+      fontFamily: '"Roboto", sans-serif'
     },
     container: {
       maxWidth: '450px',
@@ -121,22 +121,28 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.wrapper}>
+    <div style={styles.wrapper} className="login-wrapper">
+      <style>{`
+        @media (max-width: 500px) {
+          h1 { font-size: 32px !important; }
+          .login-wrapper { padding-top: 120px !important; }
+        }
+      `}</style>
       <div style={styles.container}>
         <div style={{ textAlign: 'center' }}>
           <h1 style={styles.title}>Welcome Back<span style={{ color: '#cccccc' }}>.</span></h1> {/* Light gray dot */}
-          <span style={styles.subtitle}>AERO IDENTITY VERIFICATION</span>
+          <span style={styles.subtitle}></span>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div style={styles.inputContainer}>
             <Mail size={18} style={styles.inputIcon} />
-            <input 
-              type="email" 
-              placeholder="Email Address" 
-              ref={emailRef} 
-              required 
-              style={styles.input} 
+            <input
+              type="email"
+              placeholder="Email Address"
+              ref={emailRef}
+              required
+              style={styles.input}
               onFocus={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px #ffffff'} // White focus border
               onBlur={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'}
             />
@@ -144,12 +150,12 @@ const Login = () => {
 
           <div style={styles.inputContainer}>
             <Lock size={18} style={styles.inputIcon} />
-            <input 
-              type="password" 
-              placeholder="Password" 
-              ref={passwordRef} 
-              required 
-              style={styles.input} 
+            <input
+              type="password"
+              placeholder="Password"
+              ref={passwordRef}
+              required
+              style={styles.input}
               onFocus={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px #ffffff'} // White focus border
               onBlur={(e) => e.target.style.boxShadow = 'inset 0 0 0 1px rgba(255, 255, 255, 0.08)'}
             />
@@ -161,9 +167,9 @@ const Login = () => {
             </Link>
           </div>
 
-          <button 
-            type="submit" 
-            disabled={loading} 
+          <button
+            type="submit"
+            disabled={loading}
             style={styles.button}
             onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
             onMouseOut={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
@@ -174,7 +180,7 @@ const Login = () => {
 
         <div style={styles.footer}>
           <p style={{ fontSize: '14px', color: '#cccccc' }}> {/* Light gray text */}
-            New to the skies? <Link to="/register" style={{ color: '#ffffff', fontWeight: 800, textDecoration: 'none' }}>Request Membership.</Link> {/* White link */}
+            New to the skies? <Link to="/register" style={{ color: '#ffffff', fontWeight: 800, textDecoration: 'none' }}>Register Now.</Link> {/* White link */}
           </p>
         </div>
       </div>
