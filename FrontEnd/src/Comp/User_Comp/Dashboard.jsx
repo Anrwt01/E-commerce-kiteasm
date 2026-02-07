@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { productImages } from "../../utils/productImages";
+// import { productImages } from "../../utils/productImages";
 import axios from "axios";
 import API_BASE_URL from "../../utils/config.js";
 import {

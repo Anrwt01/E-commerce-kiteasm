@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from "../../utils/config.js";
 
 
-import kite_Pattern from "../../assets/Photo/kiteasm_pattern.jpg";
+import kite_Pattern from "../../assets/Images/kiteasm_pattern.jpg";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
