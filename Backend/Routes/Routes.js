@@ -4,6 +4,8 @@ import { Router } from "express";
 import { verifyme } from "../Http/Middleware/Verifyme.js";
 import { verifyRole } from "../Http/Middleware/VerifyRole.js";
 
+import { toggleWishlist, getWishlist } from "../Http/Controller/User/wishlist.js";
+
 import { forgotPassword } from "../Http/Controller/User/forgotPassword.js";
 
 /* 👤 Auth Controllers */
@@ -93,6 +95,11 @@ router.get("/user/Details", verifyme,userDetails )
 /* ===========================
    PAYMENTS
 =========================== */
+
+router.get("/my-wishlist", verifyme, getWishlist);
+
+// Add/Remove item from wishlist
+router.post("/toggle-wishlist", verifyme, toggleWishlist);
 
 
 /* ===========================

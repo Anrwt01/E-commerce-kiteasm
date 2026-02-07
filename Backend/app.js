@@ -31,7 +31,7 @@ app.use(
 // 📂 Static Files (Errors)
 app.use(express.static(path.join(__dirname, "Public")));
 
-console.log("RAZORPAY_KEY:", process.env.RAZORPAY_KEY);
+
 
 // 🚏 Routes
 app.use("/api", Routes);
@@ -93,6 +93,6 @@ const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 
