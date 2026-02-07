@@ -320,109 +320,163 @@ const Cart = () => {
   const totalAmount = subtotal + logistics;
 
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <button onClick={() => navigate("/dashboard")} style={styles.backBtn}>
-          <ChevronLeft size={16} /> Back to Catalog
-        </button>
+    <>
+      <style>{`
+        @media (max-width: 1024px) {
+          .cart-layout {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+        }
 
-        <header style={{ marginBottom: 60 }}>
-          <h1 className="main-title" style={styles.mainTitle}>Your Cart<span style={{ color: 'var(--accent)' }}>.</span></h1>
-          <p style={styles.subtitle}>Review your selected items before proceeding to checkout.</p>
-        </header>
+        @media (max-width: 768px) {
+          .cart-page {
+            padding: 120px 12px 60px !important;
+          }
+          .cart-section-card {
+            padding: 24px !important;
+            border-radius: 24px !important;
+          }
+          .cart-item-wrapper {
+            gap: 16px !important;
+          }
+          .cart-item-image {
+            width: 60px !important;
+            height: 60px !important;
+          }
+          .cart-item-title {
+            font-size: 14px !important;
+          }
+          .cart-summary-card {
+            padding: 24px !important;
+            border-radius: 24px !important;
+          }
+          .cart-order-btn {
+            padding: 18px !important;
+            font-size: 12px !important;
+          }
+          .cart-main-title {
+            font-size: 1.8rem !important;
+          }
+        }
 
-        {cart.length > 0 ? (
-          <div style={styles.layout}>
-            <div style={styles.leftCol}>
-              <div style={styles.sectionCard}>
-                <div style={styles.cardHeader}>
-                  <div style={styles.iconHeading}>
-                    <ShoppingBag size={16} />
-                    <span>Your Items</span>
-                  </div>
-                </div>
-                <div style={styles.cartList}>
-                  {cart.map((item) => (
-                    <div key={item.productId?._id} style={{ display: 'flex', alignItems: 'center', gap: 24, paddingBottom: 20, borderBottom: '1px solid var(--border-soft)', marginBottom: 20 }}>
-                      <div style={{ width: 80, height: 80, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-soft)', flexShrink: 0 }}>
-                        <img
-                          src={`../uploads/${item.productId._id}/main.jpg`}
-                          alt="product"
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 900, color: 'var(--slate-800)', letterSpacing: '-0.5px' }}>{item.productId?.name}</h3>
-                        <p style={{ margin: '4px 0', fontSize: 15, color: 'var(--accent)', fontWeight: '800' }}>₹{item.productId?.price}</p>
-                        <span style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--slate-400)' }}>UNIT COUNT: {item.quantity}</span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                        <button
-                          onClick={() => toggleWishlist(item.productId?._id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: wishlistItems.includes(item.productId?._id) ? 'var(--accent)' : 'var(--slate-400)',
-                            transition: '0.3s'
-                          }}
-                        >
-                          <Heart size={20} fill={wishlistItems.includes(item.productId?._id) ? "var(--accent)" : "none"} />
-                        </button>
-                        <button
-                          onClick={() => removeItem(item.productId?._id)}
-                          disabled={deletingId === item.productId?._id}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-400)', transition: '0.3s' }}
-                        >
-                          {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
-                        </button>
-                      </div>
+        @media (max-width: 480px) {
+          .cart-item-wrapper {
+            gap: 12px !important;
+          }
+          .cart-item-image {
+            width: 50px !important;
+            height: 50px !important;
+          }
+          .cart-section-card {
+            padding: 20px !important;
+          }
+        }
+      `}</style>
+      <div style={styles.page} className="cart-page">
+        <div style={styles.container}>
+          <button onClick={() => navigate("/dashboard")} style={styles.backBtn}>
+            <ChevronLeft size={16} /> Back to Catalog
+          </button>
+
+          <header style={{ marginBottom: 60 }}>
+            <h1 className="main-title cart-main-title" style={styles.mainTitle}>Your Cart<span style={{ color: 'var(--accent)' }}>.</span></h1>
+            <p style={styles.subtitle}>Review your selected items before proceeding to checkout.</p>
+          </header>
+
+          {cart.length > 0 ? (
+            <div style={styles.layout} className="cart-layout">
+              <div style={styles.leftCol}>
+                <div style={styles.sectionCard} className="cart-section-card">
+                  <div style={styles.cardHeader}>
+                    <div style={styles.iconHeading}>
+                      <ShoppingBag size={16} />
+                      <span>Your Items</span>
                     </div>
-                  ))}
+                  </div>
+                  <div style={styles.cartList}>
+                    {cart.map((item) => (
+                      <div key={item.productId?._id} className="cart-item-wrapper" style={{ display: 'flex', alignItems: 'center', gap: 24, paddingBottom: 20, borderBottom: '1px solid var(--border-soft)', marginBottom: 20 }}>
+                        <div className="cart-item-image" style={{ width: 80, height: 80, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-soft)', flexShrink: 0 }}>
+                          <img
+                            src={`../uploads/${item.productId._id}/main.jpg`}
+                            alt="product"
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <h3 className="cart-item-title" style={{ margin: 0, fontSize: 16, fontWeight: 900, color: 'var(--slate-800)', letterSpacing: '-0.5px' }}>{item.productId?.name}</h3>
+                          <p style={{ margin: '4px 0', fontSize: 15, color: 'var(--accent)', fontWeight: '800' }}>₹{item.productId?.price}</p>
+                          <span style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--slate-400)' }}>UNIT COUNT: {item.quantity}</span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                          <button
+                            onClick={() => toggleWishlist(item.productId?._id)}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              color: wishlistItems.includes(item.productId?._id) ? 'var(--accent)' : 'var(--slate-400)',
+                              transition: '0.3s'
+                            }}
+                          >
+                            <Heart size={20} fill={wishlistItems.includes(item.productId?._id) ? "var(--accent)" : "none"} />
+                          </button>
+                          <button
+                            onClick={() => removeItem(item.productId?._id)}
+                            disabled={deletingId === item.productId?._id}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-400)', transition: '0.3s' }}
+                          >
+                            {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div style={styles.rightCol}>
-              <div style={styles.summaryCard}>
-                <div style={styles.cardHeader}>
-                  <div style={styles.iconHeading}>
-                    <ArrowRight size={16} />
-                    <span>Shipment Manifest</span>
+              <div style={styles.rightCol}>
+                <div style={styles.summaryCard} className="cart-summary-card">
+                  <div style={styles.cardHeader}>
+                    <div style={styles.iconHeading}>
+                      <ArrowRight size={16} />
+                      <span>Shipment Manifest</span>
+                    </div>
                   </div>
+                  <div style={styles.cartList}>
+                    <div style={styles.cartItem}>
+                      <span style={{ fontWeight: '600' }}>Inventory Subtotal</span>
+                      <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{subtotal}</span>
+                    </div>
+                    <div style={styles.cartItem}>
+                      <span style={{ fontWeight: '600' }}>Logistics & Handling</span>
+                      <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{logistics}</span>
+                    </div>
+                  </div>
+                  <div style={styles.divider}></div>
+                  <div style={styles.totalRow}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: 10, color: 'var(--slate-400)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL PAYABLE</span>
+                      <span style={styles.totalAmount}>₹{totalAmount}</span>
+                    </div>
+                  </div>
+                  <button onClick={() => navigate("/checkout")} style={styles.orderBtn} className="cart-order-btn">
+                    Authorize Fulfillment
+                  </button>
                 </div>
-                <div style={styles.cartList}>
-                  <div style={styles.cartItem}>
-                    <span style={{ fontWeight: '600' }}>Inventory Subtotal</span>
-                    <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{subtotal}</span>
-                  </div>
-                  <div style={styles.cartItem}>
-                    <span style={{ fontWeight: '600' }}>Logistics & Handling</span>
-                    <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{logistics}</span>
-                  </div>
-                </div>
-                <div style={styles.divider}></div>
-                <div style={styles.totalRow}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: 10, color: 'var(--slate-400)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL PAYABLE</span>
-                    <span style={styles.totalAmount}>₹{totalAmount}</span>
-                  </div>
-                </div>
-                <button onClick={() => navigate("/checkout")} style={styles.orderBtn}>
-                  Authorize Fulfillment
-                </button>
               </div>
             </div>
-          </div>
-        ) : (
-          <div style={styles.emptyCart}>
-            <ShoppingBag size={48} style={styles.emptyIcon} />
-            <h2 style={styles.emptyTitle}>Cart is Empty</h2>
-            <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
-          </div>
-        )}
+          ) : (
+            <div style={styles.emptyCart}>
+              <ShoppingBag size={48} style={styles.emptyIcon} />
+              <h2 style={styles.emptyTitle}>Cart is Empty</h2>
+              <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

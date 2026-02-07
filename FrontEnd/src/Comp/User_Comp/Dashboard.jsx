@@ -85,30 +85,29 @@ const Dashboard = () => {
 
     if (loading || !user) return null;
 
-    const owners = [
-        {
-            name: "Udit Sanwal",
-            role: "FOUNDER & CEO",
-            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh", // Placeholder avatar
-            instagram: "https://www.instagram.com/_notrio_/",
-            youtube: "https://www.youtube.com/@RioTheExplorer"
-        },
-        {
-            name: "Shubham Joshi",
-            role: "Manager & Marketing",
-            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya", // Placeholder avatar
-            instagram: "#",
-            youtube: "https://www.youtube.com/@RioTheExplorer"
-        },
-        {
-            name: "Anuj Rawat",
-            role: "Lead Developer",
-            image: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jack", // Placeholder avatar
-            instagram: "https://www.instagram.com/anujjrawtt",
-            youtube: "https://www.youtube.com/@RioTheExplorer"
-        },
-
-    ];
+   const owners = [
+    {
+        name: "Udit Sanwal",
+        role: "FOUNDER & CEO",
+        image: "../teampictures/udit.jpg", 
+        instagram: "https://www.instagram.com/_notrio_/",
+        youtube: "https://www.youtube.com/@RioTheExplorer"
+    },
+    {
+        name: "Shubham Joshi",
+        role: "Head Of Marketing",
+        image: "../teampictures/joshi.jpg",
+        instagram: "https://www.instagram.com/KiteASM",
+        youtube: "https://www.youtube.com/@kiteasm01"
+    },
+    {
+        name: "Aditya Pundir",
+        role: "Sales Head",
+        image: "../teampictures/aditya.jpg",
+        instagram: "https://www.instagram.com/KiteASM",
+        youtube: "https://www.youtube.com/@kiteasm01"
+    }
+];
     return (
         <div className="dash-container">
             {/* Soft Grid Background */}
@@ -141,6 +140,7 @@ const Dashboard = () => {
                         { title: 'Orders', path: '/orders', icon: CubeIcon, desc: 'Track Orders' },
                         { title: 'Cart', path: '/cart', icon: SparklesIcon, desc: 'Active Cart' },
                         { title: 'Profile', path: '/user/update', icon: Cog6ToothIcon, desc: 'Adjust Profile' },
+                        { title: 'Wishlist', path: '/wishlist', icon: Cog6ToothIcon, desc: 'See wishlist' },
                     ].map((item) => (
                         <Link key={item.title} to={item.path} className="bento-card">
                             <div className="bento-icon-box">
@@ -243,6 +243,7 @@ const Dashboard = () => {
             </div>
 
             <style>{`
+
                 :root {
                     --bg-main: var(--bg-base);
                     --text-black: var(--slate-800);
@@ -250,13 +251,87 @@ const Dashboard = () => {
                     --accent-color: var(--accent);
                 }
 
-                .dash-container {
-                    background-color: var(--bg-main);
-                    min-height: 100vh;
-                    color: var(--text-black);
-                    font-family: var(--font-sans);
-                    position: relative;
-                }
+                /* Founders Section - Updated for larger, flush photos */
+                    .command-center { 
+                        margin-top: 120px; 
+                        padding: 80px 0; 
+                        text-align: center; 
+                    }
+
+                    .command-header h3 { 
+                        font-size: 12px; 
+                        letter-spacing: 4px; 
+                        color: var(--text-muted); 
+                        margin-bottom: 60px; 
+                        font-weight: 900; 
+                    }
+
+                    .founders-grid { 
+                        display: grid; 
+                        grid-template-columns: repeat(3, 1fr); 
+                        gap: 40px; /* Increased gap for larger cards */
+                        max-width: 1300px; 
+                        margin: 0 auto; 
+                    }
+
+                    .founder-card { 
+                        padding: 40px 20px; 
+                        text-align: center; 
+                    }
+
+                    /* Increased size and removed padding so photo touches the border */
+                    .founder-img-wrapper { 
+                        width: 220px; /* Increased from 140px */
+                        height: 220px; /* Increased from 140px */
+                        margin: 0 auto 30px; 
+                        border-radius: 50px; /* More modern rounded-square look */
+                        border: 3px solid var(--accent-color);
+                        background: white;
+                        overflow: hidden; /* This clips the image to the border radius */
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    /* Photo now fills the entire wrapper */
+                    .founder-img { 
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover; /* Ensures the photo fills the box without distortion */
+                        display: block;
+                    }
+
+                    .founder-name { 
+                        font-size: 28px; 
+                        font-weight: 800; 
+                        letter-spacing: -1px; 
+                        color: var(--text-black); 
+                        margin-bottom: 5px;
+                    }
+
+                    .founder-role { 
+                        font-size: 12px; 
+                        font-weight: 900; 
+                        letter-spacing: 2px; 
+                        color: var(--accent-color); 
+                        text-transform: uppercase; 
+                    }
+
+                    /* Responsive adjustment for larger photos */
+                    @media (max-width: 768px) {
+                        .founder-img-wrapper {
+                            width: 180px;
+                            height: 180px;
+                        }
+                    }
+
+                                    .dash-container {
+                                        background-color: var(--bg-main);
+                                        min-height: 100vh;
+                                        color: var(--text-black);
+                                        font-family: var(--font-sans);
+                                        position: relative;
+                                    }
 
                 .top-nav {
                     position: fixed; top: 0; width: 100%; height: 80px;
@@ -296,7 +371,7 @@ const Dashboard = () => {
                 .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 500; letter-spacing: -2.5px; margin: 0; color: var(--text-black); }
 
                 /* Bento Cards */
-                .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: 60px 0; }
+                .bento-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; margin: 60px 0; }
                 
                 .bento-card {
                     background: rgba(255, 255, 255, 0.4);

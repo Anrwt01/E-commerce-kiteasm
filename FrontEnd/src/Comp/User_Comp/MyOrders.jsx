@@ -212,7 +212,7 @@ const MyOrders = () => {
                                 boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)'
                             }}
                         >
-                            ACQUIRE GEAR
+                            Add Product
                         </button>
                     </div>
                 ) : (

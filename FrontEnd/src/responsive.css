@@ -1,0 +1,276 @@
+/* ========================================
+   RESPONSIVE DESIGN - GLOBAL STYLES
+   Mobile-first responsive styles for all pages
+   ======================================== */
+
+/* ========================================
+   GLOBAL RESPONSIVE UTILITIES
+   ======================================== */
+@media (max-width: 1024px) {
+
+    /* Two-column grids become single column on tablet */
+    [style*="grid-template-columns: '1fr 400px'"],
+    [style*="grid-template-columns: '1.1fr 0.9fr'"],
+    [style*="gridTemplateColumns: '1fr 400px'"],
+    [style*="gridTemplateColumns: '1.1fr 0.9fr'"] {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Page padding adjustments */
+    [style*="padding: '140px"],
+    [style*="padding: '160px"] {
+        padding: 120px 12px 60px !important;
+    }
+
+    /* Card padding reductions */
+    [style*="padding: '40px'"][style*="borderRadius: 32"] {
+        padding: 24px !important;
+        border-radius: 24px !important;
+    }
+
+    /* Form grid layouts */
+    [style*="gridTemplateColumns: '1fr 1fr'"],
+    [style*="grid-template-columns: '1fr 1fr'"] {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* Button adjustments */
+    button[style*="padding: '22px'"],
+    button[style*="padding: '20px'"] {
+        padding: 18px !important;
+        font-size: 12px !important;
+    }
+
+    /* Input field adjustments */
+    input[style*="padding: '16px"],
+    input[style*="padding: '18px"],
+    textarea[style*="padding: '16px"],
+    select[style*="padding: '16px'"] {
+        padding: 14px 18px !important;
+        font-size: 14px !important;
+    }
+
+    /* Image size reductions */
+    [style*="width: 80"][style*="height: 80"] {
+        width: 60px !important;
+        height: 60px !important;
+    }
+
+    /* Heading size adjustments */
+    h1 {
+        font-size: clamp(1.8rem, 5vw, 2.5rem) !important;
+    }
+
+    h2 {
+        font-size: clamp(1.5rem, 4vw, 2rem) !important;
+    }
+
+    h3 {
+        font-size: clamp(1.2rem, 3vw, 1.5rem) !important;
+    }
+
+    /* Ensure all buttons are touch-friendly */
+    button,
+    .btn,
+    a.btn {
+        min-height: 44px !important;
+    }
+
+    /* Container padding */
+    [style*="maxWidth: 1100"],
+    [style*="maxWidth: 1000"],
+    [style*="maxWidth: 1200"] {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    /* Grid layouts - make responsive */
+    [style*="display: 'grid'"][style*="gridTemplateColumns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Auth cards */
+    .login-card,
+    .register-card {
+        padding: 30px !important;
+        max-width: 100% !important;
+        margin: 0 16px !important;
+    }
+
+    .login-sky-container,
+    .register-sky-container {
+        padding: 20px !important;
+    }
+
+    .input-field {
+        padding: 16px 18px 16px 50px !important;
+        font-size: 14px !important;
+    }
+
+    .login-btn,
+    .register-btn {
+        padding: 18px !important;
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Extra small screens */
+    body {
+        font-size: 14px !important;
+    }
+
+    /* Further reduce image sizes */
+    [style*="width: 80"][style*="height: 80"],
+    [style*="width: 60"][style*="height: 60"] {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    /* Tighter card padding */
+    [style*="padding: '40px'"],
+    [style*="padding: '30px'"],
+    [style*="padding: '24px'"] {
+        padding: 20px !important;
+    }
+
+    /* Auth cards */
+    .login-card,
+    .register-card {
+        padding: 24px !important;
+        border-radius: 30px !important;
+    }
+
+    h1 {
+        font-size: 1.8rem !important;
+    }
+}
+
+/* ========================================
+   SPECIFIC COMPONENT OVERRIDES
+   ======================================== */
+
+/* Table layouts - convert to cards on mobile */
+@media (max-width: 768px) {
+
+    /* Hide table headers on mobile */
+    [style*="gridTemplateColumns: '1.5fr 2fr 1fr 1fr'"]>div:first-child {
+        display: none !important;
+    }
+
+    /* Stack table rows */
+    [style*="gridTemplateColumns: '1.5fr 2fr 1fr 1fr'"] {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        padding: 20px !important;
+    }
+
+    /* Product grids */
+    [style*="gridTemplateColumns: 'repeat(auto-fill"],
+    [style*="grid-template-columns: 'repeat(auto-fill"] {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}
+
+/* Wishlist specific */
+@media (max-width: 768px) {
+    [style*="gridTemplateColumns: \"repeat(auto-fill, minmax(280px, 1fr))\""] {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+        gap: 20px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    [style*="gridTemplateColumns: \"repeat(auto-fill"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Admin dashboard stats grid */
+@media (max-width: 1024px) {
+    [style*="display: 'grid'"][style*="gap: '30px'"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 768px) {
+
+    [style*="display: 'grid'"][style*="gap: '30px'"],
+    [style*="display: 'grid'"][style*="gap: '40px'"] {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+}
+
+/* Flex layouts - ensure wrapping on mobile */
+@media (max-width: 768px) {
+    [style*="display: 'flex'"][style*="gap"] {
+        flex-wrap: wrap !important;
+    }
+
+    /* Action button groups */
+    [style*="display: 'flex'"][style*="gap: '15px'"] button {
+        flex: 1 1 auto !important;
+    }
+}
+
+/* Overflow handling for tables */
+@media (max-width: 768px) {
+    [style*="overflow: 'hidden'"] {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* Form elements full width on mobile */
+@media (max-width: 768px) {
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    textarea,
+    select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* Ensure proper spacing for mobile */
+@media (max-width: 768px) {
+
+    [style*="marginBottom: 60"],
+    [style*="margin-bottom: 60"] {
+        margin-bottom: 40px !important;
+    }
+
+    [style*="marginBottom: 40"],
+    [style*="margin-bottom: 40"] {
+        margin-bottom: 24px !important;
+    }
+
+    [style*="gap: 60"],
+    [style*="gap: '60px'"] {
+        gap: 40px !important;
+    }
+
+    [style*="gap: 40"],
+    [style*="gap: '40px'"] {
+        gap: 24px !important;
+    }
+}
+
+/* Fix for inline styles with display grid */
+@media (max-width: 768px) {
+    div[style*="display: grid"][style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+}

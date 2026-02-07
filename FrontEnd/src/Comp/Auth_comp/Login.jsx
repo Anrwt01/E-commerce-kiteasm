@@ -205,7 +205,7 @@ const Login = () => {
 
           <button className="login-btn" type="submit" disabled={loading}>
             {loading && <span className="charkhari-loader"></span>}
-            {loading ? 'Winding...' : 'Enter Hangar'}
+            {loading ? 'Loading...' : 'Login'}
           </button>
         </form>
 

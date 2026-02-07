@@ -33,7 +33,6 @@ const animationStyles = `
   }
   input:focus { outline: none !important; border: none !important; }
   
-  /* Responsive Breakpoints */
   @media (max-width: 768px) {
     .header-row { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
     .search-section { width: 100% !important; align-items: flex-start !important; }
@@ -45,21 +44,48 @@ const animationStyles = `
     .product-grid {
       grid-template-columns: repeat(2, 1fr) !important;
       gap: 12px !important;
+      padding: 0 10px !important;
     }
+
     .product-card-hover {
-      padding: 8px !important;
-      border-radius: 16px !important;
+      padding: 0 !important; /* Remove padding to let image touch edges */
+      border-radius: 24px !important; /* Matches your screenshot */
+      overflow: hidden !important;
+      height: auto !important;
     }
+
+    /* Target the image container */
+    .product-card-hover > div:first-child { 
+      height: 160px !important; /* Shorter mobile height */
+      border-radius: 0 0 24px 24px !important; /* Bottom rounding for the image */
+      margin: 8px !important; /* Small gap from card edge */
+      width: calc(100% - 16px) !important;
+      position: relative;
+    }
+
+    /* Target the text area */
+    .product-card-hover > div:last-child {
+      padding: 0 12px 16px !important; /* Consistent side spacing */
+    }
+
     .product-name-text {
-      font-size: 14px !important;
-      margin-bottom: 6px !important;
-    }
-    .product-price-text {
       font-size: 15px !important;
+      font-weight: 700 !important;
+      margin-bottom: 8px !important;
+      white-space: normal !important; /* Allow 2 lines like screenshot */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
+
+    .product-price-text {
+      font-size: 16px !important;
+      font-weight: 800 !important;
+    }
+
     .add-btn {
-      width: 30px !important;
-      height: 30px !important;
+      display: none !important; /* Screenshot doesn't show a plus button on card */
     }
   }
 

@@ -161,8 +161,16 @@ const ProductDetails = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   const token = localStorage.getItem("token");
+
+  // Handle screen resize for dynamic styling
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchWishlist = async () => {
     if (!token) return;
@@ -206,20 +214,15 @@ const ProductDetails = () => {
         const res = await axios.get(`${API_BASE_URL}/user/products/${id}`);
         const data = res.data.product || res.data;
         setProduct(data);
-
-        // Default to main image
         setActiveImage(`../uploads/${data._id}/main.jpg`);
 
-        // Inside useEffect fetchData...
         if (data.category?.toLowerCase() === "manjha") {
           const allRes = await axios.get(`${API_BASE_URL}/user/products`);
           const allProducts = allRes.data.products || [];
           const OswalNo3 = allProducts.find(p =>
-            p._id !== data._id &&
-            (p.name?.toLowerCase().includes("oswal no3"))
+            p._id !== data._id && (p.name?.toLowerCase().includes("oswal no3"))
           );
           if (OswalNo3) {
-            // Construct the image path specifically for the suggestion
             OswalNo3.imageUrl = `../uploads/${OswalNo3._id}/main.jpg`;
             setSuggestedProduct(OswalNo3);
           }
@@ -237,18 +240,14 @@ const ProductDetails = () => {
   const handleAddToCart = async () => {
     setIsAdding(true);
     try {
-      const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
-      const headers = { Authorization: `Bearer ${token}` };
-
       await axios.post(`${API_BASE_URL}/user/cart/add`, {
         productId: product._id,
         quantity
-      }, { headers });
-
+      }, { headers: { Authorization: `Bearer ${token}` } });
       navigate("/cart");
     } catch (err) {
-      alert("Failed to add to cart.", err);
+      alert("Failed to add to cart.");
     } finally {
       setIsAdding(false);
     }
@@ -257,25 +256,13 @@ const ProductDetails = () => {
   const handleBundleAddToCart = async () => {
     setIsAdding(true);
     try {
-      const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
       const headers = { Authorization: `Bearer ${token}` };
-
-      // Add main product
-      await axios.post(`${API_BASE_URL}/user/cart/add`, {
-        productId: product._id,
-        quantity
-      }, { headers });
-
-      // Add bundled product
-      await axios.post(`${API_BASE_URL}/user/cart/add`, {
-        productId: suggestedProduct._id,
-        quantity: 1
-      }, { headers });
-
+      await axios.post(`${API_BASE_URL}/user/cart/add`, { productId: product._id, quantity }, { headers });
+      await axios.post(`${API_BASE_URL}/user/cart/add`, { productId: suggestedProduct._id, quantity: 1 }, { headers });
       navigate("/cart");
     } catch (err) {
-      alert("Failed to add bundle to cart.", err);
+      alert("Failed to add bundle to cart.");
     } finally {
       setIsAdding(false);
     }
@@ -289,7 +276,6 @@ const ProductDetails = () => {
 
   if (!product) return <div style={{ textAlign: "center", padding: "100px" }}>Product Not Found</div>;
 
-  // We define the 3 secondary images based on your naming convention
   const secondaryImages = [1, 2, 3];
 
   return (
@@ -309,45 +295,46 @@ const ProductDetails = () => {
            grid-template-columns: 1.2fr 1fr;
            gap: 60px;
         }
-        .image-gallery-flex {
-           display: flex;
-           gap: 20px;
-           flex-direction: row;
-        }
-        .thumbs-flex {
-           display: flex;
-           flex-direction: column;
-           gap: 12px;
-        }
-        .bundle-flex {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
+
+        @media (max-width: 1024px) {
+           .details-grid { gap: 30px; grid-template-columns: 1fr 1fr; }
         }
 
-        @media (max-width: 992px) {
-           .details-grid {
-              grid-template-columns: 1fr;
+        @media (max-width: 768px) {
+           .details-grid { grid-template-columns: 1fr; gap: 30px; }
+           .image-gallery-flex { flex-direction: column-reverse !important; gap: 15px !important; }
+           .thumbs-flex { 
+              flex-direction: row !important; 
+              justify-content: center; 
+              overflow-x: auto; 
+              padding-bottom: 5px; 
            }
+           .main-preview-box { min-height: 350px !important; padding: 10px !important; }
+           
+           /* CENTERED ACTION BUTTONS ON MOBILE */
+           .action-buttons-container { 
+              flex-direction: column !important; 
+              align-items: center !important; 
+              text-align: center;
+              gap: 20px !important; 
+           }
+           .quantity-selector { width: 150px !important; }
+           .primary-add-btn { width: 100% !important; max-width: 350px; }
+           .product-info-text { text-align: center; }
+           .rating-container { justify-content: center; }
+           .price-container { justify-content: center; }
+           .trust-badges { justify-items: center; text-align: center; }
         }
-        @media (max-width: 600px) {
-           .image-gallery-flex {
-              flex-direction: column-reverse;
-           }
-           .thumbs-flex {
-              flex-direction: row;
-              overflow-x: auto;
-           }
-           .bundle-flex {
-              flex-direction: column;
-              align-items: flex-start;
-           }
+
+        .bundle-flex { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+        @media (max-width: 768px) {
+            .bundle-flex { flex-direction: column; text-align: center; }
+            .bundle-item-group { justify-content: center; flex-wrap: wrap; }
+            .bundle-action-area { width: 100%; border-top: 1px solid #eee; pt: 20px; text-align: center !important; }
         }
       `}</style>
 
-      <div style={{ maxWidth: "1250px", margin: "0 auto", padding: "120px 20px 60px" }}>
+      <div style={{ maxWidth: "1250px", margin: "0 auto", padding: isMobile ? "90px 20px 40px" : "120px 20px 60px" }}>
 
         <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: "8px", color: "#666", fontWeight: "500", cursor: "pointer", marginBottom: "30px" }}>
           <ChevronLeft size={20} /> Back to Collection
@@ -356,36 +343,27 @@ const ProductDetails = () => {
         <div className="details-grid">
 
           {/* LEFT: IMAGE GALLERY */}
-          <div className="image-gallery-flex">
-
-            {/* Thumbnails */}
-            <div className="thumbs-flex">
-
-              {/* Main Image Thumbnail */}
+          <div className="image-gallery-flex" style={{ display: "flex", gap: "20px" }}>
+            <div className="thumbs-flex" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <div
                 onMouseEnter={() => setActiveImage(`../uploads/${product._id}/main.jpg`)}
                 style={{
-                  width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
+                  width: "75px", height: "75px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
                   border: activeImage === `../uploads/${product._id}/main.jpg` ? "2px solid #000" : "1px solid #eee",
-                  transition: "0.3s",
-                  transform: activeImage === `../uploads/${product._id}/main.jpg` ? "scale(1.08)" : "scale(1)"
+                  transition: "0.3s", flexShrink: 0
                 }}
               >
-                <img src={`../uploads/${product._id}/main.jpg`} style={{ width: "100%", objectFit: "contain", height: "100%", objectFit: "cover" }} alt="main-thumb" />
+                <img src={`../uploads/${product._id}/main.jpg`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="main-thumb" />
               </div>
 
-              {/* 3 Secondary Image Thumbnails */}
               {secondaryImages.map((num) => {
                 const imgPath = `../uploads/${product._id}/detail-${num}.jpg`;
                 return (
-                  <div
-                    key={num}
-                    onMouseEnter={() => setActiveImage(imgPath)}
+                  <div key={num} onMouseEnter={() => setActiveImage(imgPath)}
                     style={{
-                      width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
+                      width: "75px", height: "75px", borderRadius: "10px", overflow: "hidden", cursor: "pointer",
                       border: activeImage === imgPath ? "2px solid #000" : "1px solid #eee",
-                      transition: "0.3s",
-                      transform: activeImage === imgPath ? "scale(1.08)" : "scale(1)"
+                      transition: "0.3s", flexShrink: 0
                     }}
                   >
                     <img src={imgPath} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt={`detail-${num}`} />
@@ -394,74 +372,62 @@ const ProductDetails = () => {
               })}
             </div>      
 
-            {/* Main Preview */}
-            <div style={{ flex: 1, background: "#f9f9f9", borderRadius: "16px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", minHeight: "550px" }}>
-              <img
-                key={activeImage}
-                src={activeImage}
-                alt={product.name}
-                className="main-view-anim"
-                style={{ maxWidth: "100%", maxHeight: "500px", objectFit: "contain" }}
-              />
+            <div className="main-preview-box" style={{ flex: 1, background: "#f9f9f9", borderRadius: "16px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", minHeight: "550px" }}>
+              <img key={activeImage} src={activeImage} alt={product.name} className="main-view-anim" style={{ maxWidth: "100%", maxHeight: "500px", objectFit: "contain" }} />
             </div>
           </div>
 
           {/* RIGHT: PRODUCT INFO */}
-          <div>
+          <div className="product-info-text">
             <div>
               <span style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", color: "#999", letterSpacing: "1px" }}>{product.category}</span>
-              <h1 style={{ fontSize: "36px", fontWeight: "800", margin: "8px 0", letterSpacing: "-1px" }}>{product.name}</h1>
+              <h1 style={{ fontSize: isMobile ? "28px" : "36px", fontWeight: "800", margin: "8px 0", letterSpacing: "-1px" }}>{product.name}</h1>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "15px", margin: "15px 0" }}>
+            <div className="rating-container" style={{ display: "flex", alignItems: "center", gap: "15px", margin: "15px 0" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#ff9f00" }}>
                 {[...Array(5)].map((_, i) => <Star key={i} size={18} fill={i < 4 ? "#ff9f00" : "none"} stroke={i < 4 ? "#ff9f00" : "#ccc"} />)}
               </div>
               <span style={{ color: "#888", fontSize: "14px" }}>(120+ Reviews)</span>
             </div>
 
-            <div style={{ margin: "30px 0" }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+            <div className="price-container" style={{ margin: "30px 0", display: "flex", alignItems: "baseline", gap: "12px" }}>
                 <span style={{ fontSize: "42px", fontWeight: "900" }}>₹{product.price}</span>
                 <span style={{ color: product.stock > 0 ? "#388e3c" : "#d32f2f", fontWeight: "600" }}>
-                  {product.stock > 0 ? `In Stock: ${product.stock}` : "Out of Stock"}
+                  {product.stock > 0 ? `In Stock` : "Out of Stock"}
                 </span>
-              </div>
             </div>
 
-            <p style={{ fontSize: "16px", color: "#444", lineHeight: "1.8", marginBottom: "40px", borderLeft: "3px solid #eee", paddingLeft: "20px" }}>
+            <p style={{ fontSize: "16px", color: "#444", lineHeight: "1.8", marginBottom: "40px", borderLeft: isMobile ? "none" : "3px solid #eee", paddingLeft: isMobile ? "0" : "20px" }}>
               {product.description}
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "40px" }}>
+            <div className="trust-badges" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "40px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><ShieldCheck size={20} /> 100% Authentic</div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><Truck size={20} /> Express Delivery</div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><RotateCcw size={20} /> 7 Day Returns</div>
               <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14px" }}><Zap size={20} /> Competition Grade</div>
             </div>
 
-            <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", border: "2px solid #000", borderRadius: "10px" }}>
+            {/* UPDATED: ACTION BUTTONS CONTAINER */}
+            <div className="action-buttons-container" style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+              
+              {/* Quantity Selector */}
+              <div className="quantity-selector" style={{ display: "flex", alignItems: "center", border: "2px solid #000", borderRadius: "10px", background: "#fff" }}>
                 <button onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ padding: "12px 15px", background: "none", border: "none", cursor: "pointer" }}><Minus size={16} /></button>
                 <span style={{ width: "40px", textAlign: "center", fontWeight: "700" }}>{quantity}</span>
                 <button
-                  onClick={() => {
-                    if (quantity < product.stock) setQuantity(q => q + 1);
-                  }}
-                  style={{
-                    padding: "12px 15px",
-                    background: "none",
-                    border: "none",
-                    cursor: quantity >= product.stock ? "not-allowed" : "pointer",
-                    opacity: quantity >= product.stock ? 0.3 : 1
-                  }}
+                  onClick={() => quantity < product.stock && setQuantity(q => q + 1)}
+                  style={{ padding: "12px 15px", background: "none", border: "none", cursor: quantity >= product.stock ? "not-allowed" : "pointer", opacity: quantity >= product.stock ? 0.3 : 1 }}
                 >
                   <Plus size={16} />
                 </button>
               </div>
 
+              {/* Add to Cart */}
               <button
                 onClick={handleAddToCart}
+                className="primary-add-btn"
                 disabled={isAdding || product.stock <= 0}
                 style={{
                   flex: 1, background: product.stock > 0 ? "#000" : "#ccc", color: "#fff",
@@ -474,16 +440,17 @@ const ProductDetails = () => {
                 {isAdding ? "ADDING..." : product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
               </button>
 
+              {/* Wishlist Button */}
               <button
                 onClick={() => toggleWishlist(product._id)}
                 style={{
                   padding: "15px", borderRadius: "10px", border: "2px solid #000",
-                  background: wishlistItems.includes(product._id) ? "var(--bg-base)" : "transparent",
+                  background: wishlistItems.includes(product._id) ? "#000" : "transparent",
                   cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "0.3s", color: wishlistItems.includes(product._id) ? "var(--accent)" : "#000"
+                  transition: "0.3s", color: wishlistItems.includes(product._id) ? "#fff" : "#000"
                 }}
               >
-                <Heart size={24} fill={wishlistItems.includes(product._id) ? "var(--accent)" : "none"} />
+                <Heart size={24} fill={wishlistItems.includes(product._id) ? "currentColor" : "none"} />
               </button>
             </div>
           </div>
@@ -491,77 +458,44 @@ const ProductDetails = () => {
 
         {/* BUNDLE SECTION */}
         {suggestedProduct && (
-          <div style={{
-            marginTop: "80px",
-            padding: "40px",
-            borderRadius: "24px",
-            background: "#ffffff",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 10px 30px -15px rgba(0,0,0,0.05)"
-          }}>
-            <h3 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "30px", display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ marginTop: "80px", padding: isMobile ? "25px" : "40px", borderRadius: "24px", background: "#ffffff", border: "1px solid #e2e8f0", boxShadow: "0 10px 30px -15px rgba(0,0,0,0.05)" }}>
+            <h3 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "30px", display: "flex", alignItems: "center", gap: "10px", justifyContent: isMobile ? "center" : "flex-start" }}>
               <Zap size={20} color="#ff9f00" fill="#ff9f00" /> Complete Your Gear
             </h3>
 
-            <div className="bundle-flex" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "30px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
-
-                {/* Current Product Image */}
-                <div style={{ width: "120px", height: "120px", background: "#f8fafc", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
-                  <img src={activeImage} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", opacity: 0.6 }} alt="Current Product" />
+            <div className="bundle-flex">
+              <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1, justifyContent: isMobile ? "center" : "flex-start" }}>
+                <div style={{ width: "80px", height: "80px", background: "#f8fafc", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
+                  <img src={activeImage} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", opacity: 0.6 }} alt="Current" />
                 </div>
-
-                <Plus size={24} color="#cbd5e1" strokeWidth={3} />
-
-                {/* Suggested Product Info & Photo */}
-                <div style={{ display: "flex", alignItems: "center", gap: "20px", padding: "15px", background: "#f8fafc", borderRadius: "16px", border: "1px solid #f1f5f9" }}>
-                  <div style={{ width: "100px", height: "100px", background: "#fff", borderRadius: "8px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img
-                      src={suggestedProduct.imageUrl}
-                      style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain" }}
-                      alt={suggestedProduct.name}
-                      onError={(e) => { e.target.src = "https://via.placeholder.com/100?text=Kite"; }}
-                    />
-                  </div>
+                <Plus size={20} color="#cbd5e1" strokeWidth={3} />
+                <div style={{ display: "flex", alignItems: "center", gap: "15px", padding: "12px", background: "#f8fafc", borderRadius: "16px", border: "1px solid #f1f5f9" }}>
+                  <img src={suggestedProduct.imageUrl} style={{ width: "60px", height: "60px", objectFit: "contain" }} alt={suggestedProduct.name} onError={(e) => { e.target.src = "https://via.placeholder.com/100?text=Kite"; }} />
                   <div>
-                    <p style={{ fontWeight: "800", fontSize: "16px", margin: "0 0 4px 0", color: "#0f172a" }}>{suggestedProduct.name}</p>
-                    <p style={{ color: "#0ea5e9", fontWeight: "700", fontSize: "18px", margin: 0 }}>+ ₹{suggestedProduct.price.toLocaleString()}</p>
+                    <p style={{ fontWeight: "800", fontSize: "14px", margin: "0", color: "#0f172a" }}>{suggestedProduct.name}</p>
+                    <p style={{ color: "#0ea5e9", fontWeight: "700", fontSize: "16px", margin: 0 }}>+ ₹{suggestedProduct.price}</p>
                   </div>
                 </div>
               </div>
 
-              {/* Bundle Action */}
-              <div style={{ textAlign: "right" }}>
+              <div className="bundle-action-area" style={{ textAlign: isMobile ? "center" : "right", marginTop: isMobile ? "20px" : "0" }}>
                 <p style={{ fontSize: "13px", color: "#64748b", fontWeight: "600", marginBottom: "8px" }}>Combined Total</p>
                 <button
                   onClick={handleBundleAddToCart}
                   disabled={isAdding}
                   style={{
-                    background: "#0f172a",
-                    color: "#fff",
-                    padding: "16px 32px",
-                    borderRadius: "14px",
-                    fontWeight: "800",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                    boxShadow: "0 10px 20px -5px rgba(15, 23, 42, 0.2)",
-                    transition: "0.3s",
-                    opacity: isAdding ? 0.7 : 1
+                    background: "#0f172a", color: "#fff", padding: "16px 32px", borderRadius: "14px", fontWeight: "800", border: "none", cursor: "pointer", fontSize: "16px", width: isMobile ? "100%" : "auto"
                   }}
-                  onMouseEnter={(e) => !isAdding && (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => !isAdding && (e.currentTarget.style.transform = "translateY(0)")}
                 >
-                  {isAdding ? "ADDING BUNDLE..." : `Get Bundle (₹${(product.price + suggestedProduct.price).toLocaleString()})`}
+                  {isAdding ? "ADDING..." : `Get Bundle (₹${(product.price + suggestedProduct.price).toLocaleString()})`}
                 </button>
               </div>
             </div>
           </div>
-        )
-        }
+        )}
       </div>
     </div>
-  )
+  );
 };
 
 export default ProductDetails;

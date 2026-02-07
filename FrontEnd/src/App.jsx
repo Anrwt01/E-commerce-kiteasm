@@ -53,12 +53,12 @@ const App = () => {
         <Routes>
 
           {/* --- 🔓 GUEST ONLY ROUTES (Blocked if logged in) --- */}
-          <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* --- 🌍 SHARED PUBLIC ROUTES (Always accessible) --- */}
+          <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/products" element={<Products />} />

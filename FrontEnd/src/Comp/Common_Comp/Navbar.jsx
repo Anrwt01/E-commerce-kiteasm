@@ -123,6 +123,7 @@ const Navbar = () => {
       fontSize: '12px', fontWeight: '900', textAlign: 'center', textDecoration: 'none', marginTop: '10px',
       border: 'none',
       boxShadow: isActive ? 'none' : '0 10px 15px -3px rgba(59, 130, 246, 0.4)'
+      
     })
   };
 
@@ -132,7 +133,7 @@ const Navbar = () => {
       ? [{ p: '/', n: 'Home' }, { p: '/products', n: 'Products' }, { p: '/contact', n: 'Contact' }, { p: '/about', n: 'About' }]
       : role === "admin"
         ? [{ p: '/admin', n: 'Admin Dashboard' }, { p: '/admin/orders', n: 'Orders' }, { p: '/admin/products', n: 'Product' }]
-        : [{ p: '/dashboard', n: 'User Dashboard' }, { p: '/products', n: 'Products' }, { p: '/wishlist', n: 'Wishlist' }, { p: '/orders', n: 'Orders' }];
+        : [{ p: '/', n: 'Home' },{ p: '/dashboard', n: 'User Dashboard' }, { p: '/products', n: 'Products' }, { p: '/orders', n: 'Orders' },{ p: '/about', n: 'About' }];
 
     return items.map(item => (
       <li key={item.p} style={{ listStyle: 'none' }}>
@@ -146,10 +147,10 @@ const Navbar = () => {
       <nav style={styles.nav}>
         <div style={styles.container}>
           {/* Logo */}
-          <Link to="/" style={styles.logo}>
-            <img src={kiteasm_logo} alt="Kiteasm" style={styles.logoImage} />
-            <span style={{ color: '#1E293B' }}>Kiteasm<span style={{ color: '#3B82F6' }}>.</span></span>
-          </Link>
+         <Link to="/" style={styles.logo}>
+        <img src={kiteasm_logo} alt="Kiteasm" style={styles.logoImage} />
+        <span style={{ color: '#1E293B' }}>Kiteasm<span style={{ color: '#3B82F6' }}>.</span></span>
+      </Link>
 
           {/* Laptop Navigation Links */}
           <ul style={styles.linksContainer}>

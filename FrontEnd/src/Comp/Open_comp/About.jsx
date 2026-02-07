@@ -29,7 +29,7 @@ const About = () => {
     },
     storyCard: {
       background: 'var(--bg-card)',
-      border: '1px solid var(--border-soft)',
+      border: '1px solid',
       borderRadius: 'var(--radius-xl)',
       padding: '60px',
       position: 'relative',
@@ -94,15 +94,39 @@ const About = () => {
   return (
     <div style={styles.container}>
       <style>{`
+        @media (max-width: 1024px) {
+          .story-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .owner-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important; }
+        }
         @media (max-width: 768px) {
-           section { padding: 60px 20px !important; }
-           h1 { font-size: 3rem !important; }
-           h2 { font-size: 2.5rem !important; }
-           .hover-card { padding: 30px !important; }
+          section { padding: 60px 20px !important; }
+          .hero { padding: 120px 20px 60px !important; }
+          h1 { font-size: 3rem !important; }
+          h2 { font-size: 2.5rem !important; }
+          .story-card { padding: 40px 20px !important; }
+          .hover-card { padding: 30px !important; }
+          .owner-card img { width: 120px !important; height: 120px !important; }
+          .owner-card h3 { font-size: 22px !important; }
+          .badge { font-size: 10px !important; }
+          .register-btn { padding: 16px 32px !important; font-size: 14px !important; }
+        }
+        @media (max-width: 480px) {
+          .hero { padding: 100px 16px 50px !important; }
+          h1 { font-size: 2.5rem !important; line-height: 1.2 !important; }
+          h2 { font-size: 2rem !important; }
+          .story-card { padding: 30px 16px !important; }
+          .hover-card { padding: 20px !important; }
+          .owner-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+          .owner-card img { width: 100px !important; height: 100px !important; }
+          .owner-card h3 { font-size: 20px !important; }
+          .social-link { width: 36px !important; height: 36px !important; }
+          .register-btn { padding: 14px 24px !important; font-size: 13px !important; }
+          .become-seller { padding: 40px 20px !important; }
+          .cta { padding: 80px 20px !important; }
         }
       `}</style>
       {/* 1. HERO SECTION */}
-      <section style={styles.hero}>
+      <section style={styles.hero} className="hero">
         <div style={{ position: 'relative', zIndex: 1 }}>
           <span style={styles.badge}><Wind size={14} /> Established 2021</span>
           <h1 style={styles.gradientText}>Elevating <br />Kite Flying Experience <span style={{ color: 'var(--accent)' }}>.</span></h1>
@@ -114,11 +138,11 @@ const About = () => {
 
       {/* 2. OUR STORY */}
       <section style={styles.section}>
-        <div style={styles.storyCard}>
+        <div style={styles.storyCard} className="story-card">
           <div style={{ position: 'absolute', right: '-40px', bottom: '-40px', opacity: 0.03, color: 'white' }}>
             <BookOpen size={300} />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center' }} className="story-grid">
             <div>
               <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '24px', color: 'var(--slate-800)', letterSpacing: '-1px' }}>Our Journey<span style={{ color: 'var(--accent)' }}>.</span></h2>
               <p style={{ color: 'var(--slate-600)', fontSize: '18px', lineHeight: '1.8' }}>
@@ -148,52 +172,70 @@ const About = () => {
           <div style={{ height: '4px', width: '60px', background: 'var(--accent)', marginTop: '15px', borderRadius: '2px' }}></div>
         </div>
 
-        <div style={styles.ownerGrid}>
+        <div style={styles.ownerGrid} className="owner-grid">
           {/* Founder */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="../teampictures/udit.jpg" alt="Founder" style={{ width: '100%', borderRadius: '30px' }} />
+                    <img src="../teampictures/udit.jpg" alt="Founder" style={{ 
+          width: '100%', 
+          height: '100%',     // Crucial for the cover property to work
+          objectFit: 'cover',  // This ensures the photo fills the area without distortion
+          borderRadius: '30px',
+          display: 'block'     // Removes inline spacing
+        }}/>
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Udit Sanwal</h3>
             <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Founder & CEO</p>
             {/* <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>With over 15 years in the kite industry, Rajesh leads Kiteasm with a vision for innovation and quality.</p> */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-              <a href="https://www.instagram.com/_notrio_/" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="https://www.youtube.com/@RioTheExplorer" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.instagram.com/_notrio_/" style={styles.socialLink} className="social-link"><Instagram size={20} /></a>
+              <a href="https://www.youtube.com/@RioTheExplorer" style={styles.socialLink} className="social-link"><Youtube size={20} /></a>
             </div>
           </div>
 
           {/* Designer */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="../teampictures/joshi.jpg" alt="Designer" style={{ width: '100%', borderRadius: '30px' }} />
+              <img src="../teampictures/joshi.jpg" alt="Designer" style={{ 
+                width: '100%', 
+                height: '100%',     // Crucial for the cover property to work
+                objectFit: 'cover',  // This ensures the photo fills the area without distortion
+                borderRadius: '30px',
+                display: 'block'     // Removes inline spacing
+              }} />
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Shubham Joshi</h3>
             <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Head of Marketing </p>
             {/* <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>Priya designs our kites and accessories, focusing on aerodynamics and user experience for all skill levels.</p> */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-              <a href="https://www.instagram.com/KiteASM" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="https://www.youtube.com/@kiteasm01" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.instagram.com/KiteASM" style={styles.socialLink} className="social-link"><Instagram size={20} /></a>
+              <a href="https://www.youtube.com/@kiteasm01" style={styles.socialLink} className="social-link"><Youtube size={20} /></a>
             </div>
           </div>
 
           {/* Developer */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jack" alt="Developer" style={{ width: '100%', borderRadius: '30px' }} />
-            </div>
+              <img src="../teampictures/aditya.jpg" alt="Developer" style={{ 
+                width: '100%', 
+                height: '100%',     // Crucial for the cover property to work
+                objectFit: 'cover',  // This ensures the photo fills the area without distortion
+                borderRadius: '30px',
+                display: 'block'     // Removes inline spacing
+              }} />
+                        </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Aditya Pundir</h3>
             <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Sales Head </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-              <a href="https://www.instagram.com/KiteASM" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="https://www.youtube.com/@kiteasm01" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.instagram.com/KiteASM" style={styles.socialLink} className="social-link"><Instagram size={20} /></a>
+              <a href="https://www.youtube.com/@kiteasm01" style={styles.socialLink} className="social-link"><Youtube size={20} /></a>
             </div>
           </div>
         </div>
       </section>
 
       {/* 3.5 BECOME A SELLER */}
-      <section style={{ ...styles.section, textAlign: 'center', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', margin: '40px auto', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-floating)' }}>
+      <section style={{ ...styles.section, textAlign: 'center', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', margin: '40px auto', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-floating)' }} className="become-seller">
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <div style={{ width: '80px', height: '80px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 30px' }}>
             <Briefcase size={32} color="var(--accent)" />
@@ -202,21 +244,21 @@ const About = () => {
           <p style={{ color: 'var(--slate-600)', fontSize: '18px', lineHeight: '1.8', marginBottom: '40px' }}>
             Join the fastest growing kite marketplace. Whether you craft artisanal kites or produce high-quality gear, reach thousands of enthusiasts directly.
           </p>
-          <button style={{ ...styles.registerBtn, backgroundColor: 'transparent', border: '2px solid var(--accent)', color: 'var(--accent)', boxShadow: 'none' }}>
+          <button style={{ ...styles.registerBtn, backgroundColor: 'transparent', border: '2px solid var(--accent)', color: 'var(--accent)', boxShadow: 'none' }} className="register-btn">
             START SELLING
           </button>
         </div>
       </section>
 
       {/* 4. CTA */}
-      <section style={{ textAlign: 'center', padding: '120px 24px', borderTop: '1px solid var(--border-soft)' }}>
+      <section style={{ textAlign: 'center', padding: '120px 24px', borderTop: '1px solid var(--border-soft)' }} className="cta">
         <h2 style={{ fontSize: '48px', fontWeight: '900', color: 'var(--slate-800)', marginBottom: '20px', letterSpacing: '-2px' }}>Join the Sky.</h2>
         <p style={{ color: 'var(--slate-600)', fontSize: '18px', marginBottom: '50px', maxWidth: '600px', margin: '0 auto 50px' }}>
           Explore the premium collection of kites and gear. Elevate your flying experience today.
         </p>
 
         <Link to="/register" style={{ textDecoration: 'none' }}>
-          <button style={styles.registerBtn}>
+          <button style={styles.registerBtn} className="register-btn">
             <UserPlus size={20} /> CREATE AN ACCOUNT
           </button>
         </Link>
