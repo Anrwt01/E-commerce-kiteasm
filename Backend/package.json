@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon app.js",
@@ -27,11 +27,11 @@
     "razorpay": "^2.9.6",
     "socket.io": "^4.8.1",
     "stripe": "^20.1.0",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+     "dotenv": "^17.2.3"
   },
   "devDependencies": {
     "autocannon": "^8.0.0",
-    "dotenv": "^17.2.3",
     "nodemon": "^3.1.7"
   }
 }
