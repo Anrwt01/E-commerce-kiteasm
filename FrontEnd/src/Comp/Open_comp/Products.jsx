@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Layers } from "lucide-react";
+import API_BASE_URL from "../../utils/config.js";
 
 // Helper to resolve image paths based on our new ID structure
 const getProductImage = (dbPath) => {
@@ -26,9 +27,9 @@ const animationStyles = `
     transition: all 0.3s ease;
   }
   .product-card-hover:hover {
-    transform: translateY(-4px);
-    background: rgba(0, 0, 0, 0.03) !important;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--accent) !important;
+    box-shadow: var(--shadow-hover) !important;
   }
   input:focus { outline: none !important; border: none !important; }
   
@@ -38,6 +39,28 @@ const animationStyles = `
     .search-section { width: 100% !important; align-items: flex-start !important; }
     .search-box { max-width: 100% !important; }
     .page-wrapper { padding-top: 120px !important; }
+  }
+
+  @media (max-width: 600px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 12px !important;
+    }
+    .product-card-hover {
+      padding: 8px !important;
+      border-radius: 16px !important;
+    }
+    .product-name-text {
+      font-size: 14px !important;
+      margin-bottom: 6px !important;
+    }
+    .product-price-text {
+      font-size: 15px !important;
+    }
+    .add-btn {
+      width: 30px !important;
+      height: 30px !important;
+    }
   }
 `;
 
@@ -53,7 +76,7 @@ const Products = () => {
   const fetchProducts = useCallback(async (isFirstLoad = false) => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/search/products", {
+      const res = await axios.get(`${API_BASE_URL}/search/products`, {
         params: { category: activeCategory, search: searchTerm }
       });
       const items = res.data.products || [];
@@ -81,9 +104,9 @@ const Products = () => {
   const styles = {
     pageWrapper: {
       padding: "160px 5% 80px",
-      backgroundColor: '#ffffff',
+      backgroundColor: 'var(--bg-base)',
       minHeight: '100vh',
-      color: '#000000',
+      color: 'var(--slate-800)',
       width: '100%',
       boxSizing: 'border-box'
     },
@@ -98,12 +121,14 @@ const Products = () => {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
-      background: 'rgba(0,0,0,0.05)',
+      background: 'rgba(255,255,255,0.7)',
+      backdropFilter: 'blur(10px)',
       padding: '14px 22px',
       borderRadius: '16px',
       width: '100%',
       maxWidth: '400px',
-      border: '1px solid rgba(0,0,0,0.1)',
+      border: '1px solid var(--border-soft)',
+      boxShadow: 'var(--shadow-sm)',
       boxSizing: 'border-box'
     },
     catPill: (isActive) => ({
@@ -114,8 +139,10 @@ const Products = () => {
       cursor: "pointer",
       border: "none",
       transition: "0.3s all",
-      backgroundColor: isActive ? "#000000" : "rgba(0,0,0,0.05)",
-      color: isActive ? "#ffffff" : "#000000",
+      backgroundColor: isActive ? "var(--accent)" : "rgba(255,255,255,0.8)",
+      color: isActive ? "#ffffff" : "var(--slate-600)",
+      boxShadow: isActive ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'var(--shadow-sm)',
+      border: isActive ? 'none' : '1px solid var(--border-soft)',
       textTransform: 'uppercase'
     }),
     grid: {
@@ -124,19 +151,25 @@ const Products = () => {
       gap: "25px"
     },
     card: {
-      background: "#ffffff",
-      border: "1px solid rgba(0,0,0,0.08)",
-      borderRadius: "24px",
-      padding: "12px",
+      background: "var(--bg-card)",
+      border: "1px solid var(--border-soft)",
+      borderRadius: "var(--radius-xl)",
+      padding: "20px",
       cursor: "pointer",
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      boxShadow: 'var(--shadow-floating)'
     },
     imgContainer: {
-      aspectRatio: '1/1',
-      borderRadius: "18px",
-      overflow: "hidden",
-      background: '#f5f5f7',
-      width: '100%'
+      width: '100%',
+      height: '300px',
+      borderRadius: '18px',
+      overflow: 'hidden',
+      backgroundColor: '#f1f5f9',
+      transition: 'transform 0.6s cubic-bezier(0.19, 1, 0.22, 1)',
     }
   };
 
@@ -151,16 +184,16 @@ const Products = () => {
             <span style={{ fontSize: "11px", fontWeight: "900", color: "#666", letterSpacing: "3px", textTransform: 'uppercase' }}>
               <Layers size={14} style={{ marginBottom: '-2px', marginRight: '5px' }} /> Premium Stock
             </span>
-            <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: "700", margin: "10px 0", letterSpacing: "-2px" }}>
-              The Collection<span style={{ color: '#444' }}>.</span>
+            <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: "800", margin: "10px 0", letterSpacing: "-2px", color: 'var(--slate-800)' }}>
+              The Collection<span style={{ color: 'var(--accent)' }}>.</span>
             </h1>
           </header>
 
           <div className="search-section" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
             <div className="search-box" style={styles.searchBox}>
-              <Search size={18} color="#000" />
+              <Search size={18} color="var(--slate-400)" />
               <input
-                style={{ border: 'none', background: 'transparent', color: '#000000', width: '100%', fontSize: '14px' }}
+                style={{ border: 'none', background: 'transparent', color: 'var(--slate-800)', width: '100%', fontSize: '14px', fontWeight: '500' }}
                 placeholder="Search collection..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -178,7 +211,7 @@ const Products = () => {
         </div>
 
         {/* Product Grid */}
-        <div style={styles.grid}>
+        <div style={styles.grid} className="product-grid">
           {loading ? (
             <p style={{ color: '#444' }}>Syncing Inventory...</p>
           ) : products.length > 0 ? (
@@ -202,16 +235,17 @@ const Products = () => {
                     <span style={{ fontSize: '9px', color: '#666', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>{product.category}</span>
                     {product.isExclusive && <span style={{ fontSize: '9px', color: '#0ea5e9', fontWeight: '900' }}>EXCLUSIVE</span>}
                   </div>
-                  <h3 style={{ fontSize: '17px', fontWeight: '800', margin: '0 0 12px', color: '#000000', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <h3 className="product-name-text" style={{ fontSize: '1.25rem', fontWeight: '700', margin: '0 0 12px', color: 'var(--slate-800)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', letterSpacing: '-0.5px' }}>
                     {product.name}
                   </h3>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '18px', fontWeight: '900', color: "#000000" }}>₹{product.price}</span>
-                    <button style={{
-                      background: "#000000", color: "#ffffff", border: "none", borderRadius: "10px",
-                      width: "36px", height: "36px", display: "flex", alignItems: "center", justifyContent: "center"
+                    <span className="product-price-text" style={{ fontSize: '1.2rem', fontWeight: '800', color: "var(--accent)" }}>₹{product.price}</span>
+                    <button className="add-btn" style={{
+                      background: "var(--accent)", color: "#ffffff", border: "none", borderRadius: "12px",
+                      width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: '700',
+                      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
                     }}>
-                      <Plus size={18} />
+                      <Plus size={20} />
                     </button>
                   </div>
                 </div>

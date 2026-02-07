@@ -1,10 +1,232 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../utils/config.js";
 import { useNavigate } from "react-router-dom";
 import {
   ShieldCheckIcon, ArrowLeftIcon, CheckCircleIcon,
   MapPinIcon, LockClosedIcon, TruckIcon, CreditCardIcon
 } from "@heroicons/react/24/outline";
+
+// Define styles object with Anti-Gravity aesthetic
+const styles = {
+  page: {
+    background: "var(--bg-base)",
+    minHeight: "100vh",
+    padding: "140px 16px 80px",
+    color: "var(--slate-800)",
+    fontFamily: "var(--font-sans)"
+  },
+  container: {
+    maxWidth: 1100,
+    margin: "0 auto"
+  },
+  backBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    border: 'none',
+    background: 'none',
+    fontSize: 11,
+    fontWeight: 900,
+    color: 'var(--slate-400)',
+    cursor: 'pointer',
+    marginBottom: 24,
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    transition: '0.3s'
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 400px',
+    gap: 60,
+    alignItems: 'start'
+  },
+  leftCol: { width: '100%' },
+  rightCol: { width: '100%' },
+  mainTitle: {
+    fontSize: 'clamp(2rem, 5vw, 2.5rem)',
+    fontWeight: 900,
+    marginTop: 10,
+    letterSpacing: '-2px',
+    color: 'var(--slate-800)'
+  },
+  subtitle: {
+    color: 'var(--slate-600)',
+    marginTop: 8,
+    fontSize: 16
+  },
+  sectionCard: {
+    background: 'var(--bg-card)',
+    padding: '40px',
+    borderRadius: 32,
+    border: '1px solid var(--border-soft)',
+    boxShadow: 'var(--shadow-floating)',
+    marginBottom: 32
+  },
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
+    gap: 10
+  },
+  iconHeading: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    fontWeight: 900,
+    fontSize: 11,
+    color: 'var(--accent)',
+    textTransform: 'uppercase',
+    letterSpacing: '1px'
+  },
+  editBtn: {
+    border: 'none',
+    padding: '12px 20px',
+    borderRadius: 14,
+    fontSize: 10,
+    fontWeight: 900,
+    cursor: 'pointer',
+    transition: '0.4s',
+    flexShrink: 0,
+    textTransform: 'uppercase',
+    letterSpacing: '1px'
+  },
+  dataDisplay: {
+    background: 'var(--bg-base)',
+    padding: 32,
+    borderRadius: 24,
+    border: '1px solid var(--border-soft)'
+  },
+  infoRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: 32,
+    marginBottom: 24
+  },
+  label: {
+    fontSize: 10,
+    fontWeight: 900,
+    color: 'var(--slate-400)',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  },
+  val: {
+    fontSize: 16,
+    fontWeight: 900,
+    margin: '0',
+    color: 'var(--slate-800)'
+  },
+  verifiedTag: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    fontSize: 10,
+    color: '#10b981',
+    fontWeight: 900,
+    marginTop: 16,
+    borderTop: '1px solid var(--border-soft)',
+    paddingTop: 16
+  },
+  formGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: 20
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8
+  },
+  input: {
+    padding: '16px 20px',
+    borderRadius: 16,
+    border: '1px solid var(--border-soft)',
+    outline: 'none',
+    fontSize: 14,
+    width: '100%',
+    boxSizing: 'border-box',
+    background: '#fff',
+    fontWeight: '600',
+    transition: '0.3s'
+  },
+  payGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: 20,
+    marginTop: 32
+  },
+  payOption: {
+    padding: '24px',
+    borderRadius: 24,
+    border: '2px solid var(--border-soft)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+    transition: '0.4s',
+    background: 'white'
+  },
+  summaryCard: {
+    background: 'var(--bg-card)',
+    color: 'var(--slate-800)',
+    padding: '40px',
+    borderRadius: 32,
+    border: '1px solid var(--border-soft)',
+    boxShadow: 'var(--shadow-floating)'
+  },
+  cartList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20
+  },
+  cartItemLayout: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: 14,
+    color: 'var(--slate-600)'
+  },
+  divider: {
+    height: 1,
+    background: 'var(--border-soft)',
+    margin: '32px 0'
+  },
+  totalRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 40
+  },
+  orderBtn: {
+    width: '100%',
+    padding: '22px',
+    borderRadius: 20,
+    background: 'var(--accent)',
+    color: '#fff',
+    border: 'none',
+    fontWeight: '900',
+    cursor: 'pointer',
+    fontSize: '13px',
+    textTransform: 'uppercase',
+    letterSpacing: '1.5px',
+    boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
+    transition: '0.4s'
+  },
+  secureNote: {
+    textAlign: 'center',
+    fontSize: 10,
+    color: 'var(--slate-400)',
+    marginTop: 32,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    fontWeight: 900,
+    letterSpacing: '1px',
+    textTransform: 'uppercase'
+  }
+};
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -50,7 +272,6 @@ const Checkout = () => {
     );
 
     const only = (key) => types.length > 0 && types.every(t => t.includes(key));
-    const has = (key) => types.some(t => t.includes(key));
 
     items.forEach(item => {
       const name = normalize(item.productId?.name || "");
@@ -87,8 +308,8 @@ const Checkout = () => {
     try {
       const token = localStorage.getItem("token");
       const [cartRes, userRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/user/cart", { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get("http://localhost:5000/api/user/details", { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API_BASE_URL}/user/cart`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_BASE_URL}/user/details`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
 
       const items = cartRes.data.items || [];
@@ -138,7 +359,7 @@ const Checkout = () => {
       setSyncing(true);
       try {
         const token = localStorage.getItem("token");
-        await axios.put("http://localhost:5000/api/user/add-update", formData, {
+        await axios.put(`${API_BASE_URL}/user/add-update`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } catch (err) {
@@ -181,7 +402,7 @@ const Checkout = () => {
         paymentMethod
       };
 
-      const res = await axios.post("http://localhost:5000/api/user/checkout", orderPayload, {
+      const res = await axios.post(`${API_BASE_URL}/user/checkout`, orderPayload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -189,7 +410,7 @@ const Checkout = () => {
         const serverOrderId = res.data.orderId;
         if (paymentMethod === "Razorpay") {
           const { data: pRes } = await axios.post(
-            "http://localhost:5000/api/razorpay",
+            `${API_BASE_URL}/razorpay`,
             { orderId: serverOrderId },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -209,7 +430,7 @@ const Checkout = () => {
                   orderId: serverOrderId
                 };
                 const { data: vRes } = await axios.post(
-                  "http://localhost:5000/api/verify",
+                  `${API_BASE_URL}/verify`,
                   verificationPayload,
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -236,44 +457,29 @@ const Checkout = () => {
 
   return (
     <div style={styles.page}>
-      <style>{`
-        @media (max-width: 992px) {
-          .checkout-layout { grid-template-columns: 1fr !important; gap: 30px !important; }
-          .right-col-container { margin-top: 0 !important; }
-          .main-title { font-size: 32px !important; }
-          .form-grid { grid-template-columns: 1fr !important; }
-          .info-row { grid-template-columns: 1fr !important; }
-          .pay-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (max-width: 600px) {
-          .main-title { font-size: 28px !important; }
-          .section-card { padding: 20px !important; }
-        }
-      `}</style>
-
       <div style={styles.container}>
         <button onClick={() => navigate(-1)} style={styles.backBtn}>
           <ArrowLeftIcon width={14} /> RETURN TO STORE
         </button>
 
-        <div className="checkout-layout" style={styles.layout}>
+        <div style={styles.layout}>
           {/* Details Section */}
           <div style={styles.leftCol}>
-            <header style={{ marginBottom: 40 }}>
-              <h1 className="main-title" style={styles.mainTitle}>Finalize Deployment<span style={{ color: '#3b82f6' }}>.</span></h1>
-              <p style={styles.subtitle}>Confirm your delivery coordinates and contact nodes.</p>
+            <header style={{ marginBottom: 60 }}>
+              <h1 style={styles.mainTitle}>Authorize Shipment<span style={{ color: 'var(--accent)' }}>.</span></h1>
+              <p style={styles.subtitle}>Confirm your delivery coordinates and contact nodes for fulfillment.</p>
             </header>
 
             <section style={styles.sectionCard}>
               <div style={styles.cardHeader}>
                 <div style={styles.iconHeading}>
-                  <MapPinIcon width={22} color="#3b82f6" />
+                  <MapPinIcon width={22} color="var(--accent)" />
                   <span>DELIVERY COORDINATES</span>
                 </div>
                 <button onClick={toggleEditAndSave} style={{
                   ...styles.editBtn,
-                  backgroundColor: isEditing ? '#3b82f6' : '#f1f5f9',
-                  color: isEditing ? '#fff' : '#475569'
+                  backgroundColor: isEditing ? 'var(--accent)' : 'var(--bg-base)',
+                  color: isEditing ? '#fff' : 'var(--slate-600)'
                 }}>
                   {syncing ? "SYNCING..." : isEditing ? "SAVE SETTINGS" : "EDIT INFO"}
                 </button>
@@ -281,18 +487,18 @@ const Checkout = () => {
 
               {!isEditing ? (
                 <div style={styles.dataDisplay}>
-                  <div className="info-row" style={styles.infoRow}>
-                    <div style={styles.infoBlock}>
+                  <div style={styles.infoRow}>
+                    <div>
                       <span style={styles.label}>RECIPIENT</span>
                       <p style={styles.val}>{formData.name || "N/A"}</p>
                     </div>
-                    <div style={styles.infoBlock}>
+                    <div>
                       <span style={styles.label}>PRIMARY CONTACT</span>
                       <p style={styles.val}>+91 {formData.phone1}</p>
                     </div>
                   </div>
-                  <div className="info-row" style={styles.infoRow}>
-                    <div style={styles.infoBlock}>
+                  <div style={styles.infoRow}>
+                    <div>
                       <span style={styles.label}>DESTINATION HANGAR</span>
                       <p style={styles.val}>
                         {formData.address.house}, {formData.address.galino}<br />
@@ -300,7 +506,7 @@ const Checkout = () => {
                       </p>
                     </div>
                     {formData.phone2 && (
-                      <div style={styles.infoBlock}>
+                      <div>
                         <span style={styles.label}>SECONDARY CONTACT</span>
                         <p style={styles.val}>+91 {formData.phone2}</p>
                       </div>
@@ -311,7 +517,7 @@ const Checkout = () => {
                   </div>
                 </div>
               ) : (
-                <div className="form-grid" style={styles.formGrid}>
+                <div style={styles.formGrid}>
                   <div style={styles.inputGroup}><label style={styles.label}>Full Name</label><input name="name" value={formData.name} onChange={handleChange} style={styles.input} /></div>
                   <div style={styles.inputGroup}><label style={styles.label}>Primary Phone</label><input name="phone1" value={formData.phone1} onChange={handleChange} style={styles.input} /></div>
                   <div style={styles.inputGroup}><label style={styles.label}>Secondary Phone</label><input name="phone2" value={formData.phone2} onChange={handleChange} style={styles.input} /></div>
@@ -326,21 +532,21 @@ const Checkout = () => {
 
             <section style={styles.sectionCard}>
               <div style={styles.iconHeading}>
-                <CreditCardIcon width={22} color="#3b82f6" /> <span>PAYMENT METHOD</span>
+                <CreditCardIcon width={22} color="var(--accent)" /> <span>PAYMENT GATEWAY</span>
               </div>
-              <div className="pay-grid" style={styles.payGrid}>
+              <div style={styles.payGrid}>
                 <div
                   onClick={() => setPaymentMethod("Razorpay")}
                   style={{
                     ...styles.payOption,
-                    borderColor: paymentMethod === 'Razorpay' ? '#3b82f6' : '#e2e8f0',
-                    backgroundColor: paymentMethod === 'Razorpay' ? '#eff6ff' : '#fff'
+                    borderColor: paymentMethod === 'Razorpay' ? 'var(--accent)' : 'var(--border-soft)',
+                    boxShadow: paymentMethod === 'Razorpay' ? '0 10px 25px rgba(59, 130, 246, 0.1)' : 'none'
                   }}
                 >
-                  <ShieldCheckIcon width={24} />
+                  <ShieldCheckIcon width={24} color={paymentMethod === 'Razorpay' ? 'var(--accent)' : 'var(--slate-400)'} />
                   <div>
-                    <b>Online Payment</b>
-                    <p style={{ margin: 0, fontSize: 11 }}>UPI, Cards, NetBanking</p>
+                    <b style={{ color: paymentMethod === 'Razorpay' ? 'var(--slate-800)' : 'var(--slate-600)' }}>Digital Transmission</b>
+                    <p style={{ margin: 0, fontSize: 11, color: 'var(--slate-400)' }}>UPI, Cards, NetBanking</p>
                   </div>
                 </div>
 
@@ -348,14 +554,14 @@ const Checkout = () => {
                   onClick={() => setPaymentMethod("COD")}
                   style={{
                     ...styles.payOption,
-                    borderColor: paymentMethod === 'COD' ? '#3b82f6' : '#e2e8f0',
-                    backgroundColor: paymentMethod === 'COD' ? '#eff6ff' : '#fff'
+                    borderColor: paymentMethod === 'COD' ? 'var(--accent)' : 'var(--border-soft)',
+                    boxShadow: paymentMethod === 'COD' ? '0 10px 25px rgba(59, 130, 246, 0.1)' : 'none'
                   }}
                 >
-                  <TruckIcon width={24} />
+                  <TruckIcon width={24} color={paymentMethod === 'COD' ? 'var(--accent)' : 'var(--slate-400)'} />
                   <div>
-                    <b>COD</b>
-                    <p style={{ margin: 0, fontSize: 11 }}>Pay on Delivery</p>
+                    <b style={{ color: paymentMethod === 'COD' ? 'var(--slate-800)' : 'var(--slate-600)' }}>Arrival Settlement</b>
+                    <p style={{ margin: 0, fontSize: 11, color: 'var(--slate-400)' }}>Pay on Delivery</p>
                   </div>
                 </div>
               </div>
@@ -363,33 +569,43 @@ const Checkout = () => {
           </div>
 
           {/* Right Side: Order Summary */}
-          <div className="right-col-container" style={styles.rightCol}>
+          <div style={styles.rightCol}>
             <div style={styles.summaryCard}>
-              <h3 style={{ fontSize: 12, letterSpacing: 1.5, color: '#94a3b8', marginBottom: 24, fontWeight: 900 }}>INVENTORY SUMMARY</h3>
+              <header style={styles.cardHeader}>
+                <div style={styles.iconHeading}>
+                  <TruckIcon width={16} />
+                  <span>Inventory Summary</span>
+                </div>
+              </header>
+
               <div style={styles.cartList}>
                 {cartItems.map((item, i) => (
-                  <div key={i} style={styles.cartItem}>
-                    <span style={{ flex: 1 }}>{item.productId?.name} <small style={{ color: '#64748b' }}>x{item.quantity}</small></span>
-                    <span style={{ fontWeight: 700, color: '#fff' }}>₹{item.price * item.quantity}</span>
+                  <div key={i} style={styles.cartItemLayout}>
+                    <span style={{ flex: 1, fontWeight: '800', color: 'var(--slate-800)' }}>{item.productId?.name} <small style={{ color: 'var(--slate-400)', marginLeft: '8px' }}>UNIT COUNT: {item.quantity}</small></span>
+                    <span style={{ fontWeight: 900, color: 'var(--accent)' }}>₹{item.price * item.quantity}</span>
                   </div>
                 ))}
               </div>
 
               <div style={styles.divider} />
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                <span style={{ fontSize: 13, color: '#94a3b8' }}>Subtotal</span>
-                <span style={{ fontWeight: 700, color: '#fff' }}>₹{totalAmount - logisticsCost}</span>
+              <div style={styles.cartList}>
+                <div style={styles.cartItemLayout}>
+                  <span style={{ fontWeight: '600' }}>Inventory Subtotal</span>
+                  <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{totalAmount - logisticsCost}</span>
+                </div>
+                <div style={styles.cartItemLayout}>
+                  <span style={{ fontWeight: '600' }}>Logistics & Handling</span>
+                  <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{logisticsCost}</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-                <span style={{ fontSize: 13, color: '#94a3b8' }}>Logistics & Handling</span>
-                <span style={{ fontWeight: 700, color: '#fff' }}>₹{logisticsCost}</span>
-              </div>
+
+              <div style={styles.divider} />
 
               <div style={styles.totalRow}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontSize: 10, color: '#64748b', fontWeight: 800 }}>TOTAL PAYABLE</span>
-                  <span style={{ fontSize: 28, fontWeight: 900, color: '#fff' }}>₹{totalAmount}</span>
+                  <span style={{ fontSize: 10, color: 'var(--slate-400)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL PAYABLE</span>
+                  <span style={{ fontSize: 32, fontWeight: 900, color: 'var(--slate-800)', letterSpacing: '-1.5px' }}>₹{totalAmount}</span>
                 </div>
               </div>
 
@@ -413,38 +629,6 @@ const Checkout = () => {
       </div>
     </div>
   );
-};
-
-const styles = {
-  page: { background: "#f8fafc", minHeight: "100vh", padding: "40px 16px", color: "#1e293b" },
-  container: { maxWidth: 1100, margin: "0 auto" },
-  backBtn: { display: 'flex', alignItems: 'center', gap: 8, border: 'none', background: 'none', fontSize: 11, fontWeight: 800, color: '#94a3b8', cursor: 'pointer', marginBottom: 24 },
-  layout: { display: 'grid', gridTemplateColumns: '1fr 380px', gap: 40, alignItems: 'start' },
-  leftCol: { width: '100%' },
-  rightCol: { width: '100%', marginTop: '100px' }, // Increased top margin for laptop screens
-  mainTitle: { fontSize: 42, fontWeight: 800, marginTop: 10, letterSpacing: '-1.5px' },
-  subtitle: { color: '#64748b', marginTop: 8, fontSize: 15 },
-  sectionCard: { background: '#fff', padding: '32px', borderRadius: 24, border: '1px solid #e2e8f0', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)', marginBottom: 24 },
-  cardHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, gap: 10 },
-  iconHeading: { display: 'flex', alignItems: 'center', gap: 10, fontWeight: 900, fontSize: 11, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' },
-  editBtn: { border: 'none', padding: '10px 18px', borderRadius: 10, fontSize: 10, fontWeight: 800, cursor: 'pointer', transition: '0.2s', flexShrink: 0 },
-  dataDisplay: { background: '#f8fafc', padding: 24, borderRadius: 16, border: '1px solid #f1f5f9' },
-  infoRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 20 },
-  label: { fontSize: 10, fontWeight: 900, color: '#94a3b8', marginBottom: 6, textTransform: 'uppercase' },
-  val: { fontSize: 15, fontWeight: 700, margin: '0', color: '#1e293b' },
-  verifiedTag: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#10b981', fontWeight: 900, marginTop: 12 },
-  formGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 },
-  inputGroup: { display: 'flex', flexDirection: 'column', gap: 6 },
-  input: { padding: '12px 16px', borderRadius: 12, border: '1px solid #cbd5e1', outline: 'none', fontSize: 14, width: '100%', boxSizing: 'border-box', background: '#fff' },
-  payGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 24 },
-  payOption: { padding: 20, borderRadius: 16, border: '2px solid', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 14, transition: '0.2s' },
-  summaryCard: { background: '#0f172a', color: '#fff', padding: '35px', borderRadius: 32, border: '1px solid #1e293b', height: 'auto' },
-  cartList: { display: 'flex', flexDirection: 'column', gap: 16 },
-  cartItem: { display: 'flex', justifyContent: 'space-between', fontSize: 14, color: '#94a3b8' },
-  divider: { height: 1, background: '#1e293b', margin: '24px 0' },
-  totalRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32 },
-  orderBtn: { width: '100%', padding: '20px', borderRadius: 18, background: '#3b82f6', color: '#fff', border: 'none', fontWeight: 900, cursor: 'pointer', fontSize: 14, boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)' },
-  secureNote: { textAlign: 'center', fontSize: 10, color: '#475569', marginTop: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800, letterSpacing: '0.5px' }
 };
 
 export default Checkout;

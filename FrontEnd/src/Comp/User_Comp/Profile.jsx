@@ -1,19 +1,140 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft, User, Mail, Calendar, ShieldCheck } from "lucide-react";
+import API_BASE_URL from "../../utils/config.js";
+import { ArrowLeft, User, Mail, Calendar, ShieldCheck, ChevronRight } from "lucide-react";
+
+// Define styles object with Anti-Gravity aesthetic
+const styles = {
+  page: {
+    background: "var(--bg-base)",
+    minHeight: "100vh",
+    padding: "140px 16px 80px",
+    color: "var(--slate-800)",
+    fontFamily: "var(--font-sans)"
+  },
+  container: {
+    maxWidth: 1000,
+    margin: "0 auto"
+  },
+  backBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    border: 'none',
+    background: 'none',
+    fontSize: 11,
+    fontWeight: 900,
+    color: 'var(--slate-400)',
+    cursor: 'pointer',
+    marginBottom: 24,
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    transition: '0.3s'
+  },
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1.2fr',
+    gap: 80,
+    alignItems: 'start'
+  },
+  mainTitle: {
+    fontSize: 'clamp(2.5rem, 8vw, 4.5rem)',
+    fontWeight: 900,
+    marginTop: 10,
+    letterSpacing: '-3px',
+    color: 'var(--slate-800)',
+    lineHeight: '1',
+    marginBottom: '40px'
+  },
+  subtitle: {
+    color: 'var(--slate-600)',
+    marginTop: 8,
+    fontSize: 16,
+    lineHeight: '1.6'
+  },
+  sectionCard: {
+    background: 'var(--bg-card)',
+    padding: '48px',
+    borderRadius: 40,
+    border: '1px solid var(--border-soft)',
+    boxShadow: 'var(--shadow-floating)',
+  },
+  infoBox: {
+    padding: '32px 0',
+    borderBottom: '1px solid var(--border-soft)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  label: {
+    fontSize: '10px',
+    fontWeight: '900',
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase',
+    color: 'var(--slate-400)',
+  },
+  valText: {
+    fontSize: '20px',
+    fontWeight: '800',
+    letterSpacing: '-0.5px',
+    color: 'var(--slate-800)',
+  },
+  btnPrimary: {
+    backgroundColor: 'var(--accent)',
+    color: '#fff',
+    padding: '22px 32px',
+    borderRadius: '20px',
+    border: 'none',
+    fontSize: '13px',
+    fontWeight: '900',
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
+    transition: '0.4s',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    width: '100%'
+  },
+  btnSecondary: {
+    backgroundColor: 'transparent',
+    color: 'var(--slate-600)',
+    padding: '20px 32px',
+    borderRadius: '20px',
+    border: '1px solid var(--border-soft)',
+    fontSize: '11px',
+    fontWeight: '900',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    transition: '0.3s',
+    width: '100%'
+  },
+  avatar: {
+    width: '64px',
+    height: '64px',
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    borderRadius: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '32px'
+  }
+};
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [hoveredBtn, setHoveredBtn] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const { data } = await axios.get("http://localhost:5000/api/user/Details", {
+        const { data } = await axios.get(`${API_BASE_URL}/user/Details`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (data.success) setUser(data.user);
@@ -27,238 +148,86 @@ const Profile = () => {
   }, []);
 
   if (loading) return (
-    <div style={{
-      height: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#000',
-      color: '#fff',
-      letterSpacing: '0.5em',
-      fontSize: '10px',
-      fontWeight: 'bold',
-      fontFamily: '"Roboto", sans-serif'
-    }}>
-      INITIALIZING IDENTITY...
+    <div style={{ ...styles.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '2px', color: 'var(--accent)' }}>INITIALIZING IDENTITY...</div>
     </div>
   );
 
-  const styles = {
-    container: {
-      minHeight: '100vh',
-      backgroundColor: '#000',
-      color: '#fff',
-      fontFamily: '"Roboto", sans-serif',
-      padding: '0 5vw',
-      overflowX: 'hidden',
-      position: 'relative'
-    },
-    nav: {
-      maxWidth: '1400px',
-      margin: '0 auto',
-      padding: '30px 0',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderBottom: '1px solid #333'
-    },
-    backBtn: {
-      background: 'none',
-      border: 'none',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      fontSize: '11px',
-      fontWeight: '600',
-      letterSpacing: '0.1em',
-      color: '#fff'
-    },
-    main: {
-      maxWidth: '1400px',
-      margin: '60px auto 100px auto',
-      display: 'grid',
-      gap: '60px',
-      alignItems: 'start'
-    },
-    nameTitle: {
-      fontSize: 'clamp(40px, 12vw, 90px)',
-      fontWeight: '200',
-      letterSpacing: '-0.06em',
-      lineHeight: '0.9',
-      margin: '24px 0',
-      textTransform: 'lowercase',
-      background: 'linear-gradient(135deg, #fff 0%, #888 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-    },
-    infoBox: {
-      padding: '30px 0',
-      borderBottom: '1px solid #222',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '8px',
-    },
-    label: {
-      fontSize: '9px',
-      fontWeight: '900',
-      letterSpacing: '0.3em',
-      textTransform: 'uppercase',
-      color: '#666',
-    },
-    valText: {
-      fontSize: 'clamp(18px, 4vw, 24px)',
-      fontWeight: '300',
-      letterSpacing: '-0.02em',
-      color: '#fff',
-      wordBreak: 'break-all'
-    },
-    btnBlack: (isHovered) => ({
-      backgroundColor: isHovered ? '#fff' : '#000',
-      color: isHovered ? '#000' : '#fff',
-      padding: '20px 32px',
-      border: '1px solid #fff',
-      fontSize: '11px',
-      fontWeight: 'bold',
-      letterSpacing: '0.2em',
-      cursor: 'pointer',
-      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-    }),
-    btnOutline: (isHovered) => ({
-      backgroundColor: isHovered ? '#fff' : 'transparent',
-      color: isHovered ? '#000' : '#fff',
-      padding: '20px 32px',
-      border: '1px solid #444',
-      fontSize: '11px',
-      fontWeight: 'bold',
-      letterSpacing: '0.2em',
-      cursor: 'pointer',
-      transition: 'all 0.3s ease'
-    }),
-    bgText: {
-      position: 'fixed',
-      bottom: '-10px',
-      left: '-10px',
-      fontSize: 'clamp(60px, 20vw, 200px)',
-      fontWeight: '900',
-      color: '#fff',
-      opacity: '0.03',
-      pointerEvents: 'none',
-      zIndex: 0,
-      userSelect: 'none'
-    },
-    avatar: {
-      width: '40px',
-      height: '40px',
-      backgroundColor: '#fff',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }
-  };
-
   return (
-    <div style={styles.container}>
-      <style>{`
-        /* Responsive Desktop */
-        @media (min-width: 992px) {
-            .profile-grid {
-                grid-template-columns: 1fr 1.2fr !important;
-                gap: 120px !important;
-            }
-            .sticky-left {
-                position: sticky !important;
-                top: 100px;
-            }
-        }
-        /* Mobile Spacing */
-        @media (max-width: 600px) {
-            .nav-id { display: none !important; }
-            .action-buttons { margin-top: 40px !important; }
-        }
-      `}</style>
-
-      <nav style={styles.nav}>
+    <div style={styles.page}>
+      <div style={styles.container}>
         <button
           style={styles.backBtn}
           onClick={() => navigate("/dashboard")}
         >
-          <ArrowLeft size={16} /> INDEX
+          <ArrowLeft size={16} /> Back to Dashboard
         </button>
-        <div className="nav-id" style={{ fontSize: '11px', fontWeight: '900', letterSpacing: '0.5em', color: '#fff' }}>
-          00 — PROFILE
-        </div>
-      </nav>
 
-      <main className="profile-grid" style={styles.main}>
-        {/* Left Section */}
-        <section className="sticky-left">
-          <div style={styles.avatar}>
-            <User size={20} color="#000" />
-          </div>
-          <h1 style={styles.nameTitle}>
-            {user?.name?.split(' ')[0]} <br />
-            <span style={{ fontWeight: '600', color: '#fff' }}>{user?.name?.split(' ')[1] || 'user'}</span>
-          </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ width: '30px', height: '1px', backgroundColor: '#444' }} />
-            <p style={{ fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#666' }}>
-              Verified Account
-            </p>
-          </div>
-        </section>
-
-        {/* Right Section */}
-        <section style={{ zIndex: 1 }}>
-          <div style={styles.infoBox}>
-            <p style={styles.label}>Electronic Mail</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px' }}>
-              <p style={styles.valText}>{user?.email}</p>
-              <Mail size={18} strokeWidth={1} color="#666" />
+        <main style={styles.layout}>
+          {/* Left Section */}
+          <section>
+            <div style={styles.avatar}>
+              <User size={32} color="var(--accent)" />
             </div>
-          </div>
-
-          <div style={styles.infoBox}>
-            <p style={styles.label}>Registration Date</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <p style={styles.valText}>
-                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '---'}
+            <h1 style={styles.mainTitle}>
+              {user?.name?.split(' ')[0]} <br />
+              <span style={{ color: 'var(--accent)' }}>{user?.name?.split(' ')[1] || 'Pilot'}</span>
+            </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{ width: '40px', height: '1px', backgroundColor: 'var(--border-soft)' }} />
+              <p style={{ fontSize: '10px', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--slate-400)' }}>
+                CERTIFIED PILOT STATUS
               </p>
-              <Calendar size={18} strokeWidth={1} color="#666" />
             </div>
-          </div>
+          </section>
 
-          <div style={styles.infoBox}>
-            <p style={styles.label}>Security Protocol</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <p style={styles.valText}>End-to-End Encrypted</p>
-              <ShieldCheck size={18} strokeWidth={1} color="#666" />
+          {/* Right Section */}
+          <section>
+            <div style={styles.sectionCard}>
+              <div style={styles.infoBox}>
+                <p style={styles.label}>Electronic Mail</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <p style={styles.valText}>{user?.email}</p>
+                  <Mail size={18} color="var(--slate-200)" />
+                </div>
+              </div>
+
+              <div style={styles.infoBox}>
+                <p style={styles.label}>Registration Log</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <p style={styles.valText}>
+                    {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '---'}
+                  </p>
+                  <Calendar size={18} color="var(--slate-200)" />
+                </div>
+              </div>
+
+              <div style={{ ...styles.infoBox, borderBottom: 'none', marginBottom: '40px' }}>
+                <p style={styles.label}>Access Protocol</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <p style={styles.valText}>Secure Transmission</p>
+                  <ShieldCheck size={18} color="var(--slate-200)" />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <button
+                  style={styles.btnPrimary}
+                  onClick={() => navigate("/orders")}
+                >
+                  VIEW SHIPMENT HISTORY <ChevronRight size={16} />
+                </button>
+                <button
+                  style={styles.btnSecondary}
+                  onClick={() => navigate("/user/update")}
+                >
+                  UPDATE PILOT PROFILE
+                </button>
+              </div>
             </div>
-          </div>
-
-          <div className="action-buttons" style={{ marginTop: '60px', display: 'flex', gap: '16px', flexDirection: 'column' }}>
-            <button
-              onMouseEnter={() => setHoveredBtn('history')}
-              onMouseLeave={() => setHoveredBtn(null)}
-              style={styles.btnBlack(hoveredBtn === 'history')}
-              onClick={() => navigate("/orders")}
-            >
-              VIEW ORDER HISTORY
-            </button>
-            <button
-              onMouseEnter={() => setHoveredBtn('edit')}
-              onMouseLeave={() => setHoveredBtn(null)}
-              style={styles.btnOutline(hoveredBtn === 'edit')}
-              onClick={() => navigate("/user/update")}
-            >
-              EDIT ACCOUNT DETAILS
-            </button>
-          </div>
-        </section>
-      </main>
-
-      <h2 style={styles.bgText}>KITEASM</h2>
+          </section>
+        </main>
+      </div>
     </div>
   );
 };

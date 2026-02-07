@@ -1,18 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --white: #FFFFFF;
-  --black: #000000;
-  --gray-light: #F5F5F7;
-  --gray-mid: #71717A;
-  --gray-dark: #27272A;
-  --accent: #007AFF;
-  --accent-alt: #FF5E00;
+  --bg-base: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --accent: #3B82F6;
+  /* Electric Blue */
+  --slate-800: #1E293B;
+  --slate-600: #475569;
+  --slate-400: #94A3B8;
+  --border-soft: #F1F5F9;
 
-  --font-sans: 'Roboto', sans-serif;
-  --font-serif: 'Roboto', sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-floating: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --container-max: 1400px;
   --nav-height: 80px;
+  --radius-xl: 24px;
 }
 
 /* Base Reset */
@@ -24,9 +32,11 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--white);
-  color: var(--black);
-  line-height: 1.5;
+  background-color: var(--bg-base);
+  color: var(--slate-800);
+  line-height: 1.7;
+  /* Airy Typography */
+  letter-spacing: 0.015em;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -122,10 +132,12 @@ h3,
 }
 
 .navbar.scrolled {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.75);
+  /* Glassmorphism */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   height: 70px;
-  border-bottom-color: var(--gray-light);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .nav-inner {
@@ -192,35 +204,42 @@ h3,
   transform: scale(1.1);
 }
 
+/* Anti-Gravity Floating Card */
+.floating-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-floating);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 40px;
-  font-size: 10px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+  padding: 14px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 12px;
   transition: all 0.3s;
 }
 
-.btn-black {
-  background: var(--black);
+.btn-primary {
+  background: var(--accent);
   color: var(--white);
 }
 
-.btn-black:hover {
-  background: var(--gray-dark);
-}
-
-.btn-outline {
-  border: 1px solid var(--black);
-}
-
-.btn-outline:hover {
-  background: var(--black);
-  color: var(--white);
+.btn-primary:hover {
+  background: #2563EB;
+  /* Slightly darker electric blue */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Utility Animations */

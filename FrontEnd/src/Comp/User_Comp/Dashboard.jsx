@@ -2,23 +2,63 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { productImages } from "../../utils/productImages";
 import axios from "axios";
+import API_BASE_URL from "../../utils/config.js";
 import {
     ShoppingBagIcon, SparklesIcon, Cog6ToothIcon,
     CubeIcon, ChevronRightIcon, PowerIcon
 } from "@heroicons/react/24/outline";
+import { Heart } from "lucide-react";
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [featuredProducts, setFeaturedProducts] = useState([]);
+    const [wishlistItems, setWishlistItems] = useState([]);
+
+    const token = localStorage.getItem("token");
 
     const fetchQuickProducts = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/user/products');
-            setFeaturedProducts(res.data.products?.slice(0, 4) || []);
+            const res = await axios.get(`${API_BASE_URL}/user/products`);
+            setFeaturedProducts(res.data.products || []);
         } catch (err) {
             console.error("Error fetching products:", err);
+        }
+    };
+
+    const fetchWishlist = async () => {
+        if (!token) return;
+        try {
+            const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setWishlistItems(res.data.products?.map(p => p._id) || []);
+        } catch (error) {
+            console.error("Wishlist fetch failed:", error);
+        }
+    };
+
+    const toggleWishlist = async (productId) => {
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+        try {
+            const res = await axios.post(
+                `${API_BASE_URL}/toggle-wishlist`,
+                { productId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (res.status === 200 || res.status === 201) {
+                setWishlistItems(prev =>
+                    prev.includes(productId)
+                        ? prev.filter(id => id !== productId)
+                        : [...prev, productId]
+                );
+            }
+        } catch (error) {
+            console.error("Wishlist toggle failed:", error);
         }
     };
 
@@ -35,6 +75,7 @@ const Dashboard = () => {
             const parsedUser = JSON.parse(storedUserData);
             setUser(parsedUser);
             fetchQuickProducts();
+            fetchWishlist();
             setLoading(false);
         } catch (error) {
             localStorage.clear();
@@ -76,7 +117,7 @@ const Dashboard = () => {
             {/* Premium Top Navigation */}
             <nav className="top-nav">
                 <div className="nav-inner">
-                    <div className="logo-brand">KITEASM<span>.</span></div>
+                    <div className="logo-brand">Kiteasm<span style={{ color: 'var(--accent)' }}>.</span></div>
                     <div className="nav-actions">
                         <div className="user-badge">
                             <span className="online-dot"></span>
@@ -91,11 +132,9 @@ const Dashboard = () => {
 
             <div className="main-content">
                 <header className="hero-section">
-                    {/* <div className="status-badge">SYSTEMS_NOMINAL</div> */}
-                    <h1 className="hero-title">Welcome, {user.name?.split(" ")[0]}</h1>
+                    <h1 className="hero-title">Welcome Back, {user.name?.split(" ")[0]}<span style={{ color: 'var(--accent)' }}>.</span></h1>
                 </header>
 
-                {/* Bento Grid - Styled as floating panels */}
                 <div className="bento-grid">
                     {[
                         { title: 'Products', path: '/products', icon: ShoppingBagIcon, desc: 'View Inventory' },
@@ -105,35 +144,60 @@ const Dashboard = () => {
                     ].map((item) => (
                         <Link key={item.title} to={item.path} className="bento-card">
                             <div className="bento-icon-box">
-                                <item.icon style={{ width: '24px' }} strokeWidth={1.5} />
+                                <item.icon style={{ width: '22px', color: 'var(--accent)' }} strokeWidth={2} />
                             </div>
                             <div className="bento-text">
                                 <span className="bento-title">{item.title}</span>
                                 <span className="bento-desc">{item.desc}</span>
                             </div>
-                            <ChevronRightIcon className="bento-arrow" style={{ width: '14px' }} />
+                            <ChevronRightIcon className="bento-arrow" style={{ width: '14px', color: 'var(--slate-400)' }} />
                         </Link>
                     ))}
                 </div>
 
-                {/* Featured Products */}
                 <section className="dashboard-section">
                     <div className="section-header">
-                        <h2 className="section-title">Latest Equipment</h2>
-                        <Link to="/products" className="view-link">VIEW ALL</Link>
+                        <h2 className="section-title">New Arrivals</h2>
+                        <Link to="/products" className="view-link">DISCOVER ALL</Link>
                     </div>
 
                     <div className="product-row">
                         {featuredProducts
                             .filter(p => p.isExclusive === true)
+                            .slice(0, 4)
                             .map((p) => (
-                                <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card">
+                                <Link key={p._id} to={`/products/${p._id}`} className="modern-p-card floating-card">
                                     <div className="p-img-box">
-                                        <img
-                                            src={p.mainImage}   // better than manual path
-                                            alt={p.name}
-                                        />
-                                        <div className="p-overlay">SHOP NOW</div>
+                                        <button
+                                            className="dash-wishlist-btn"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                toggleWishlist(p._id);
+                                            }}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '12px',
+                                                right: '12px',
+                                                background: 'rgba(255,255,255,0.7)',
+                                                backdropFilter: 'blur(8px)',
+                                                border: '1px solid rgba(0,0,0,0.05)',
+                                                borderRadius: '50%',
+                                                width: '32px',
+                                                height: '32px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                zIndex: 10,
+                                                color: wishlistItems.includes(p._id) ? 'var(--accent)' : 'var(--slate-400)',
+                                                transition: '0.3s'
+                                            }}
+                                        >
+                                            <Heart size={16} fill={wishlistItems.includes(p._id) ? "var(--accent)" : "none"} />
+                                        </button>
+                                        <img src={p.mainImage} alt={p.name} />
+                                        <div className="p-overlay">VIEW PRODUCT</div>
                                     </div>
 
                                     <div className="p-meta">
@@ -145,7 +209,6 @@ const Dashboard = () => {
                     </div>
                 </section>
 
-
                 <section className="command-center">
                     <div className="command-header">
                         <span className="line"></span>
@@ -155,7 +218,7 @@ const Dashboard = () => {
 
                     <div className="founders-grid">
                         {owners.map((owner) => (
-                            <div key={owner.name} className="founder-card">
+                            <div key={owner.name} className="founder-card floating-card">
                                 <div className="founder-img-wrapper">
                                     <img src={owner.image} alt={owner.name} className="founder-img" />
                                 </div>
@@ -163,7 +226,6 @@ const Dashboard = () => {
                                 <div className="founder-info">
                                     <h4 className="founder-name">{owner.name}</h4>
                                     <span className="founder-role">{owner.role}</span>
-                                    <p className="founder-desc">{owner.desc}</p>
 
                                     <div className="founder-socials">
                                         <a href={owner.instagram} aria-label="Instagram">
@@ -181,255 +243,175 @@ const Dashboard = () => {
             </div>
 
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
-
-                /* Command Center Section */
-.command-center {
-    margin-top: 120px;
-    padding: 80px 0;
-    text-align: center;
-}
-
-.command-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 60px;
-}
-
-.command-header .line {
-    flex: 0 1 40px;
-    height: 1px;
-    background: #000;
-}
-
-.command-header h3 {
-    font-size: 12px;
-    letter-spacing: 4px;
-    font-weight: 800;
-    color: #000;
-}
-
-/* Founder Cards Grid */
-.founders-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-}
-
-.founder-card {
-    background: #fff;
-    border: 1px solid #f0f0f0;
-    border-radius: 24px;
-    padding: 50px 40px;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-    position: relative;
-    overflow: hidden;
-}
-
-.founder-card:hover {
-    transform: translateY(-10px);
-    border-color: #000;
-    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1);
-}
-
-/* Image Styling */
-.founder-img-wrapper {
-    width: 140px;
-    height: 140px;
-    margin: 0 auto 30px;
-    border-radius: 40px; /* Squircle shape like screenshot */
-    padding: 5px;
-    border: 1px solid #000;
-    overflow: hidden;
-}
-
-.founder-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 35px;
-    background: #f9f9f9;
-}
-
-/* Typography */
-.founder-name {
-    font-family: 'Roboto', sans-serif;
-    font-size: 32px;
-    font-weight: 500;
-    font-style: italic;
-    margin: 0 0 10px;
-}
-
-.founder-role {
-    display: block;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-    color: #000;
-}
-
-.founder-desc {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #666;
-    max-width: 320px;
-    margin: 0 auto 30px;
-}
-
-/* Social Icons */
-.founder-socials {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-}
-
-.social-icon {
-    width: 20px;
-    height: 20px;
-    color: #000;
-    transition: transform 0.3s ease;
-}
-
-.social-icon:hover {
-    transform: scale(1.2);
-    color: #666;
-}
-
-@media (max-width: 850px) {
-    .founders-grid { grid-template-columns: 1fr; }
-    .founder-card { padding: 40px 20px; }
-}
                 :root {
-                    --bg-main: #FDFDFD;
-                    --bg-subtle: #F3F4F6;
-                    --text-black: #000000;
-                    --text-muted: #6B7280;
-                    --accent: #000000;
-                    --card-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+                    --bg-main: var(--bg-base);
+                    --text-black: var(--slate-800);
+                    --text-muted: var(--slate-600);
+                    --accent-color: var(--accent);
                 }
 
                 .dash-container {
                     background-color: var(--bg-main);
                     min-height: 100vh;
                     color: var(--text-black);
-                    font-family: 'Roboto', sans-serif;
+                    font-family: var(--font-sans);
                     position: relative;
-                }
-
-                /* Subtle Grid Overlay */
-                .grid-bg {
-                    position: fixed;
-                    inset: 0;
-                    background-image: radial-gradient(#e5e7eb 0.8px, transparent 0.8px);
-                    background-size: 24px 24px;
-                    opacity: 0.5;
-                    pointer-events: none;
                 }
 
                 .top-nav {
                     position: fixed; top: 0; width: 100%; height: 80px;
-                    background: rgba(255,255,255,0.8);
-                    backdrop-filter: blur(10px); z-index: 100;
-                    border-bottom: 1px solid #E5E7EB;
+                    background: rgba(255,255,255,0.7);
+                    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                    z-index: 100;
+                    border-bottom: 1px solid var(--border-soft);
                 }
 
                 .nav-inner {
-                    max-width: 1200px; margin: 0 auto; height: 100%;
+                    max-width: 1400px; margin: 0 auto; height: 100%;
                     display: flex; align-items: center; justify-content: space-between; padding: 0 40px;
                 }
 
-                .logo-brand { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
-                .logo-brand span { color: #6B7280; }
+                .logo-brand { font-weight: 900; font-size: 20px; letter-spacing: -1px; text-transform: uppercase; }
 
                 .nav-actions { display: flex; align-items: center; gap: 24px; }
                 .user-badge { 
-                    font-size: 12px; color: var(--text-black); font-weight: 600;
+                    font-size: 11px; color: var(--text-black); font-weight: 800;
                     display: flex; align-items: center; gap: 10px;
-                    background: var(--bg-subtle); padding: 8px 16px; border-radius: 100px;
+                    background: var(--bg-card); padding: 8px 18px; border-radius: 100px;
+                    border: 1px solid var(--border-soft); box-shadow: var(--shadow-sm);
+                    text-transform: uppercase; letter-spacing: 0.5px;
                 }
-                .online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+                .online-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; }
 
                 .power-btn { 
                     background: var(--text-black); border: none; color: white;
                     padding: 10px; cursor: pointer; border-radius: 50%; transition: 0.3s;
                     display: flex; align-items: center; justify-content: center;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
                 }
                 .power-btn:hover { transform: scale(1.1); background: #ef4444; }
 
-                .main-content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 140px 40px 100px; }
+                .main-content { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 160px 40px 100px; }
 
-                .status-badge { 
-                    display: inline-block; font-size: 10px; font-weight: 800; 
-                    letter-spacing: 1px; color: white; background: #000; 
-                    padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; 
-                }
-                .hero-title { font-size: 56px; font-weight: 800; letter-spacing: -2px; margin: 0; }
-                .hero-tagline { color: var(--text-muted); margin-top: 12px; font-size: 18px; }
+                .hero-title { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 500; letter-spacing: -2.5px; margin: 0; color: var(--text-black); }
 
                 /* Bento Cards */
-                .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 60px 0; }
+                .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: 60px 0; }
+                
                 .bento-card {
-                    background: white; border: 1px solid #E5E7EB;
-                    padding: 30px 24px; display: flex; flex-direction: column; gap: 20px;
-                    text-decoration: none; color: var(--text-black); 
-                    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-                    box-shadow: var(--card-shadow); border-radius: 16px;
+                    background: rgba(255, 255, 255, 0.4);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    padding: 32px;
+                    border-radius: 24px;
+                    text-decoration: none;
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+                    position: relative;
+                    overflow: hidden;
                 }
-                .bento-card:hover { transform: translateY(-8px); border-color: #000; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+                .bento-card:hover {
+                    background: rgba(255, 255, 255, 0.7);
+                    transform: translateY(-8px);
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+                    border-color: var(--accent-color);
+                }
+                
                 .bento-icon-box { 
-                    width: 48px; height: 48px; background: #F3F4F6; 
-                    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+                    width: 56px; height: 56px; background: white; 
+                    border-radius: 18px; display: flex; align-items: center; justify-content: center;
+                    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+                    box-shadow: 0 8px 16px rgba(0,0,0,0.03);
+                    flex-shrink: 0;
                 }
-                .bento-title { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; }
-                .bento-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
-                .bento-arrow { opacity: 0.3; margin-top: auto; align-self: flex-end; }
+                .bento-card:hover .bento-icon-box { 
+                    background: var(--accent-color); 
+                    transform: scale(1.1) rotate(-5deg);
+                    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
+                }
+                .bento-card:hover .bento-icon-box svg { color: white !important; }
+                
+                .bento-text { display: flex; flex-direction: column; gap: 4px; }
+                .bento-title { font-size: 15px; font-weight: 800; letter-spacing: -0.5px; color: var(--text-black); }
+                .bento-desc { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+                .bento-arrow {
+                    position: absolute;
+                    right: 24px;
+                    opacity: 0;
+                    transform: translateX(-10px);
+                    transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+                }
+                .bento-card:hover .bento-arrow {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
 
                 /* Product Cards */
-                .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-                .section-title { font-size: 24px; font-weight: 800; margin: 0; }
-                .view-link { color: var(--text-black); font-size: 12px; text-decoration: underline; font-weight: 700; }
+                .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+                .section-title { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -1px; }
+                .view-link { color: var(--accent-color); font-size: 12px; text-decoration: none; font-weight: 800; letter-spacing: 1px; }
 
                 .product-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-                .modern-p-card { text-decoration: none; color: var(--text-black); }
+                .modern-p-card { text-decoration: none; color: var(--text-black); padding: 12px; }
                 .p-img-box { 
-                    aspect-ratio: 1/1; background: #F3F4F6; position: relative; overflow: hidden;
-                    border-radius: 12px; transition: 0.4s;
+                    aspect-ratio: 1/1; background: #F1F5F9; position: relative; overflow: hidden;
+                    border-radius: 18px; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
                 }
                 .p-img-box img { width: 100%; height: 100%; object-fit: cover; }
                 .p-overlay { 
-                    position: absolute; bottom: 0; left: 0; right: 0; background: #000; color: white;
-                    text-align: center; padding: 12px; font-size: 11px; font-weight: 800;
-                    transform: translateY(100%); transition: 0.3s;
+                    position: absolute; bottom: 0; left: 0; right: 0; background: var(--accent-color); color: white;
+                    text-align: center; padding: 14px; font-size: 10px; font-weight: 900;
+                    transform: translateY(100%); transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+                    letter-spacing: 1px;
                 }
                 .modern-p-card:hover .p-overlay { transform: translateY(0); }
-                .modern-p-card:hover .p-img-box { transform: scale(0.98); }
-                .p-meta h4 { margin: 15px 0 5px; font-size: 15px; font-weight: 700; }
-                .p-meta p { color: var(--text-muted); font-weight: 500; font-size: 14px; }
+                .p-meta h4 { margin: 20px 0 5px; font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+                .p-meta p { color: var(--accent-color); font-weight: 800; font-size: 14px; }
 
-                /* Commanders Section */
-                .command-center { margin-top: 100px; padding: 60px 0; border-top: 1px solid #E5E7EB; }
-                .command-header h3 { font-size: 12px; letter-spacing: 3px; color: var(--text-muted); margin-bottom: 40px; }
-                .founders-flex { display: flex; gap: 80px; }
-                .commander-card { display: flex; align-items: center; gap: 24px; }
-                .commander-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: var(--card-shadow); }
-                .commander-role { font-size: 10px; color: var(--text-muted); letter-spacing: 1px; font-weight: 800; }
-                .commander-details h4 { margin: 4px 0; font-size: 20px; font-weight: 800; }
+                /* Founders Section */
+                .command-center { margin-top: 120px; padding: 80px 0; text-align: center; }
+                .command-header h3 { font-size: 12px; letter-spacing: 4px; color: var(--text-muted); margin-bottom: 60px; font-weight: 900; }
+                
+                .founders-grid { 
+                    display: grid; 
+                    grid-template-columns: repeat(3, 1fr); 
+                    gap: 32px; 
+                    max-width: 1200px; 
+                    margin: 0 auto; 
+                }
 
-                @media (max-width: 1000px) {
-                    .bento-grid, .product-row { grid-template-columns: repeat(2, 1fr); }
-                    .founders-flex { flex-direction: column; gap: 40px; }
+                .founder-card { padding: 50px 40px; text-align: center; }
+                .founder-img-wrapper { 
+                    width: 140px; height: 140px; margin: 0 auto 30px; 
+                    border-radius: 40px; border: 2px solid var(--accent-color);
+                    padding: 8px; background: white;
+                }
+                .founder-img { border-radius: 32px; background: #f1f5f9; }
+                .founder-name { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--text-black); }
+                .founder-role { font-size: 11px; font-weight: 900; letter-spacing: 2px; color: var(--accent-color); text-transform: uppercase; }
+
+                .social-icon { width: 20px; height: 20px; color: var(--slate-400); transition: 0.3s; margin-left: 15px; }
+                .social-icon:hover { color: var(--accent-color); transform: translateY(-3px); }
+
+                @media (max-width: 1200px) {
+                    .bento-grid, .product-row, .founders-grid { grid-template-columns: repeat(2, 1fr); }
+                }
+
+                @media (max-width: 768px) {
+                    .founders-grid { grid-template-columns: 1fr; }
                 }
 
                 @media (max-width: 600px) {
-                    .bento-grid, .product-row, .founders-grid { grid-template-columns: 1fr; }
-                    .main-content { padding: 120px 20px 60px; }
+                    .bento-grid { grid-template-columns: 1fr; }
+                    .product-row { grid-template-columns: repeat(2, 1fr) !important; gap: 16px; }
                     .hero-title { font-size: 36px; }
+                    .main-content { padding: 120px 20px 60px; }
                     .nav-inner { padding: 0 20px; }
-                    .founder-card { padding: 30px 20px; }
                 }
             `}</style>
         </div>

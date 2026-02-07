@@ -1,154 +1,98 @@
-# Kiteasm Project Documentation
+# 🪁 Kiteasm - Technical Architecture & Systems Deep-Dive
 
-## 1. Project Overview
-**Kiteasm** is a full-stack e-commerce application dedicated to high-performance kite flying gear ("Manjha", "Saddi", "Kites"). The platform provides a premium shopping experience with features like "Master Edition" exclusive drops, product bundling, and a dedicated pilot dashboard.
+## 1. Architectural Strategy
+Kiteasm is built on a **Decoupled Client-Server Architecture**, separating the presentation layer from the business logic and data persistence.
 
-### Technology Stack
-- **Frontend**: React.js (Vite), CSS (Modules/Vanilla), Lucide React / Heroicons.
-- **Backend**: Node.js, Express.js.
-- **Database**: MongoDB (via Mongoose).
-- **Payment/Tools**: Razorpay, ExcelJS (for reports).
+### Frontend (React Single Page Application)
+- **Engine**: Vite + React 19.
+- **Routing**: `react-router-dom` v7 with a centralized `App.jsx` configuration.
+- **Styling Strategy**: High-performance Vanilla CSS with a focus on CSS Variables for consistency and premium animations (Glassmorphism, Fade-ins, Micro-interactions).
+- **Communication Layer**: Axios with a centralized `API_BASE_URL` in `utils/config.js` to simplify environment switching.
 
----
-
-## 2. Directory Structure
-
-```text
-MyProject-2/
-├── Backend/
-│   ├── Http/               # Controllers & Logic
-│   ├── Public/             # Static Assets & Error Pages
-│   ├── Routes/             # API Route Definitions
-│   ├── Schema/             # Mongoose Models (Product, User, etc.)
-│   ├── app.js              # Application Entry Point
-│   └── package.json        # Backend Dependencies
-│
-└── FrontEnd/
-    ├── src/
-    │   ├── Comp/
-    │   │   ├── Admin_comp/ # Admin Dashboard & Management
-    │   │   ├── Auth_comp/  # Login, Register, Recovery
-    │   │   ├── Open_comp/  # Public Pages (Home, Products)
-    │   │   └── User_Comp/  # User Dashboard, Cart, Checkout
-    │   ├── utils/          # Config & Helpers
-    │   └── main.jsx        # Frontend Entry Point
-    └── package.json        # Frontend Dependencies
-```
+### Backend (Express RESTful API)
+- **Engine**: Node.js + Express 5 (latest).
+- **ODM**: Mongoose 8+ for MongoDB Atlas integration.
+- **Process Management**: Integrated with `nodemon` for development and native clustering readiness for multi-core scaling.
+- **Security**: Stateless JWT-based authentication for horizontal scalability.
 
 ---
 
-## 3. Setup & Installation
+## 2. Security & Authentication Flow
 
-### Backend Setup
-1.  Navigate to the `Backend` directory.
-2.  Install dependencies:
-    ```bash
-    npm install
-    # Critical: Ensure mongoose is installed if not present in package.json
-    npm install mongoose
-    ```
-3.  Configure Environment Variables (`.env`):
-    ```env
-    PORT=5000
-    MONGO_URI=your_mongodb_connection_string
-    CORS_ORIGIN=http://localhost:5173
-    RAZORPAY_KEY=your_key
-    ```
-4.  Start the server:
-    ```bash
-    npm run dev  # (uses nodemon)
-    ```
+### JWT Implementation
+Kiteasm uses a **Stateless Token** strategy to avoid server-side session overhead.
 
-### Frontend Setup
-1.  Navigate to the `FrontEnd` directory.
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start the development server:
-    ```bash
-    npm run dev
-    ```
-    The app will typically run at `http://localhost:5173`.
+1.  **Issue**: Upon successful `POST /auth/login`, the backend signed a JWT containing the `userId`.
+2.  **Storage**: The Frontend stores this in `localStorage` as `token`.
+3.  **Transmission**: Every protected request includes the token in the `Authorization: Bearer <token>` header.
+4.  **Verification**: 
+    -   **`Verifyme.js` Middleware**: Extracts the token from headers, verifies the signature against `JWT_SECRET`, and injects `req.userId` into the request object for subsequent controllers.
+    -   **`VerifyRole.js` Middleware**: Intercepts admin-only routes. It fetches the user from DB based on `req.userId` and validates `user.role === 'admin'`.
+
+### Route Protection (Frontend)
+-   **`Protected_Route.jsx`**: A high-order wrapper that guards routes. It checks for token presence and validates `adminOnly` requirements, redirecting unauthorized users to `/login` or the home page.
 
 ---
 
-## 4. Architecture & Configuration
+## 3. Core System Logic Flows
 
-### API Configuration
-A centralized configuration file controls the API base URL.
--   **File**: `FrontEnd/src/utils/config.js`
--   **Current Value**: `http://localhost:5000/api`
--   **Usage**: Import `API_BASE_URL` in components to make requests.
+### � The Cart & Bundle Engine
+The Cart system is optimized for "Gear Bundles", a key differentiator for Kiteasm.
 
-### Database Schema (Highlighted)
-**Product Schema** (`Backend/Schema/Product_Schema.js`):
-The product model has been enhanced to support exclusive drops and multiple images.
+-   **Logic**: `Cart_Controller.js` manages state. If a product already exists in the cart, it increments quantity; otherwise, it pushes a new item object with a "Price Lock" (recording the price at the time of addition).
+-   **Bundles**: Defined in `ProductDetails.jsx`. When a "Manjha" product is viewed, the system cross-references the catalog to suggest a companion "Saddi" or "Kite" (e.g., Oswal No3). 
+-   **Implementation**: The "Get Bundle" button triggers a sequential `axios.post` chain ensuring both the main and suggested products are committed to the database before the user is navigated to the cart view.
 
-```javascript
-const Product_schema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  stock: { type: Number, required: true },
-  category: { type: String, required: true },
-  
-  // Visual Assets
-  mainImage: { type: String, required: true }, // Cover Image
-  secondaryImages: [{ url: String, public_id: String }], // Gallery
-  
-  // Exclusive Flag for "Master Edition" items
-  isExclusive: { type: Boolean, default: false }, 
-  
-  isActive: { type: Boolean, default: true }
-}, { timestamps: true });
-```
+### � Transaction & Fulfillment flow (The "Life of an Order")
+The checkout process follows a strict 6-step transactional flow:
+
+1.  **Frontend Preparation**: `Checkout.jsx` aggregates cart items, subtotal, and user shipping details.
+2.  **Stock Lock**: The backend `Checkout.js` loops through items and performs a **Stock Pre-Check** (`product.stock >= item.quantity`).
+3.  **Inventory Deduction**: Once validated, `product.stock` is updated atomically to prevent race conditions (multiple users buying the last item).
+4.  **Order Persistence**: A record is created in `OrderModel` with `paymentStatus: "pending"` (for COD) or `paid` (for Online).
+5.  **Cart Liquidation**: The user's `CartModel` document is deleted upon successful order creation.
+6.  **Communication**: `Nodemailer` sends transactional emails to the customer and the admin team with full order breakdowns.
 
 ---
 
-## 5. Key Features & Components
+## 4. Database Schema Deep-Dive
 
-### 🛒 Public Storefront
--   **Home (`Home.jsx`)**: proper "Master Edition" grid displaying top exclusive products.
--   **Product Details (`ProductDetails.jsx`)**: 
-    -   Dynamic Image Gallery.
-    -   "Pro Bundle" Logic: Automatically suggests a bundle (e.g., Manjha + Saddi) for savings.
-    -   Stock status indicators (In Stock / Out of Stock).
+### `Product_Schema.js`
+-   **`isExclusive`**: Boolean. Activates "Master Edition" UI styling.
+-   **`mainImage`**: String. Path to the primary product photo.
+-   **`secondaryImages`**: Array of URLs for the detail gallery.
+-   **`category`**: String. Used for filtering and the bundle suggestion engine.
 
-### 👤 User Dashboard
--   **Dashboard (`Dashboard.jsx`)**: 
-    -   Displays "Master Edition" gear.
-    -   Quick access to "Collections", "Order History", and "Profile".
-    -   Personalized Welcome Message.
+### `OrderSchema.js`
+-   **`userId`**: ObjectId ref to `User`.
+-   **`items`**: Array containing snapshots of product details at the time of purchase (ensures historical integrity if prices change).
+-   **`customerDetails`**: Object containing name, email, and a flattened string of the shipping address.
+-   **`orderStatus`**: `processing` -> `shipped` -> `delivered`.
 
-### 🛡️ Admin Panel
--   **Add Product (`AddProduct.jsx`)**: 
-    -   Supports File Upload (Multipart Form Data).
-    -   Checkbox for `Mark as Master Edition` (sets `isExclusive`).
-    -   Category selection (Kites, Manjha, Saddi, Accessories).
--   **Analytics (`AdminDashboard.jsx`)**: 
-    -   Revenue charts, Order stats, and Excel Report downloads.
-    -   Inventory Management.
+### `User_Schema.js`
+-   **`role`**: `user` or `admin`.
+-   **`address`**: Array of structured addresses for quick checkout selection.
 
 ---
 
-## 6. API Reference (Summary)
+## 5. API Matrix
 
-### Public / User
--   `GET /api/user/products` - Fetch all products.
--   `GET /api/user/products/:id` - Fetch single product details.
--   `GET /api/search/products` - Search products with filters.
--   `POST /api/user/cart/add` - Add item (or bundle) to cart.
--   `POST /api/contact` - Submit contact form.
+### 👥 User & Guest Endpoints
+-   `GET /user/products`: Full catalog retrieval with optional pagination capability.
+-   `GET /user/products/:id`: Specific item details + companion suggestion triggers.
+-   `POST /user/cart/add`: Body: `{ productId, quantity }`. Uses `verifyme` middleware.
+-   `POST /user/checkout`: Atomic order creation and inventory adjustment.
+-   `POST /payment/create-order`: Gateway initialization (Razorpay).
 
-### Authentication
--   `POST /api/auth/login`
--   `POST /api/auth/register`
--   `POST /api/auth/forgot-password`
+### 🛡️ Admin Endpoints
+-   `GET /admin/orders`: Overview of all business transactions.
+-   `GET /admin/download-orders`: Generates an XLSX report using `ExcelJS`.
+-   `POST /admin/New/products`: Handles multipart file uploads (using standard form data).
+-   `PUT /admin/orderupdate/status/:id`: Logistic status updates.
 
-### Admin
--   `GET /api/admin/products` - List all inventory.
--   `POST /api/admin/New/products` - Create new product (Multi-part form).
--   `PUT /api/admin/products/:id` - Update product details.
--   `GET /api/admin/orders` - View all orders.
--   `PUT /api/admin/orderupdate/status/:id` - Update order status (Processing/Shipped/Delivered).
+---
+
+## 6. External Integrations
+1. **Razorpay**: Used for secured online payments with signature verification.
+2. **Nodemailer**: SMTP integration for sending transactional emails (Order confirmations, Password resets).
+3. **ExcelJS**: Generates professional CSV/XLSX reports for business analysis.

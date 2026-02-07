@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../utils/config.js";
 import { useNavigate } from "react-router-dom";
 import {
     CubeIcon,
@@ -8,20 +9,114 @@ import {
     ArrowLeftIcon,
     ChevronRightIcon
 } from "@heroicons/react/24/outline";
+import { Heart } from "lucide-react";
+
+// Define styles object with Anti-Gravity aesthetic
+const styles = {
+    page: {
+        background: "var(--bg-base)",
+        minHeight: "100vh",
+        padding: "140px 16px 80px",
+        color: "var(--slate-800)",
+        fontFamily: "var(--font-sans)"
+    },
+    container: {
+        maxWidth: 1000,
+        margin: "0 auto"
+    },
+    backBtn: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        border: 'none',
+        background: 'none',
+        fontSize: 11,
+        fontWeight: 900,
+        color: 'var(--slate-400)',
+        cursor: 'pointer',
+        marginBottom: 24,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        transition: '0.3s'
+    },
+    mainTitle: {
+        fontSize: 'clamp(2rem, 5vw, 2.5rem)',
+        fontWeight: 900,
+        marginTop: 10,
+        letterSpacing: '-2px',
+        color: 'var(--slate-800)'
+    },
+    subtitle: {
+        color: 'var(--slate-600)',
+        marginTop: 8,
+        fontSize: 16
+    },
+    sectionCard: {
+        background: 'var(--bg-card)',
+        padding: '0',
+        borderRadius: 32,
+        border: '1px solid var(--border-soft)',
+        boxShadow: 'var(--shadow-floating)',
+        marginBottom: 32,
+        overflow: 'hidden'
+    },
+    tableHeader: {
+        background: 'var(--bg-base)',
+        padding: '20px 32px',
+        borderBottom: '1px solid var(--border-soft)',
+    },
+    headerLabel: {
+        fontSize: '11px',
+        fontWeight: 900,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        color: 'var(--slate-400)',
+    },
+    orderRow: {
+        display: 'grid',
+        gridTemplateColumns: '1.5fr 2fr 1fr 1fr',
+        gap: '24px',
+        padding: '32px',
+        alignItems: 'center',
+        borderBottom: '1px solid var(--border-soft)',
+        transition: '0.3s',
+    },
+    statusBadge: (status) => {
+        const isDelivered = status?.toLowerCase() === 'delivered';
+        return {
+            backgroundColor: isDelivered ? '#DCFCE7' : 'var(--bg-base)',
+            color: isDelivered ? '#166534' : 'var(--slate-600)',
+            padding: '8px 16px',
+            borderRadius: '14px',
+            fontSize: '11px',
+            fontWeight: '900',
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+            display: 'inline-block',
+            textAlign: 'center'
+        };
+    },
+    emptyCard: {
+        textAlign: 'center',
+        padding: '100px 40px',
+        background: 'var(--bg-card)',
+        borderRadius: 32,
+        border: '1px solid var(--border-soft)',
+        boxShadow: 'var(--shadow-floating)'
+    }
+};
 
 const MyOrders = () => {
     const navigate = useNavigate();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [wishlistItems, setWishlistItems] = useState([]);
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
+    const token = localStorage.getItem("token");
 
     const fetchOrders = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const res = await axios.get("http://localhost:5000/api/user/orders", {
+            const res = await axios.get(`${API_BASE_URL}/user/orders`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const ordersList = res.data.orders || res.data || [];
@@ -35,167 +130,141 @@ const MyOrders = () => {
         }
     };
 
-    const styles = {
-        wrapper: {
-            backgroundColor: '#F8FAFC', // Very light grey/white background
-            minHeight: '100vh',
-            color: '#1E293B',
-            paddingTop: '100px',
-            paddingBottom: '100px',
-            fontFamily: "'Roboto', sans-serif",
-        },
-        container: { maxWidth: '1000px', margin: '0 auto', padding: '0 20px' },
-        headerSection: {
-            marginBottom: '40px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            flexWrap: 'wrap',
-            gap: '20px'
-        },
-        card: {
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: '20px',
-            overflow: 'hidden',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-            marginBottom: '16px'
-        },
-        statusBadge: (status) => ({
-            backgroundColor: status?.toLowerCase() === 'delivered' ? '#DCFCE7' : '#F1F5F9',
-            color: status?.toLowerCase() === 'delivered' ? '#166534' : '#475569',
-            padding: '6px 14px',
-            borderRadius: '50px',
-            fontSize: '11px',
-            fontWeight: '700',
-            textTransform: 'uppercase',
-            display: 'inline-block'
-        })
+    const fetchWishlist = async () => {
+        if (!token) return;
+        try {
+            const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setWishlistItems(res.data.products?.map(p => p._id) || []);
+        } catch (error) {
+            console.error("Wishlist fetch failed:", error);
+        }
     };
 
+    const toggleWishlist = async (productId) => {
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+        try {
+            const res = await axios.post(
+                `${API_BASE_URL}/toggle-wishlist`,
+                { productId },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (res.status === 200 || res.status === 201) {
+                setWishlistItems(prev =>
+                    prev.includes(productId)
+                        ? prev.filter(id => id !== productId)
+                        : [...prev, productId]
+                );
+            }
+        } catch (error) {
+            console.error("Wishlist toggle failed:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+        fetchWishlist();
+    }, []);
+
     if (loading) return (
-        <div style={{ ...styles.wrapper, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-            <div className="loader">SYNCING LOGS...</div>
+        <div style={{ ...styles.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '2px', color: 'var(--accent)' }}>SYNCING LOGS...</div>
         </div>
     );
 
     return (
-        <div style={styles.wrapper}>
-            <style>{`
-                .order-table { width: 100%; border-collapse: collapse; }
-                .order-table th { 
-                    text-align: left; padding: 16px 24px; font-size: 11px; 
-                    text-transform: uppercase; color: #64748B; letter-spacing: 1px;
-                }
-                .order-table td { padding: 24px; border-top: 1px solid #F1F5F9; }
-
-                /* RESPONSIVE LOGIC */
-                @media (max-width: 768px) {
-                    .desktop-table { display: none; }
-                    .mobile-card-list { display: block; }
-                    .header-title { text-align: center; width: 100%; }
-                }
-                @media (min-width: 769px) {
-                    .mobile-card-list { display: none; }
-                }
-
-                .back-btn:hover { color: #000 !important; }
-            `}</style>
-
+        <div style={styles.page}>
             <div style={styles.container}>
-                {/* BACK BUTTON */}
                 <button
                     onClick={() => navigate('/dashboard')}
-                    className="back-btn"
-                    style={{ background: 'none', border: 'none', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600, fontSize: '14px', marginBottom: '20px' }}
+                    style={styles.backBtn}
                 >
-                    <ArrowLeftIcon width={16} /> Dashboard
+                    <ArrowLeftIcon width={14} /> Back to Dashboard
                 </button>
 
-                <div style={styles.headerSection}>
-                    <div className="header-title">
-                        <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#0F172A', margin: 0 }}>Order History</h1>
-                        <p style={{ color: '#64748B', fontSize: '15px', marginTop: '5px' }}>Track and manage your previous gear deployments.</p>
-                    </div>
-                </div>
+                <header style={{ marginBottom: 60 }}>
+                    <h1 style={styles.mainTitle}>Order Manifest<span style={{ color: 'var(--accent)' }}>.</span></h1>
+                    <p style={styles.subtitle}>Track and manage your kite equipment deployments.</p>
+                </header>
 
                 {orders.length === 0 ? (
-                    <div style={{ ...styles.card, textAlign: 'center', padding: '80px 20px' }}>
-                        <CubeIcon style={{ width: 48, margin: '0 auto', color: '#CBD5E1' }} />
-                        <p style={{ marginTop: '20px', color: '#64748B', fontWeight: 500 }}>No orders found in your manifest.</p>
-                        <button onClick={() => navigate('/products')} style={{ marginTop: '24px', backgroundColor: '#000', color: 'white', padding: '14px 28px', borderRadius: '12px', border: 'none', fontWeight: 700, cursor: 'pointer' }}>START SHOPPING</button>
+                    <div style={styles.emptyCard}>
+                        <CubeIcon style={{ width: 64, margin: '0 auto', color: 'var(--slate-200)' }} />
+                        <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--slate-800)', marginTop: '24px' }}>Hangar is Empty</h2>
+                        <p style={{ color: 'var(--slate-400)', marginTop: '12px' }}>No gear deployments found in your manifest.</p>
+                        <button
+                            onClick={() => navigate('/products')}
+                            style={{
+                                marginTop: '40px',
+                                backgroundColor: 'var(--accent)',
+                                color: 'white',
+                                padding: '18px 32px',
+                                borderRadius: '18px',
+                                border: 'none',
+                                fontWeight: 900,
+                                fontSize: '12px',
+                                letterSpacing: '1px',
+                                cursor: 'pointer',
+                                boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)'
+                            }}
+                        >
+                            ACQUIRE GEAR
+                        </button>
                     </div>
                 ) : (
-                    <>
-                        {/* DESKTOP TABLE */}
-                        <div className="desktop-table" style={styles.card}>
-                            <table className="order-table">
-                                <thead style={{ backgroundColor: '#F8FAFC' }}>
-                                    <tr>
-                                        <th>Deployment Info</th>
-                                        <th>Inventory</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.map((order) => (
-                                        <tr key={order._id}>
-                                            <td>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
-                                                    <CalendarIcon width={16} color="#64748B" />
-                                                    {new Date(order.createdAt).toLocaleDateString('en-GB')}
-                                                </div>
-                                                <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px', fontFamily: 'monospace' }}>
-                                                    ID: {order._id.toUpperCase()}
-                                                </div>
-                                            </td>
-                                            <td>
-                                                {order.items?.map((item, i) => (
-                                                    <div key={i} style={{ fontSize: '14px', fontWeight: 500, marginBottom: '2px' }}>
-                                                        {item.productName || "Kiteasm Gear"} <span style={{ color: '#94A3B8' }}>× {item.quantity}</span>
-                                                    </div>
-                                                ))}
-                                            </td>
-                                            <td style={{ fontWeight: 800, fontSize: '15px' }}>₹{order.totalAmount}</td>
-                                            <td>
-                                                <span style={styles.statusBadge(order.orderStatus)}>
-                                                    {order.orderStatus || 'Processing'}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                    <div style={styles.sectionCard}>
+                        <div style={{ ...styles.orderRow, background: 'var(--bg-base)', borderBottom: '1px solid var(--border-soft)', padding: '16px 32px' }}>
+                            <span style={styles.headerLabel}>DEPLOYMENT INFO</span>
+                            <span style={styles.headerLabel}>INVENTORY</span>
+                            <span style={styles.headerLabel}>ALLOCATION</span>
+                            <span style={styles.headerLabel}>STATUS</span>
                         </div>
-
-                        {/* MOBILE CARD LIST */}
-                        <div className="mobile-card-list">
-                            {orders.map((order) => (
-                                <div key={order._id} style={styles.card}>
-                                    <div style={{ padding: '20px', borderBottom: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div>
-                                            <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{new Date(order.createdAt).toLocaleDateString()}</div>
-                                            <div style={{ fontWeight: 800, fontSize: '14px' }}>Order #{order._id.slice(-6).toUpperCase()}</div>
-                                        </div>
-                                        <span style={styles.statusBadge(order.orderStatus)}>{order.orderStatus || 'Pending'}</span>
+                        {orders.map((order) => (
+                            <div key={order._id} style={styles.orderRow}>
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 900, fontSize: '15px' }}>
+                                        <CalendarIcon width={16} color="var(--slate-400)" />
+                                        {new Date(order.createdAt).toLocaleDateString('en-GB')}
                                     </div>
-                                    <div style={{ padding: '20px' }}>
-                                        {order.items?.map((item, i) => (
-                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', marginBottom: '8px' }}>
-                                                <span>{item.productName} <small style={{ color: '#94A3B8' }}>x{item.quantity}</small></span>
-                                                <span style={{ fontWeight: 600 }}>₹{item.price * item.quantity}</span>
-                                            </div>
-                                        ))}
-                                        <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px dashed #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <span style={{ fontWeight: 700 }}>Total Paid</span>
-                                            <span style={{ fontWeight: 900, fontSize: '18px', color: '#000' }}>₹{order.totalAmount}</span>
-                                        </div>
+                                    <div style={{ fontSize: '10px', color: 'var(--slate-400)', marginTop: '6px', fontWeight: '800' }}>
+                                        #{order._id.toUpperCase()}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </>
+                                <div>
+                                    {order.items?.map((item, i) => (
+                                        <div key={i} style={{ fontSize: '14px', fontWeight: 700, marginBottom: '8px', color: 'var(--slate-800)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <button
+                                                onClick={() => toggleWishlist(item.productId)}
+                                                style={{
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    padding: 0,
+                                                    color: wishlistItems.includes(item.productId) ? 'var(--accent)' : 'var(--slate-300)',
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                <Heart size={14} fill={wishlistItems.includes(item.productId) ? "var(--accent)" : "none"} />
+                                            </button>
+                                            {item.productName || item.productname || "Kiteasm Gear"}
+                                            <span style={{ color: 'var(--slate-400)', marginLeft: 'auto', fontWeight: '900', fontSize: '11px' }}>× {item.quantity}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ fontWeight: 900, fontSize: '18px', color: 'var(--accent)' }}>₹{order.totalAmount}</div>
+                                <div>
+                                    <span style={styles.statusBadge(order.orderStatus)}>
+                                        {order.orderStatus || 'In Transit'}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

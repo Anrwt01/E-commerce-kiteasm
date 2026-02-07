@@ -1,13 +1,124 @@
 import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../utils/config.js";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, User, MapPin, Save, Loader2 } from "lucide-react";
+
+// Define styles object with Anti-Gravity aesthetic
+const styles = {
+  page: {
+    background: "var(--bg-base)",
+    minHeight: "100vh",
+    padding: "140px 16px 80px",
+    color: "var(--slate-800)",
+    fontFamily: "var(--font-sans)"
+  },
+  container: {
+    maxWidth: 800,
+    margin: "0 auto"
+  },
+  backBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    border: 'none',
+    background: 'none',
+    fontSize: 11,
+    fontWeight: 900,
+    color: 'var(--slate-400)',
+    cursor: 'pointer',
+    marginBottom: 24,
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    transition: '0.3s'
+  },
+  mainTitle: {
+    fontSize: 'clamp(2rem, 5vw, 2.5rem)',
+    fontWeight: 900,
+    marginTop: 10,
+    letterSpacing: '-2px',
+    color: 'var(--slate-800)'
+  },
+  subtitle: {
+    color: 'var(--slate-600)',
+    marginTop: 8,
+    fontSize: 16
+  },
+  sectionCard: {
+    background: 'var(--bg-card)',
+    padding: '48px',
+    borderRadius: 40,
+    border: '1px solid var(--border-soft)',
+    boxShadow: 'var(--shadow-floating)',
+    marginBottom: 40
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    marginBottom: '32px'
+  },
+  label: {
+    fontSize: '10px',
+    fontWeight: '900',
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase',
+    color: 'var(--accent)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+  },
+  input: {
+    padding: '20px 24px',
+    borderRadius: '20px',
+    border: '1px solid var(--border-soft)',
+    outline: 'none',
+    fontSize: '15px',
+    width: '100%',
+    boxSizing: 'border-box',
+    background: '#fff',
+    fontWeight: '600',
+    transition: '0.3s',
+    color: 'var(--slate-800)'
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '24px'
+  },
+  btnPrimary: {
+    backgroundColor: 'var(--accent)',
+    color: '#fff',
+    padding: '22px',
+    borderRadius: '20px',
+    border: 'none',
+    fontSize: '13px',
+    fontWeight: '900',
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
+    transition: '0.4s',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    width: '100%',
+    marginTop: '20px'
+  },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+  },
+};
 
 const User_details_update = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [fetching, setFetching] = useState(true); // New state for initial fetch
+  const [fetching, setFetching] = useState(true);
 
-  // Refs for all inputs
   const nameRef = useRef(null);
   const phone2Ref = useRef(null);
   const houseRef = useRef(null);
@@ -25,26 +136,24 @@ const User_details_update = () => {
     }
   }, [navigate]);
 
-  // --- FETCH EXISTING DATA TO PRE-FILL ---
   const fetchCurrentDetails = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/user/details", {
+      const res = await axios.get(`${API_BASE_URL}/user/details`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res.data.success) {
         const user = res.data.user;
-        const addr = user.address?.[0] || {}; // Get first address object
+        const addr = user.address?.[0] || {};
 
-        // Set values directly to refs
-        nameRef.current.value = user.name || "";
-        phone2Ref.current.value = user.phone2 || "";
-        houseRef.current.value = addr.house || "";
-        galinoRef.current.value = addr.galino || "";
-        cityRef.current.value = addr.city || "";
-        stateRef.current.value = addr.state || "";
-        pincodeRef.current.value = addr.pincode || "";
+        if (nameRef.current) nameRef.current.value = user.name || "";
+        if (phone2Ref.current) phone2Ref.current.value = user.phone2 || "";
+        if (houseRef.current) houseRef.current.value = addr.house || "";
+        if (galinoRef.current) galinoRef.current.value = addr.galino || addr.Galino || "";
+        if (cityRef.current) cityRef.current.value = addr.city || "";
+        if (stateRef.current) stateRef.current.value = addr.state || "";
+        if (pincodeRef.current) pincodeRef.current.value = addr.pincode || "";
       }
     } catch (error) {
       console.error("Error fetching prefill data:", error);
@@ -70,10 +179,11 @@ const User_details_update = () => {
     };
 
     try {
-      await axios.put("http://localhost:5000/api/user/profile/update", payload, {
+      await axios.put(`${API_BASE_URL}/user/profile/update`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
       });
       alert("Profile updated successfully");
+      navigate("/profile");
     } catch (error) {
       console.error(error);
       alert("Failed to update profile");
@@ -82,51 +192,56 @@ const User_details_update = () => {
     }
   };
 
-  const inputStyle = {
-    width: '100%', padding: '20px', background: 'var(--gray-light)',
-    border: '1px solid transparent', fontSize: '14px', outline: 'none',
-    marginBottom: '20px'
-  };
-
   if (fetching) return (
-    <div style={{ textAlign: 'center', paddingTop: '200px' }} className="serif italic">
-      Retrieving mission profile...
+    <div style={{ ...styles.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '2px', color: 'var(--accent)' }}>RETRIEVING PILOT PROFILE...</div>
     </div>
   );
 
   return (
-    <div className="container" style={{ paddingTop: '160px', paddingBottom: '100px', maxWidth: '800px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-        <h1 className="serif" style={{ fontSize: '48px' }}>Update Profile<span style={{ fontStyle: 'normal' }}>.</span></h1>
-        <p className="text-xs text-muted uppercase tracking-widest" style={{ marginTop: '16px' }}>Refine your coordinates</p>
-      </div>
-
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div>
-          <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'block', marginBottom: '20px' }}>01. Identity</span>
-          <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <input type="text" placeholder="Full Name" ref={nameRef} required style={inputStyle} />
-            <input type="text" placeholder="Alt Phone" ref={phone2Ref} pattern="[0-9]{10}" style={inputStyle} />
-          </div>
-        </div>
-
-        <div>
-          <span className="text-xs uppercase tracking-widest" style={{ fontWeight: 900, display: 'block', marginBottom: '20px' }}>02. Address</span>
-          <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <input type="text" placeholder="House / Flat No" ref={houseRef} required style={inputStyle} />
-            <input type="text" placeholder="Gali / Locality" ref={galinoRef} required style={inputStyle} />
-          </div>
-          <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
-            <input type="text" placeholder="City" ref={cityRef} required style={inputStyle} />
-            <input type="text" placeholder="State" ref={stateRef} required style={inputStyle} />
-            <input type="text" placeholder="Pincode" ref={pincodeRef} required style={inputStyle} />
-          </div>
-        </div>
-
-        <button type="submit" disabled={loading} className="btn btn-black" style={{ padding: '24px' }}>
-          {loading ? 'Updating...' : 'Save Profile'}
+    <div style={styles.page}>
+      <div style={styles.container}>
+        <button
+          style={styles.backBtn}
+          onClick={() => navigate("/profile")}
+        >
+          <ArrowLeft size={16} /> Back to Identity
         </button>
-      </form>
+
+        <header style={{ marginBottom: 60 }}>
+          <h1 style={styles.mainTitle}>Refine Coordinates<span style={{ color: 'var(--accent)' }}>.</span></h1>
+          <p style={styles.subtitle}>Update your navigation data and contact nodes for seamless fulfillment.</p>
+        </header>
+
+        <form onSubmit={handleSubmit}>
+          <div style={styles.sectionCard}>
+            <div style={styles.inputGroup}>
+              <span style={styles.label}><User size={12} /> Identity Protocol</span>
+              <div style={styles.grid}>
+                <input type="text" placeholder="Full Name" ref={nameRef} required style={styles.input} />
+                <input type="text" placeholder="Backup Phone Node" ref={phone2Ref} pattern="[0-9]{10}" style={styles.input} />
+              </div>
+            </div>
+
+            <div style={{ ...styles.inputGroup, marginBottom: '40px' }}>
+              <span style={styles.label}><MapPin size={12} /> Deployment Hangar</span>
+              <div style={{ ...styles.grid, marginBottom: '24px' }}>
+                <input type="text" placeholder="House / Flat No" ref={houseRef} required style={styles.input} />
+                <input type="text" placeholder="Gali / Locality" ref={galinoRef} required style={styles.input} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
+                <input type="text" placeholder="City" ref={cityRef} required style={styles.input} />
+                <input type="text" placeholder="State" ref={stateRef} required style={styles.input} />
+                <input type="text" placeholder="Pincode" ref={pincodeRef} required style={styles.input} />
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} style={styles.btnPrimary}>
+              {loading ? <Loader2 size={20} className="animate-spin" /> : <><Save size={18} /> SYNC CHANGES</>}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

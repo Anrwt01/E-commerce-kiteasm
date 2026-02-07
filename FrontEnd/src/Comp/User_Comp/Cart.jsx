@@ -1,127 +1,149 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { productImages } from "../../utils/productImages";
 import axios from "axios";
-import { Trash2, ChevronLeft, ShoppingBag, ArrowRight, Loader2 } from "lucide-react";
+import { Trash2, ChevronLeft, ShoppingBag, ArrowRight, Loader2, Heart } from "lucide-react";
+import API_BASE_URL from "../../utils/config.js";
 
-// Define styles object with responsive design
+// Define styles object with Anti-Gravity aesthetic
 const styles = {
-  container: {
-    backgroundColor: "#ffffff",
+  page: {
+    background: "var(--bg-base)",
     minHeight: "100vh",
-    color: "#000000",
+    padding: "140px 16px 80px",
+    color: "var(--slate-800)",
+    fontFamily: "var(--font-sans)"
   },
-  main: {
-    maxWidth: "1000px",
-    margin: "0 auto",
-    padding: "140px 24px 80px",
+  container: {
+    maxWidth: 1100,
+    margin: "0 auto"
   },
-  header: {
-    marginBottom: "40px",
+  backBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    border: 'none',
+    background: 'none',
+    fontSize: 11,
+    fontWeight: 900,
+    color: 'var(--slate-400)',
+    cursor: 'pointer',
+    marginBottom: 24,
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    transition: '0.3s'
   },
-  backButton: {
-    background: "none",
-    border: "none",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    cursor: "pointer",
+  layout: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 400px',
+    gap: 60,
+    alignItems: 'start'
   },
-  title: {
-    fontSize: "32px",
-    fontWeight: "800",
-    marginTop: "16px",
+  leftCol: { width: '100%' },
+  rightCol: { width: '100%' },
+  mainTitle: {
+    fontSize: 'clamp(2rem, 5vw, 2.5rem)',
+    fontWeight: 900,
+    marginTop: 10,
+    letterSpacing: '-2px',
+    color: 'var(--slate-800)'
   },
-  // Styles moved to injected block for media query support
-  cartItems: {
-    // No specific styles, just container
+  subtitle: {
+    color: 'var(--slate-600)',
+    marginTop: 8,
+    fontSize: 16
+  },
+  sectionCard: {
+    background: 'var(--bg-card)',
+    padding: '40px',
+    borderRadius: 32,
+    border: '1px solid var(--border-soft)',
+    boxShadow: 'var(--shadow-floating)',
+    marginBottom: 32
+  },
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
+    gap: 10
+  },
+  iconHeading: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    fontWeight: 900,
+    fontSize: 11,
+    color: 'var(--accent)',
+    textTransform: 'uppercase',
+    letterSpacing: '1px'
+  },
+  summaryCard: {
+    background: 'var(--bg-card)',
+    color: 'var(--slate-800)',
+    padding: '40px',
+    borderRadius: 32,
+    border: '1px solid var(--border-soft)',
+    boxShadow: 'var(--shadow-floating)'
+  },
+  cartList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20
   },
   cartItem: {
-    background: "#F9F9F9",
-    borderRadius: "20px",
-    padding: "20px",
-    display: "flex",
-    alignItems: "center",
-    gap: "20px",
-    marginBottom: "16px",
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: 14,
+    color: 'var(--slate-600)'
   },
-  itemImage: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "12px",
-    overflow: "hidden",
-  },
-  itemDetails: {
-    flex: 1,
-  },
-  itemName: {
-    margin: 0,
-    fontSize: "16px",
-  },
-  itemPrice: {
-    fontWeight: "800",
-  },
-  itemQty: {
-    fontSize: "12px",
-    color: "#666666",
-  },
-  removeButton: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-  },
-  orderSummary: {
-    background: "#F9F9F9",
-    borderRadius: "24px",
-    padding: "30px",
-    height: "fit-content",
-  },
-  summaryTitle: {
-    fontWeight: "800",
-  },
-  summaryDetails: {
-    marginTop: "24px",
-    borderBottom: "1px solid #EEEEEE",
-    paddingBottom: "16px",
-  },
-  summaryRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "12px",
+  divider: {
+    height: 1,
+    background: 'var(--border-soft)',
+    margin: '32px 0'
   },
   totalRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "20px",
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 40
   },
   totalAmount: {
-    fontWeight: "800",
-    fontSize: "20px",
+    fontWeight: "900",
+    fontSize: "28px",
+    color: "var(--slate-800)",
+    letterSpacing: "-1px"
   },
-  checkoutButton: {
-    width: "100%",
-    padding: "18px",
-    background: "#000000",
-    color: "#ffffff",
-    borderRadius: "12px",
-    fontWeight: "700",
-    marginTop: "24px",
-    cursor: "pointer",
+  orderBtn: {
+    width: '100%',
+    padding: '22px',
+    borderRadius: 20,
+    background: 'var(--accent)',
+    color: '#fff',
+    border: 'none',
+    fontWeight: '900',
+    cursor: 'pointer',
+    fontSize: '13px',
+    textTransform: 'uppercase',
+    letterSpacing: '1.5px',
+    boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
+    transition: '0.4s'
   },
   emptyCart: {
     textAlign: "center",
     paddingTop: "80px",
   },
   emptyIcon: {
-    color: "#CCCCCC",
+    color: "var(--slate-400)",
   },
   emptyTitle: {
     fontSize: "24px",
     margin: "16px 0",
+    fontWeight: "900",
+    color: "var(--slate-800)"
   },
   browseLink: {
-    color: "#000000",
-    fontWeight: "700",
+    color: "var(--accent)",
+    fontWeight: "900",
     textDecoration: "none",
   },
   loading: {
@@ -139,12 +161,13 @@ const Cart = () => {
   const [subtotal, setSubtotal] = useState(0);
   const [logistics, setLogistics] = useState(0);
   const [deletingId, setDeletingId] = useState(null);
+  const [wishlistItems, setWishlistItems] = useState([]);
+
+  const token = localStorage.getItem("token");
 
   const normalize = (s = "") => s.toLowerCase();
 
-  // FIXED: This function now safely handles the whole array
   const getDeliveryCharge = (items = []) => {
-    // Safety check to ensure items is an array
     if (!Array.isArray(items) || items.length === 0) return 0;
 
     let kiteQty = 0;
@@ -160,41 +183,37 @@ const Cart = () => {
     );
 
     const only = (key) => types.length > 0 && types.every(t => t.includes(key));
-    const has = (key) => types.some(t => t.includes(key));
 
     items.forEach(item => {
       const name = normalize(item.productId?.name || "");
       const category = normalize(item.productId?.category || "");
 
       if (category === "kite") kiteQty += item.quantity;
+      if (name.includes("Kiteasm Kite Bag")) hasBag3 = true;
       if (name.includes("3inch")) hasBag3 = true;
       if (name.includes("6inch")) hasBag6 = true;
       if (name.includes("Cover")) hasCover = true;
-      if (name.includes("Oswal")) hasOswal = true;
+      if (name.includes("Oswal No3")) hasOswal = true;
       if (name.includes("Stand")) hasStand = true;
       if (name.includes("manjha")) hasManjha = true;
     });
 
-    // 1️⃣ Per-unit Manjha rule (ONLY manjha in cart)
     if (only("manjha")) {
       return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
     }
 
-    // 2️⃣ Combination flat-rate rules
     if (hasManjha && hasCover && hasOswal) return 200;
     if (hasStand && hasCover) return 200;
     if (hasOswal && hasCover) return 200;
 
-    // 3️⃣ Bag + Kite bulk rules
     if (kiteQty > 0) {
       if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
       if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
     }
 
-    // 4️⃣ Single-product flat cart rules
     if (only("tape")) return 49;
     if (only("cover")) return 99;
-    if (only("oswal")) return 149;
+    if (only("Oswal No3")) return 149;
     if (only("kite")) return 450;
 
     return 250;
@@ -205,11 +224,10 @@ const Cart = () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
 
-      const res = await axios.get("http://localhost:5000/api/user/cart", {
+      const res = await axios.get(`${API_BASE_URL}/user/cart`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log(res)
       const items = res.data.cart?.items || res.data.items || [];
       setCart(items);
       calculateTotals(items);
@@ -228,15 +246,50 @@ const Cart = () => {
       return acc + (price * item.quantity);
     }, 0);
 
-    // FIXED: Call the function ONCE for the whole cart
     const shipTotal = getDeliveryCharge(items);
 
     setSubtotal(itemTotal);
     setLogistics(shipTotal);
   };
 
+  const fetchWishlist = async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlistItems(res.data.products?.map(p => p._id) || []);
+    } catch (error) {
+      console.error("Wishlist fetch failed:", error);
+    }
+  };
+
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/toggle-wishlist`,
+        { productId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200 || res.status === 201) {
+        setWishlistItems(prev =>
+          prev.includes(productId)
+            ? prev.filter(id => id !== productId)
+            : [...prev, productId]
+        );
+      }
+    } catch (error) {
+      console.error("Wishlist toggle failed:", error);
+    }
+  };
+
   useEffect(() => {
     fetchCart();
+    fetchWishlist();
   }, []);
 
   const removeItem = async (productId) => {
@@ -244,7 +297,7 @@ const Cart = () => {
     setDeletingId(productId);
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/user/cart/remove/${productId}`, {
+      await axios.delete(`${API_BASE_URL}/user/cart/remove/${productId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -260,68 +313,106 @@ const Cart = () => {
 
   if (loading) return (
     <div style={styles.loading}>
-      <Loader2 className="animate-spin" size={40} />
+      <Loader2 className="animate-spin" size={40} color="var(--accent)" />
     </div>
   );
 
+  const totalAmount = subtotal + logistics;
+
   return (
-    <div style={styles.container}>
-      <main style={styles.main}>
-        <header style={styles.header}>
-          <button onClick={() => navigate("/dashboard")} style={styles.backButton}>
-            <ChevronLeft size={18} /> Back to Catalog
-          </button>
-          <h1 style={styles.title}>Your Cart.</h1>
+    <div style={styles.page}>
+      <div style={styles.container}>
+        <button onClick={() => navigate("/dashboard")} style={styles.backBtn}>
+          <ChevronLeft size={16} /> Back to Catalog
+        </button>
+
+        <header style={{ marginBottom: 60 }}>
+          <h1 className="main-title" style={styles.mainTitle}>Your Hangar<span style={{ color: 'var(--accent)' }}>.</span></h1>
+          <p style={styles.subtitle}>Review your selected items before proceeding to checkout.</p>
         </header>
 
         {cart.length > 0 ? (
-          <div style={styles.cartGrid}>
-            <div style={styles.cartItems}>
-              {cart.map((item) => (
-                <div key={item.productId?._id} style={styles.cartItem}>
-                  <div style={styles.itemImage}>
-                    <img
-                      src={`../uploads/${item.productId._id}/main.jpg`}
-                      alt="product"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
+          <div style={styles.layout}>
+            <div style={styles.leftCol}>
+              <div style={styles.sectionCard}>
+                <div style={styles.cardHeader}>
+                  <div style={styles.iconHeading}>
+                    <ShoppingBag size={16} />
+                    <span>Your Items</span>
                   </div>
-                  <div style={styles.itemDetails}>
-                    <h3 style={styles.itemName}>{item.productId?.name}</h3>
-                    <p style={styles.itemPrice}>₹{item.productId?.price}</p>
-                    <span style={styles.itemQty}>QTY: {item.quantity}</span>
-                  </div>
-                  <button
-                    onClick={() => removeItem(item.productId?._id)}
-                    disabled={deletingId === item.productId?._id}
-                    style={styles.removeButton}
-                  >
-                    {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
-                  </button>
                 </div>
-              ))}
+                <div style={styles.cartList}>
+                  {cart.map((item) => (
+                    <div key={item.productId?._id} style={{ display: 'flex', alignItems: 'center', gap: 24, paddingBottom: 20, borderBottom: '1px solid var(--border-soft)', marginBottom: 20 }}>
+                      <div style={{ width: 80, height: 80, borderRadius: 16, overflow: 'hidden', border: '1px solid var(--border-soft)', flexShrink: 0 }}>
+                        <img
+                          src={`../uploads/${item.productId._id}/main.jpg`}
+                          alt="product"
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 900, color: 'var(--slate-800)', letterSpacing: '-0.5px' }}>{item.productId?.name}</h3>
+                        <p style={{ margin: '4px 0', fontSize: 15, color: 'var(--accent)', fontWeight: '800' }}>₹{item.productId?.price}</p>
+                        <span style={{ fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--slate-400)' }}>UNIT COUNT: {item.quantity}</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                        <button
+                          onClick={() => toggleWishlist(item.productId?._id)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: wishlistItems.includes(item.productId?._id) ? 'var(--accent)' : 'var(--slate-400)',
+                            transition: '0.3s'
+                          }}
+                        >
+                          <Heart size={20} fill={wishlistItems.includes(item.productId?._id) ? "var(--accent)" : "none"} />
+                        </button>
+                        <button
+                          onClick={() => removeItem(item.productId?._id)}
+                          disabled={deletingId === item.productId?._id}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-400)', transition: '0.3s' }}
+                        >
+                          {deletingId === item.productId?._id ? <Loader2 size={20} className="animate-spin" /> : <Trash2 size={20} />}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <aside style={styles.orderSummary}>
-              <h3 style={styles.summaryTitle}>Order Summary</h3>
-              <div style={styles.summaryDetails}>
-                <div style={styles.summaryRow}>
-                  <span>Subtotal</span>
-                  <span style={{ fontWeight: "600" }}>₹{subtotal}</span>
+            <div style={styles.rightCol}>
+              <div style={styles.summaryCard}>
+                <div style={styles.cardHeader}>
+                  <div style={styles.iconHeading}>
+                    <ArrowRight size={16} />
+                    <span>Shipment Manifest</span>
+                  </div>
                 </div>
-                <div style={styles.summaryRow}>
-                  <span>Logistics</span>
-                  <span style={{ fontWeight: "600" }}>₹{logistics}</span>
+                <div style={styles.cartList}>
+                  <div style={styles.cartItem}>
+                    <span style={{ fontWeight: '600' }}>Inventory Subtotal</span>
+                    <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{subtotal}</span>
+                  </div>
+                  <div style={styles.cartItem}>
+                    <span style={{ fontWeight: '600' }}>Logistics & Handling</span>
+                    <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{logistics}</span>
+                  </div>
                 </div>
+                <div style={styles.divider}></div>
+                <div style={styles.totalRow}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: 10, color: 'var(--slate-400)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>TOTAL PAYABLE</span>
+                    <span style={styles.totalAmount}>₹{totalAmount}</span>
+                  </div>
+                </div>
+                <button onClick={() => navigate("/checkout")} style={styles.orderBtn}>
+                  Authorize Fulfillment
+                </button>
               </div>
-              <div style={styles.totalRow}>
-                <span style={{ fontWeight: "800" }}>Total</span>
-                <span style={styles.totalAmount}>₹{subtotal + logistics}</span>
-              </div>
-              <button onClick={() => navigate("/checkout")} style={styles.checkoutButton}>
-                Proceed to Checkout
-              </button>
-            </aside>
+            </div>
           </div>
         ) : (
           <div style={styles.emptyCart}>
@@ -330,7 +421,7 @@ const Cart = () => {
             <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../utils/config.js";
 import { Mail, Phone, MapPin, Send, Globe, Zap, ShieldCheck } from "lucide-react";
 
 const Contact = () => {
@@ -14,7 +15,7 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/contact", formData);
+      await axios.post(`${API_BASE_URL}/contact`, formData);
       alert("Message transmitted successfully!");
       setFormData({ email: "", message: "" });
     } catch (error) {
@@ -27,47 +28,49 @@ const Contact = () => {
 
   const styles = {
     container: {
-      backgroundColor: '#000000', // Pure black for professional theme
-      color: '#ffffff', // White text
+      backgroundColor: 'var(--bg-base)',
+      color: 'var(--slate-800)',
       minHeight: '100vh',
-      fontFamily: '"Roboto", sans-serif',
+      fontFamily: 'var(--font-sans)',
       overflowX: 'hidden'
     },
     section: { maxWidth: '1200px', margin: '0 auto', padding: '80px 24px' },
     gradientText: {
-      color: '#ffffff', // Plain white instead of gradient
-      fontWeight: '500'
+      color: 'var(--slate-800)',
+      fontWeight: '800'
     },
     input: {
       width: '100%',
-      backgroundColor: 'rgba(255, 255, 255, 0.03)', // Subtle white overlay
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      backgroundColor: 'var(--bg-card)',
+      border: '1px solid var(--border-soft)',
       borderRadius: '16px',
       padding: '18px',
       outline: 'none',
-      color: 'white',
+      color: 'var(--slate-800)',
       fontSize: '15px',
       transition: 'all 0.3s ease',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box',
+      boxShadow: 'var(--shadow-sm)'
     },
     infoCard: {
       display: 'flex',
       alignItems: 'center',
       gap: '16px',
       marginBottom: '30px',
-      padding: '20px',
-      background: 'rgba(255, 255, 255, 0.02)', // Subtle overlay
-      borderRadius: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.05)'
+      padding: '24px',
+      background: 'var(--bg-card)',
+      borderRadius: '24px',
+      border: '1px solid var(--border-soft)',
+      boxShadow: 'var(--shadow-floating)'
     },
     statusCard: {
       position: 'relative',
-      background: 'rgba(255, 255, 255, 0.03)', // Subtle white overlay
-      borderRadius: '40px',
-      padding: '50px 40px',
-      border: '1px solid rgba(255, 255, 255, 0.1)', // White border
+      background: 'var(--bg-card)',
+      borderRadius: 'var(--radius-xl)',
+      padding: '60px 40px',
+      border: '1px solid var(--border-soft)',
       textAlign: 'center',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+      boxShadow: 'var(--shadow-floating)'
     }
   };
 
@@ -79,26 +82,26 @@ const Contact = () => {
 
           {/* Left: Contact Info */}
           <div>
-            <h1 style={{ ...styles.gradientText, fontSize: 'clamp(3rem, 6vw, 5rem)', lineHeight: '1.1', marginBottom: '30px' }}>
-              Make <br />Contact.
+            <h1 style={{ ...styles.gradientText, fontSize: 'clamp(3rem, 6vw, 4.5rem)', lineHeight: '1.1', marginBottom: '30px', letterSpacing: '-2px' }}>
+              Make <br />Contact<span style={{ color: 'var(--accent)' }}>.</span>
             </h1>
-            <p style={{ color: '#cccccc', fontSize: '18px', lineHeight: '1.7', marginBottom: '45px', maxWidth: '500px' }}> {/* Light gray text */}
-              Have a custom request or query? Our Team are standing by to assist your query.
+            <p style={{ color: 'var(--slate-600)', fontSize: '18px', lineHeight: '1.7', marginBottom: '45px', maxWidth: '500px' }}>
+              Have a custom request or project? Our mission-driven team is standing by to assist.
             </p>
 
             <div>
               <div style={styles.infoCard}>
-                <div style={{ padding: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', color: '#ffffff' }}><Mail size={24} /></div> {/* White icon */}
+                <div style={{ padding: '12px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px', color: 'var(--accent)' }}><Mail size={24} /></div>
                 <div>
-                  <p style={{ fontWeight: '600', fontSize: '18px', color: '#ffffff' }}>kiteasm01@gamil.com</p>
+                  <p style={{ fontWeight: '700', fontSize: '18px', color: 'var(--slate-800)' }}>kiteasm01@gmail.com</p>
                 </div>
               </div>
 
               <div style={styles.infoCard}>
-                <div style={{ padding: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '12px', color: '#ffffff' }}><Phone size={17} /></div> {/* White icon */}
+                <div style={{ padding: '12px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px', color: 'var(--accent)' }}><Phone size={22} /></div>
                 <div>
-                  <p style={{ fontSize: '11px', color: '#cccccc', fontWeight: '800', letterSpacing: '1px' }}>VOICE FREQUENCY</p> {/* Light gray label */}
-                  <p style={{ fontWeight: '600', fontSize: '18px', color: '#ffffff' }}>+91 70111801</p>
+                  <p style={{ fontSize: '10px', color: 'var(--slate-400)', fontWeight: '800', letterSpacing: '2px', textTransform: 'uppercase' }}>Voice Frequency</p>
+                  <p style={{ fontWeight: '700', fontSize: '18px', color: 'var(--slate-800)' }}>+91 70111801</p>
                 </div>
               </div>
             </div>
@@ -107,25 +110,25 @@ const Contact = () => {
           {/* Right: Decorative Status Card */}
           <div style={styles.statusCard}>
             <div style={{ position: 'absolute', top: '30px', right: '30px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: '8px', height: '8px', background: '#ffffff', borderRadius: '50%', boxShadow: '0 0 12px #ffffff' }} /> {/* White dot */}
-              <span style={{ fontSize: '10px', fontWeight: '800', color: '#ffffff' }}>SYSTEMS ONLINE</span> {/* White text */}
+              <span style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 12px #10B981' }} />
+              <span style={{ fontSize: '10px', fontWeight: '800', color: 'var(--slate-600)' }}>SYSTEMS ONLINE</span>
             </div>
 
-            <Globe size={60} color="#ffffff" style={{ marginBottom: '25px', filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.4))' }} /> {/* White globe */}
-            <h3 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '15px', color: '#ffffff' }}>All India Dispatch</h3>
-            <p style={{ color: '#cccccc', lineHeight: '1.6', marginBottom: '35px' }}> {/* Light gray text */}
+            <Globe size={60} color="var(--accent)" style={{ marginBottom: '25px', opacity: 0.8 }} />
+            <h3 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '15px', color: 'var(--slate-800)' }}>All India Dispatch</h3>
+            <p style={{ color: 'var(--slate-600)', lineHeight: '1.6', marginBottom: '35px' }}>
               Operations active across all States <br />
-              <span style={{ color: '#ffffff' }}>Current Dispatch Speed: <b>Fast-Track</b></span>
+              <span style={{ color: 'var(--accent)', fontWeight: '700' }}>Current Dispatch Speed: Fast-Track</span>
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-              <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', flex: 1, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <p style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>5hr</p> {/* White numbers */}
-                <p style={{ fontSize: '9px', color: '#cccccc', fontWeight: '800' }}>RESPONSE</p> {/* Light gray label */}
+              <div style={{ padding: '24px', background: 'var(--bg-base)', borderRadius: '24px', flex: 1, border: '1px solid var(--border-soft)' }}>
+                <p style={{ fontSize: '24px', fontWeight: '900', color: 'var(--slate-800)' }}>5hr</p>
+                <p style={{ fontSize: '10px', color: 'var(--slate-400)', fontWeight: '800' }}>RESPONSE</p>
               </div>
-              <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', borderRadius: '24px', flex: 1, border: '1px solid rgba(255,255,255,0.05)' }}>
-                <p style={{ fontSize: '24px', fontWeight: '900', color: '#ffffff' }}>99%</p> {/* White numbers */}
-                <p style={{ fontSize: '9px', color: '#cccccc', fontWeight: '800' }}>SUCCESS</p> {/* Light gray label */}
+              <div style={{ padding: '24px', background: 'var(--bg-base)', borderRadius: '24px', flex: 1, border: '1px solid var(--border-soft)' }}>
+                <p style={{ fontSize: '24px', fontWeight: '900', color: 'var(--slate-800)' }}>99%</p>
+                <p style={{ fontSize: '10px', color: 'var(--slate-400)', fontWeight: '800' }}>SUCCESS</p>
               </div>
             </div>
           </div>
@@ -133,11 +136,11 @@ const Contact = () => {
       </section>
 
       {/* 2. MESSAGE FORM */}
-      <section style={{ background: '#111111', padding: '80px 24px', borderTop: '1px solid rgba(255,255,255,0.05)' }}> {/* Dark gray background */}
+      <section style={{ background: 'var(--bg-card)', padding: '80px 24px', borderTop: '1px solid var(--border-soft)' }}>
         <div style={{ ...styles.section, maxWidth: '800px' }}>
           <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <h2 style={{ fontSize: '48px', fontWeight: '900', color: '#ffffff', marginBottom: '10px' }}>Messaging</h2>
-            <p style={{ color: '#cccccc' }}>Your message will be routed directly to our team.</p> {/* Light gray text */}
+            <h2 style={{ fontSize: '48px', fontWeight: '900', color: 'var(--slate-800)', marginBottom: '10px', letterSpacing: '-2px' }}>Messaging</h2>
+            <p style={{ color: 'var(--slate-600)' }}>Your message will be routed directly to our mission control.</p>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '25px' }}>
@@ -164,10 +167,10 @@ const Contact = () => {
               type="submit"
               disabled={loading}
               style={{
-                backgroundColor: '#ffffff', // White button
-                color: '#000000', // Black text
+                backgroundColor: 'var(--accent)',
+                color: '#ffffff',
                 padding: '22px',
-                borderRadius: '16px',
+                borderRadius: '20px',
                 fontWeight: '900',
                 border: 'none',
                 cursor: loading ? 'not-allowed' : 'pointer',
@@ -177,11 +180,11 @@ const Contact = () => {
                 gap: '12px',
                 fontSize: '16px',
                 letterSpacing: '1px',
-                boxShadow: '0 15px 30px rgba(255, 255, 255, 0.2)', // White shadow
-                transition: 'transform 0.2s ease'
+                boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)',
+                transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
               }}
-              onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-2px)')}
-              onMouseOut={(e) => !loading && (e.target.style.transform = 'translateY(0)')}
+              onMouseOver={(e) => !loading && (e.target.style.transform = 'translateY(-4px) scale(1.02)')}
+              onMouseOut={(e) => !loading && (e.target.style.transform = 'translateY(0) scale(1)')}
             >
               {loading ? "TRANSMITTING DATA..." : <><Send size={20} /> INITIATE SUBMISSION</>}
             </button>
@@ -198,7 +201,7 @@ const Contact = () => {
             border: 0,
             width: '100%',
             height: '100%',
-            filter: 'invert(90%) hue-rotate(180deg) brightness(0.7) contrast(1.2)' // Keeps map in dark mode
+            filter: 'grayscale(0.4) contrast(1.1)'
           }}
           allowFullScreen=""
           loading="lazy"
@@ -208,20 +211,21 @@ const Contact = () => {
           position: 'absolute',
           bottom: '50px',
           left: '50px',
-          background: '#111111', // Dark gray overlay
+          background: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(12px)',
           padding: '30px',
           borderRadius: '28px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: 'var(--shadow-floating)',
+          border: '1px solid var(--border-soft)',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#ffffff' }}> {/* White icon */}
-            <MapPin size={24} />
-            <h4 style={{ fontWeight: '800', margin: 0, color: '#ffffff' }}>Kiteasm</h4>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--slate-800)' }}>
+            <MapPin size={24} color="var(--accent)" />
+            <h4 style={{ fontWeight: '800', margin: 0, color: 'var(--slate-800)' }}>Kiteasm</h4>
           </div>
-          <p style={{ fontSize: '14px', color: '#cccccc', margin: 0 }}> {/* Light gray text */}
+          <p style={{ fontSize: '14px', color: 'var(--slate-600)', margin: 0, fontWeight: '500' }}>
             H3XV+8VV, Kailash Puri, Palam, Delhi, 110045
           </p>
         </div>

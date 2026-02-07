@@ -5,11 +5,11 @@ import { Instagram, Youtube, Phone, Send } from 'lucide-react';
 const Footer = () => {
   const styles = {
     footer: {
-      background: "#000000", // Pure black for consistency
-      color: "#ffffff", // White text
+      background: "var(--bg-base)", // Light background
+      color: "var(--slate-800)", // Dark text
       padding: "80px 40px 40px",
-      borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-      fontFamily: '"Roboto", sans-serif'
+      borderTop: "1px solid var(--border-soft)",
+      fontFamily: 'var(--font-sans)'
     },
     container: {
       maxWidth: "1200px",
@@ -21,42 +21,45 @@ const Footer = () => {
     },
     title: {
       fontSize: "11px",
-      fontWeight: 800,
+      fontWeight: 900,
       letterSpacing: "2px",
       marginBottom: "25px",
-      color: "#ffffff", // White title
+      color: "var(--slate-800)",
       textTransform: "uppercase"
     },
     list: { listStyle: "none", padding: 0, margin: 0 },
     listItem: { marginBottom: "14px" },
     link: {
-      color: "#cccccc", // Light gray links
+      color: "var(--slate-600)",
       textDecoration: "none",
       fontSize: "13px",
       transition: "0.3s",
+      fontWeight: '600'
     },
-    contactText: { marginBottom: "12px", fontSize: "13px", color: "#cccccc" }, // Light gray contact text
+    contactText: { marginBottom: "12px", fontSize: "13px", color: "var(--slate-600)", fontWeight: '500' },
     inputGroup: {
       display: "flex",
       gap: "0",
       marginTop: "15px",
-      border: "1px solid rgba(255,255,255,0.1)",
-      borderRadius: "4px",
-      overflow: "hidden"
+      border: "1px solid var(--border-soft)",
+      borderRadius: "12px",
+      overflow: "hidden",
+      background: "var(--bg-card)",
+      boxShadow: "var(--shadow-sm)"
     },
     input: {
       flex: 1,
       padding: "12px 15px",
-      background: "rgba(255,255,255,0.03)", // Subtle overlay
+      background: "transparent",
       border: "none",
       outline: "none",
       fontSize: "13px",
-      color: "#ffffff", // White text
+      color: "var(--slate-800)",
     },
     button: {
       padding: "0 20px",
-      background: "#ffffff", // White button
-      color: "#000000", // Black text
+      background: "var(--slate-800)",
+      color: "#ffffff",
       border: "none",
       cursor: "pointer",
       display: "flex",
@@ -68,7 +71,7 @@ const Footer = () => {
       maxWidth: "1200px",
       margin: "0 auto",
       paddingTop: "40px",
-      borderTop: "1px solid rgba(255,255,255,0.05)",
+      borderTop: "1px solid var(--border-soft)",
       display: "flex",
       justifyContent: "center",
       gap: "15px",
@@ -77,14 +80,15 @@ const Footer = () => {
       width: "40px",
       height: "40px",
       borderRadius: "50%",
-      background: "rgba(255,255,255,0.05)", // Subtle overlay
+      background: "var(--bg-card)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      color: "#ffffff", // White icons
+      color: "var(--slate-600)",
       textDecoration: "none",
-      transition: "0.3s",
-      border: "1px solid rgba(255,255,255,0.1)"
+      transition: "0.4s cubic-bezier(0.19, 1, 0.22, 1)",
+      border: "1px solid var(--border-soft)",
+      boxShadow: "var(--shadow-sm)"
     }
   };
 
@@ -135,7 +139,7 @@ const Footer = () => {
         {/* Newsletter */}
         <div>
           <h4 style={styles.title}>NEWSLETTER</h4>
-          <p style={{ fontSize: "11px", color: "#cccccc", marginBottom: "5px", letterSpacing: "1px" }}> {/* Light gray subtitle */}
+          <p style={{ fontSize: "11px", color: "var(--slate-400)", marginBottom: "5px", letterSpacing: "1px" }}> {/* Subtle subtitle */}
             STAY ON-TREND:
           </p>
           <div style={styles.inputGroup}>

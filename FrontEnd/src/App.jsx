@@ -18,7 +18,7 @@ import Contact from "./Comp/Open_comp/Contact.jsx";
 // Auth Pages
 import Login from "./Comp/Auth_comp/Login.jsx";
 import Register from "./Comp/Auth_comp/Register.jsx";
-import  Profile  from "./Comp/User_Comp/profile.jsx";
+import Profile from "./Comp/User_Comp/profile.jsx";
 
 // User Secure Pages
 import Dashboard from "./Comp/User_Comp/Dashboard.jsx";
@@ -26,6 +26,7 @@ import User_details_update from "./Comp/User_Comp/User_details_update.jsx";
 import Cart from "./Comp/User_Comp/Cart.jsx";
 import Checkout from "./Comp/User_Comp/Checkout.jsx";
 import MyOrders from "./Comp/User_Comp/MyOrders.jsx";
+import Wishlist from "./Comp/User_Comp/Wishlist.jsx";
 import ForgotPassword from "./Comp/Auth_comp/ForgotPassword.jsx";
 
 // Admin Secure Pages
@@ -50,7 +51,7 @@ const App = () => {
 
       <main style={{ minHeight: '100vh', backgroundColor: '#f8fafc' }}>
         <Routes>
-          
+
           {/* --- 🔓 GUEST ONLY ROUTES (Blocked if logged in) --- */}
           <Route path="/" element={<PublicRoute><Home /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
@@ -62,7 +63,7 @@ const App = () => {
           <Route path="/contact" element={<Contact />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetails />} />
-          <Route path= '/profile' element={<Profile/>} />
+          <Route path='/profile' element={<Profile />} />
 
           {/* --- 🔒 PROTECTED USER ROUTES (Login Required) --- */}
           <Route element={<Protected_Route adminOnly={false} />}>
@@ -71,7 +72,8 @@ const App = () => {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<MyOrders />} />
-            
+            <Route path="/wishlist" element={<Wishlist />} />
+
           </Route>
 
           {/* --- 🛡️ PROTECTED ADMIN ROUTES (Admin Only) --- */}

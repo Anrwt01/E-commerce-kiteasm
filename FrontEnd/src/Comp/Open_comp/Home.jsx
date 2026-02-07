@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
-// import { API_BASE_URL } from "../../utils/config";
+import { ArrowRight, ShieldCheck, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from "../../utils/config.js";
 
 
 import kite_Pattern from "../../assets/Photo/kiteasm_pattern.jpg";
@@ -10,17 +11,54 @@ import kite_Pattern from "../../assets/Photo/kiteasm_pattern.jpg";
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // Derive the server root (e.g., http://localhost:5000) from the API URL
 
+
+  const fetchWishlist = async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlistItems(res.data.products?.map(p => p._id) || []);
+    } catch (error) {
+      console.error("Wishlist fetch failed:", error);
+    }
+  };
+
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/toggle-wishlist`,
+        { productId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200 || res.status === 201) {
+        setWishlistItems(prev =>
+          prev.includes(productId)
+            ? prev.filter(id => id !== productId)
+            : [...prev, productId]
+        );
+      }
+    } catch (error) {
+      console.error("Wishlist toggle failed:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/user/products`);
+        const res = await axios.get(`${API_BASE_URL}/user/products`);
         const allProducts = res.data.products || [];
-        console.log(res)
         // Filter to show ONLY exclusive products
         const exclusiveOnly = allProducts.filter(product => product.isExclusive === true);
 
@@ -32,16 +70,17 @@ const Home = () => {
       }
     };
     fetchProducts();
+    fetchWishlist();
   }, []);
 
   return (
     <div className="home-wrapper">
       <style>{`
         .home-wrapper {
-          background-color: #000000;
+          background-color: var(--bg-base);
           min-height: 100vh;
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
-          color: #ffffff;
+          font-family: var(--font-sans);
+          color: var(--slate-800);
         }
 
         .nav-buffer { height: 80px; }
@@ -61,17 +100,18 @@ const Home = () => {
           position: absolute;
           top: 0; left: 0; right: 0; bottom: 0;
           background-image: url(${kite_Pattern});
-          background-size: 300px;
-          opacity: 0.05;
+          background-size: 350px;
+          opacity: 0.12; /* Increased for better visibility */
           z-index: 0;
-          animation: backgroundScroll 150s linear infinite;
-          mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
-          -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+          animation: backgroundScroll 240s linear infinite;
+          mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+          -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+          filter: grayscale(100%) brightness(1.1);
         }
 
         @keyframes backgroundScroll {
           from { background-position: 0 0; }
-          to { background-position: 1200px 0; }
+          to { background-position: 2400px 1200px; } /* Diagonally for more dynamic feel */
         }
 
         .hero-content {
@@ -79,77 +119,78 @@ const Home = () => {
           z-index: 5;
           max-width: 700px;
           text-align: center;
-          animation: fadeIn 1.2s ease-out;
+          animation: fadeIn 1.2s ease-out, floatHero 6s ease-in-out infinite;
         }
 
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floatHero {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-15px); }
         }
 
 
 
         .hero-title {
-          font-size: clamp(2.5rem, 5vw, 4rem);
-          font-weight: 700;
-          color: #ffffff;
+          font-size: clamp(3.5rem, 8vw, 6rem);
+          font-weight: 500;
+          color: var(--slate-800);
           margin: 0;
-          letter-spacing: -1px;
+          letter-spacing: -4px;
+          line-height: 0.95;
+          text-transform: uppercase;
+          text-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-
+        
         .hero-tagline {
-          color: #cccccc;
-          margin: 20px 0 40px;
-          font-size: 1.2rem;
-          border-left: 2px solid #ffffff;
-          padding-left: 20px;
+          color: var(--slate-500);
+          margin: 24px 0 48px;
+          font-size: 1.15rem;
           max-width: 500px;
           margin-left: auto;
           margin-right: auto;
+          line-height: 1.6;
+          font-weight: 500;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
         }
 
         .hero-btn {
-          background-color: #ffffff;
-          color: #000000;
-          padding: 14px 30px;
-          border-radius: 8px;
-          font-weight: 600;
+          background-color: var(--accent);
+          color: #ffffff;
+          padding: 18px 40px;
+          border-radius: 16px;
+          font-weight: 700;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          transition: all 0.3s ease;
+          gap: 12px;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          box-shadow: 0 10px 30px -5px rgba(59, 130, 246, 0.4);
         }
-
+        
         .hero-btn:hover {
-          background-color: #cccccc;
-          transform: translateY(-2px);
+          background-color: #2563EB;
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.5);
         }
 
         /* --- PRODUCTS SECTION --- */
         .products-section {
-          background-color: #000000;
-          padding: 100px 5%;
+          background-color: var(--bg-base);
+          padding: 120px 5%;
         }
 
         .section-title {
-          color: #ffffff;
-          font-size: 2.2rem;
-          font-weight: 600;
-          margin-bottom: 50px;
+          color: var(--slate-800);
+          font-size: 2.5rem;
+          font-weight: 800;
+          margin-bottom: 60px;
           text-align: center;
-          position: relative;
-        }
-
-        .section-title::after {
-          content: '';
-          position: absolute;
-          bottom: -10px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60px;
-          height: 2px;
-          background-color: #ffffff;
+          letter-spacing: -1px;
         }
 
         .products-grid {
@@ -161,16 +202,16 @@ const Home = () => {
         }
 
         .product-card {
-          background: linear-gradient(135deg, #111111 0%, #1a1a1a 100%);
-          border-radius: 20px;
-          padding: 20px;
-          border: 1px solid #333333;
-          transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          background: var(--bg-card);
+          border-radius: var(--radius-xl);
+          padding: 16px;
+          border: 1px solid var(--border-soft);
+          transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
           position: relative;
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          box-shadow: var(--shadow-floating);
           cursor: pointer;
         }
 
@@ -190,38 +231,37 @@ const Home = () => {
         }
 
         .product-card:hover {
-          transform: translateY(-10px) scale(1.02);
-          border-color: #ffffff;
-          box-shadow: 0 15px 40px rgba(255, 255, 255, 0.1);
+          transform: translateY(-12px) scale(1.02);
+          box-shadow: var(--shadow-hover);
+          border-color: var(--accent);
         }
 
         .exclusive-badge {
           position: absolute;
-          top: 20px;
-          right: 20px;
-          background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-          color: #000;
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 11px;
+          top: 15px;
+          right: 15px;
+          background: var(--accent);
+          color: #ffffff;
+          padding: 6px 14px;
+          border-radius: 50px;
+          font-size: 10px;
           font-weight: 800;
           text-transform: uppercase;
           z-index: 10;
           display: flex;
           align-items: center;
           gap: 6px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-          border: 1px solid rgba(0, 0, 0, 0.1);
+          letter-spacing: 1px;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .product-image {
           width: 100%;
-          height: 280px;
-          border-radius: 16px;
+          height: 300px;
+          border-radius: 18px;
           object-fit: cover;
-          background-color: #0a0a0a;
-          transition: transform 0.3s ease;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+          background-color: #f1f5f9;
+          transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         .product-card:hover .product-image {
@@ -237,28 +277,29 @@ const Home = () => {
         }
 
         .product-name {
-          color: #ffffff;
-          font-size: 1.3rem;
+          color: var(--slate-800);
+          font-size: 1.25rem;
           font-weight: 700;
-          margin: 0 0 12px;
-          line-height: 1.3;
-          letter-spacing: -0.5px;
+          margin: 0 0 8px;
+          line-height: 1.4;
+          letter-spacing: -0.01em;
         }
 
         .product-price {
-          color: #cccccc;
-          font-weight: 600;
+          color: var(--accent);
+          font-weight: 800;
           font-size: 1.2rem;
           margin: 0;
           display: flex;
           align-items: center;
         }
-
+        
         .product-price::before {
           content: '₹';
-          font-size: 1rem;
-          margin-right: 4px;
-          color: #ffffff;
+          font-size: 0.9rem;
+          margin-right: 2px;
+          color: var(--accent);
+          font-weight: 600;
         }
 
         @media (max-width: 900px) {
@@ -272,9 +313,32 @@ const Home = () => {
           .hero-tagline { font-size: 1rem; padding: 0 10px; }
           .products-section { padding: 60px 5%; }
           .section-title { font-size: 1.8rem; }
-          /* Single column for very small screens if desired, or keep 2-col with smaller gaps */
-          .products-grid { grid-template-columns: 1fr; gap: 24px; } 
+          /* 2-column grid for mobile as requested */
+          .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; } 
           .product-image { height: auto; aspect-ratio: 1/1; }
+        }
+
+        .home-wishlist-btn {
+          position: absolute;
+          top: 15px;
+          left: 15px;
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: 0.3s all ease;
+          z-index: 20;
+          color: var(--slate-400);
+          border: 1px solid var(--border-soft);
+        }
+        .home-wishlist-btn.active {
+          color: var(--accent);
         }
       `}</style>
 
@@ -304,30 +368,35 @@ const Home = () => {
         ) : (
           <div className="products-grid">
             {products.map((product) => (
-              <Link
-                key={product._id}
-                to={`/products/${product._id}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <div className="product-card">
-                  {/* Badge for exclusivity */}
-                  <div className="exclusive-badge">
-                    <ShieldCheck size={12} /> Exclusive
-                  </div>
-
-                  <img
-                    src={`../uploads/${product._id}/main.jpg`}
-                    alt={product.name}
-                    className="product-image"
-                    onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Kiteasm+Premium"; }}
-                  />
-
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="product-price">{product.price}</p>
-                  </div>
+              <div className="product-card" onClick={() => navigate(`/products/${product._id}`)}>
+                {/* Badge for exclusivity */}
+                <div className="exclusive-badge">
+                  <ShieldCheck size={12} /> Exclusive
                 </div>
-              </Link>
+
+                <button
+                  className={`home-wishlist-btn ${wishlistItems.includes(product._id) ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWishlist(product._id);
+                  }}
+                >
+                  <Heart size={18} fill={wishlistItems.includes(product._id) ? "var(--accent)" : "none"} />
+                </button>
+
+                <img
+                  src={`../uploads/${product._id}/main.jpg`}
+                  alt={product.name}
+                  className="product-image"
+                  onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Kiteasm+Premium"; }}
+                />
+
+                <div className="product-info">
+                  <h3 className="product-name">{product.name}</h3>
+                  <p className="product-price">{product.price}</p>
+                </div>
+              </div>
             ))}
           </div>
         )}
@@ -340,12 +409,14 @@ const Home = () => {
       </section>
 
       <footer style={{
-        padding: "60px 20px",
+        padding: "80px 20px",
         textAlign: "center",
-        color: "#444",
-        fontSize: "12px",
+        color: "var(--slate-400)",
+        fontSize: "13px",
+        fontWeight: "600",
         letterSpacing: "1px",
-        borderTop: "1px solid #111"
+        borderTop: "1px solid var(--border-soft)",
+        backgroundColor: "var(--bg-card)"
       }}>
         © 2026 KITEASM • AUTHENTIC KITE CULTURE
       </footer>

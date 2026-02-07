@@ -147,7 +147,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ChevronLeft, ShoppingCart, Minus, Plus, Loader2, Star, Zap, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+import API_BASE_URL from "../../utils/config.js";
+import { ChevronLeft, ShoppingCart, Minus, Plus, Loader2, Star, Zap, ShieldCheck, Truck, RotateCcw, Heart } from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -159,26 +160,69 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [wishlistItems, setWishlistItems] = useState([]);
+
+  const token = localStorage.getItem("token");
+
+  const fetchWishlist = async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlistItems(res.data.products?.map(p => p._id) || []);
+    } catch (error) {
+      console.error("Wishlist fetch failed:", error);
+    }
+  };
+
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/toggle-wishlist`,
+        { productId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200 || res.status === 201) {
+        setWishlistItems(prev =>
+          prev.includes(productId)
+            ? prev.filter(id => id !== productId)
+            : [...prev, productId]
+        );
+      }
+    } catch (error) {
+      console.error("Wishlist toggle failed:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/user/products/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/user/products/${id}`);
         const data = res.data.product || res.data;
         setProduct(data);
 
         // Default to main image
         setActiveImage(`../uploads/${data._id}/main.jpg`);
 
+        // Inside useEffect fetchData...
         if (data.category?.toLowerCase() === "manjha") {
-          const allRes = await axios.get(`http://localhost:5000/api/user/products`);
+          const allRes = await axios.get(`${API_BASE_URL}/user/products`);
           const allProducts = allRes.data.products || [];
-          const saddi = allProducts.find(p =>
+          const OswalNo3 = allProducts.find(p =>
             p._id !== data._id &&
-            (p.name?.toLowerCase() === "saddi" || p.name?.toLowerCase().includes("saddi"))
+            (p.name?.toLowerCase().includes("oswal no3"))
           );
-          if (saddi) setSuggestedProduct(saddi);
+          if (OswalNo3) {
+            // Construct the image path specifically for the suggestion
+            OswalNo3.imageUrl = `../uploads/${OswalNo3._id}/main.jpg`;
+            setSuggestedProduct(OswalNo3);
+          }
         }
       } catch (error) {
         console.error("Fetch Error:", error);
@@ -187,6 +231,7 @@ const ProductDetails = () => {
       }
     };
     fetchData();
+    fetchWishlist();
   }, [id]);
 
   const handleAddToCart = async () => {
@@ -196,14 +241,41 @@ const ProductDetails = () => {
       if (!token) return navigate("/login");
       const headers = { Authorization: `Bearer ${token}` };
 
-      await axios.post(`http://localhost:5000/api/user/cart/add`, {
+      await axios.post(`${API_BASE_URL}/user/cart/add`, {
         productId: product._id,
         quantity
       }, { headers });
 
       navigate("/cart");
     } catch (err) {
-      alert("Failed to add to cart.");
+      alert("Failed to add to cart.", err);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  const handleBundleAddToCart = async () => {
+    setIsAdding(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Add main product
+      await axios.post(`${API_BASE_URL}/user/cart/add`, {
+        productId: product._id,
+        quantity
+      }, { headers });
+
+      // Add bundled product
+      await axios.post(`${API_BASE_URL}/user/cart/add`, {
+        productId: suggestedProduct._id,
+        quantity: 1
+      }, { headers });
+
+      navigate("/cart");
+    } catch (err) {
+      alert("Failed to add bundle to cart.", err);
     } finally {
       setIsAdding(false);
     }
@@ -299,7 +371,7 @@ const ProductDetails = () => {
                   transform: activeImage === `../uploads/${product._id}/main.jpg` ? "scale(1.08)" : "scale(1)"
                 }}
               >
-                <img src={`../uploads/${product._id}/main.jpg`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="main-thumb" />
+                <img src={`../uploads/${product._id}/main.jpg`} style={{ width: "100%", objectFit: "contain", height: "100%", objectFit: "cover" }} alt="main-thumb" />
               </div>
 
               {/* 3 Secondary Image Thumbnails */}
@@ -320,7 +392,7 @@ const ProductDetails = () => {
                   </div>
                 );
               })}
-            </div>
+            </div>      
 
             {/* Main Preview */}
             <div style={{ flex: 1, background: "#f9f9f9", borderRadius: "16px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", minHeight: "550px" }}>
@@ -394,10 +466,24 @@ const ProductDetails = () => {
                 style={{
                   flex: 1, background: product.stock > 0 ? "#000" : "#ccc", color: "#fff",
                   padding: "15px", borderRadius: "10px", fontWeight: "700", border: "none",
-                  cursor: product.stock > 0 ? "pointer" : "not-allowed"
+                  cursor: product.stock > 0 ? "pointer" : "not-allowed",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: "10px"
                 }}
               >
+                <ShoppingCart size={20} />
                 {isAdding ? "ADDING..." : product.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
+              </button>
+
+              <button
+                onClick={() => toggleWishlist(product._id)}
+                style={{
+                  padding: "15px", borderRadius: "10px", border: "2px solid #000",
+                  background: wishlistItems.includes(product._id) ? "var(--bg-base)" : "transparent",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "0.3s", color: wishlistItems.includes(product._id) ? "var(--accent)" : "#000"
+                }}
+              >
+                <Heart size={24} fill={wishlistItems.includes(product._id) ? "var(--accent)" : "none"} />
               </button>
             </div>
           </div>
@@ -405,34 +491,77 @@ const ProductDetails = () => {
 
         {/* BUNDLE SECTION */}
         {suggestedProduct && (
-          <div style={{ marginTop: "80px", padding: "40px", borderRadius: "20px", background: "#fcfcfc", border: "1px solid #eee" }}>
+          <div style={{
+            marginTop: "80px",
+            padding: "40px",
+            borderRadius: "24px",
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
+            boxShadow: "0 10px 30px -15px rgba(0,0,0,0.05)"
+          }}>
             <h3 style={{ fontSize: "20px", fontWeight: "800", marginBottom: "30px", display: "flex", alignItems: "center", gap: "10px" }}>
               <Zap size={20} color="#ff9f00" fill="#ff9f00" /> Complete Your Gear
             </h3>
-            <div className="bundle-flex">
-              <div style={{ display: "flex", alignItems: "center", gap: "30px" }}>
-                <img src={`http://localhost:5000${product.mainImage}`} style={{ height: "100px", opacity: 0.6 }} alt="p1" />
-                <Plus size={24} color="#ccc" />
-                <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                  <img src={`http://localhost:5000${suggestedProduct.mainImage}`} style={{ height: "100px" }} alt="p2" />
+
+            <div className="bundle-flex" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "30px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
+
+                {/* Current Product Image */}
+                <div style={{ width: "120px", height: "120px", background: "#f8fafc", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", padding: "10px" }}>
+                  <img src={activeImage} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", opacity: 0.6 }} alt="Current Product" />
+                </div>
+
+                <Plus size={24} color="#cbd5e1" strokeWidth={3} />
+
+                {/* Suggested Product Info & Photo */}
+                <div style={{ display: "flex", alignItems: "center", gap: "20px", padding: "15px", background: "#f8fafc", borderRadius: "16px", border: "1px solid #f1f5f9" }}>
+                  <div style={{ width: "100px", height: "100px", background: "#fff", borderRadius: "8px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <img
+                      src={suggestedProduct.imageUrl}
+                      style={{ maxWidth: "90%", maxHeight: "90%", objectFit: "contain" }}
+                      alt={suggestedProduct.name}
+                      onError={(e) => { e.target.src = "https://via.placeholder.com/100?text=Kite"; }}
+                    />
+                  </div>
                   <div>
-                    <p style={{ fontWeight: "700", margin: 0 }}>{suggestedProduct.name}</p>
-                    <p style={{ color: "#666", fontSize: "14px" }}>+ ₹{suggestedProduct.price}</p>
+                    <p style={{ fontWeight: "800", fontSize: "16px", margin: "0 0 4px 0", color: "#0f172a" }}>{suggestedProduct.name}</p>
+                    <p style={{ color: "#0ea5e9", fontWeight: "700", fontSize: "18px", margin: 0 }}>+ ₹{suggestedProduct.price.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
-              <button
-                onClick={handleAddToCart}
-                style={{ background: "#fff", border: "2px solid #000", color: "#000", padding: "12px 30px", borderRadius: "8px", fontWeight: "700", cursor: "pointer" }}
-              >
-                Get Bundle (₹{product.price + suggestedProduct.price})
-              </button>
+
+              {/* Bundle Action */}
+              <div style={{ textAlign: "right" }}>
+                <p style={{ fontSize: "13px", color: "#64748b", fontWeight: "600", marginBottom: "8px" }}>Combined Total</p>
+                <button
+                  onClick={handleBundleAddToCart}
+                  disabled={isAdding}
+                  style={{
+                    background: "#0f172a",
+                    color: "#fff",
+                    padding: "16px 32px",
+                    borderRadius: "14px",
+                    fontWeight: "800",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    boxShadow: "0 10px 20px -5px rgba(15, 23, 42, 0.2)",
+                    transition: "0.3s",
+                    opacity: isAdding ? 0.7 : 1
+                  }}
+                  onMouseEnter={(e) => !isAdding && (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => !isAdding && (e.currentTarget.style.transform = "translateY(0)")}
+                >
+                  {isAdding ? "ADDING BUNDLE..." : `Get Bundle (₹${(product.price + suggestedProduct.price).toLocaleString()})`}
+                </button>
+              </div>
             </div>
           </div>
-        )}
+        )
+        }
       </div>
     </div>
-  );
+  )
 };
 
 export default ProductDetails;
