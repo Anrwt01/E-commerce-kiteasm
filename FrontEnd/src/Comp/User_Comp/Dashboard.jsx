@@ -140,7 +140,7 @@ const Dashboard = () => {
                         { title: 'Products', path: '/products', icon: ShoppingBagIcon, desc: 'View Inventory' },
                         { title: 'Orders', path: '/orders', icon: CubeIcon, desc: 'Track Orders' },
                         { title: 'Cart', path: '/cart', icon: SparklesIcon, desc: 'Active Cart' },
-                        { title: 'Profile', path: '/user/update', icon: Cog6ToothIcon, desc: 'Adjust Params' },
+                        { title: 'Profile', path: '/user/update', icon: Cog6ToothIcon, desc: 'Adjust Profile' },
                     ].map((item) => (
                         <Link key={item.title} to={item.path} className="bento-card">
                             <div className="bento-icon-box">

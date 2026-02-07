@@ -1,10 +1,10 @@
 import { ProductModel } from "../../../Schema/Product_Schema.js";
 
 export const New_prod = async (req, res) => {
-  // const { name, description, price, stock, category, images } = req.body;
+  const { name, description, price, stock, category, mainImage, secondaryImages, isExclusive } = req.body;
 
   try {
-    if (!name || !description || !price || stock === undefined || !category) {
+    if (!name || !description || !price || stock === undefined || !category || !mainImage) {
       return res.status(400).json({
         message: "All fields are required"
       });
@@ -20,7 +20,9 @@ export const New_prod = async (req, res) => {
       price,
       stock,
       category,
-      // images: productImages
+      mainImage,
+      secondaryImages,
+      isExclusive
     });
 
     return res.status(201).json({

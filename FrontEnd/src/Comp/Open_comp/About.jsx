@@ -104,10 +104,10 @@ const About = () => {
       {/* 1. HERO SECTION */}
       <section style={styles.hero}>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <span style={styles.badge}><Wind size={14} /> Established 2020</span>
-          <h1 style={styles.gradientText}>Elevating <br />Kite Culture<span style={{ color: 'var(--accent)' }}>.</span></h1>
+          <span style={styles.badge}><Wind size={14} /> Established 2021</span>
+          <h1 style={styles.gradientText}>Elevating <br />Kite Flying Experience <span style={{ color: 'var(--accent)' }}>.</span></h1>
           <p style={{ color: 'var(--slate-600)', fontSize: '20px', maxWidth: '600px', margin: '30px 0', lineHeight: '1.7' }}>
-            At Kiteasm, we craft premium, competition-grade gear for enthusiasts who demand excellence in every flight.
+            At Kiteasm, we craft premium, competition-grade products for enthusiasts who demand excellence in every kite fight.
           </p>
         </div>
       </section>
@@ -152,7 +152,7 @@ const About = () => {
           {/* Founder */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Founder" style={{ width: '100%', borderRadius: '30px' }} />
+              <img src="../teampictures/udit.jpg" alt="Founder" style={{ width: '100%', borderRadius: '30px' }} />
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Udit Sanwal</h3>
             <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Founder & CEO</p>
@@ -166,14 +166,14 @@ const About = () => {
           {/* Designer */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" alt="Designer" style={{ width: '100%', borderRadius: '30px' }} />
+              <img src="../teampictures/joshi.jpg" alt="Designer" style={{ width: '100%', borderRadius: '30px' }} />
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Shubham Joshi</h3>
-            <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Manager / Marketing</p>
+            <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Head of Marketing </p>
             {/* <p style={{ color: '#cccccc', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>Priya designs our kites and accessories, focusing on aerodynamics and user experience for all skill levels.</p> */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-              <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="https://www.youtube.com/@RioTheExplorer" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.instagram.com/KiteASM" style={styles.socialLink}><Instagram size={20} /></a>
+              <a href="https://www.youtube.com/@kiteasm01" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
 
@@ -182,11 +182,11 @@ const About = () => {
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
               <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jack" alt="Developer" style={{ width: '100%', borderRadius: '30px' }} />
             </div>
-            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Anuj Sharma</h3>
-            <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Lead Developer</p>
+            <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Aditya Pundir</h3>
+            <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Sales Head </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-              <a href="#" style={styles.socialLink}><Instagram size={20} /></a>
-              <a href="#" style={styles.socialLink}><Youtube size={20} /></a>
+              <a href="https://www.instagram.com/KiteASM" style={styles.socialLink}><Instagram size={20} /></a>
+              <a href="https://www.youtube.com/@kiteasm01" style={styles.socialLink}><Youtube size={20} /></a>
             </div>
           </div>
         </div>

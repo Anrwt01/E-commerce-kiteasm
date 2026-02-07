@@ -466,8 +466,8 @@ const Checkout = () => {
           {/* Details Section */}
           <div style={styles.leftCol}>
             <header style={{ marginBottom: 60 }}>
-              <h1 style={styles.mainTitle}>Authorize Shipment<span style={{ color: 'var(--accent)' }}>.</span></h1>
-              <p style={styles.subtitle}>Confirm your delivery coordinates and contact nodes for fulfillment.</p>
+              <h1 style={styles.mainTitle}>Confirm Payment<span style={{ color: 'var(--accent)' }}>.</span></h1>
+              <p style={styles.subtitle}>Confirm your delivery Address and contact nodes for fulfillment.</p>
             </header>
 
             <section style={styles.sectionCard}>
@@ -615,7 +615,7 @@ const Checkout = () => {
                 style={{ ...styles.orderBtn, opacity: (loading || isEditing) ? 0.6 : 1 }}
               >
                 {loading ? "PROCESSING..." : (
-                  paymentMethod === "COD" ? "CONFIRM ORDER" : "AUTHORIZE PAYMENT"
+                  paymentMethod === "COD" ? "CONFIRM ORDER" : "PAY"
                 )}
               </button>
 

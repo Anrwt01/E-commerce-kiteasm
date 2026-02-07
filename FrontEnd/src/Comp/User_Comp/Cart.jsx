@@ -192,7 +192,7 @@ const Cart = () => {
       if (name.includes("Kiteasm Kite Bag")) hasBag3 = true;
       if (name.includes("3inch")) hasBag3 = true;
       if (name.includes("6inch")) hasBag6 = true;
-      if (name.includes("Cover")) hasCover = true;
+      if (name.includes("3x Manjha Cover")) hasCover = true;
       if (name.includes("Oswal No3")) hasOswal = true;
       if (name.includes("Stand")) hasStand = true;
       if (name.includes("manjha")) hasManjha = true;
@@ -212,7 +212,7 @@ const Cart = () => {
     }
 
     if (only("tape")) return 49;
-    if (only("cover")) return 99;
+    if (only("3x Manjha Cover")) return 99;
     if (only("Oswal No3")) return 149;
     if (only("kite")) return 450;
 
@@ -327,7 +327,7 @@ const Cart = () => {
         </button>
 
         <header style={{ marginBottom: 60 }}>
-          <h1 className="main-title" style={styles.mainTitle}>Your Hangar<span style={{ color: 'var(--accent)' }}>.</span></h1>
+          <h1 className="main-title" style={styles.mainTitle}>Your Cart<span style={{ color: 'var(--accent)' }}>.</span></h1>
           <p style={styles.subtitle}>Review your selected items before proceeding to checkout.</p>
         </header>
 
@@ -417,7 +417,7 @@ const Cart = () => {
         ) : (
           <div style={styles.emptyCart}>
             <ShoppingBag size={48} style={styles.emptyIcon} />
-            <h2 style={styles.emptyTitle}>Hangar is Empty</h2>
+            <h2 style={styles.emptyTitle}>Cart is Empty</h2>
             <Link to="/products" style={styles.browseLink}>Browse the Collection</Link>
           </div>
         )}

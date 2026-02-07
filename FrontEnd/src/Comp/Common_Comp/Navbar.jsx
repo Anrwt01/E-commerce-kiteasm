@@ -75,7 +75,18 @@ const Navbar = () => {
     },
     container: { maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     logo: { display: 'flex', alignItems: 'center', gap: '12px', fontSize: '20px', fontWeight: '900', textTransform: 'uppercase', textDecoration: 'none', color: '#1E293B' },
-    logoImage: { height: scrolled ? '38px' : '46px', width: scrolled ? '38px' : '46px', objectFit: 'cover', transition: '0.4s ease', borderRadius: '12px' },
+    // Locate this inside your styles object
+    logoImage: {
+      height: scrolled ? '40px' : '48px',
+      width: scrolled ? '40px' : '48px',
+      objectFit: 'cover',
+      transition: '0.4s ease',
+
+      // Key changes for the circle:
+      borderRadius: '50%', // Makes it a perfect circle
+      border: '2px solid #F1F5F9', // Optional: adds a clean ring around the logo
+      boxShadow: '0 2px 8px rgba(0,0,0,0.05)', // Optional: makes it pop slightly
+    },
     linksContainer: { display: isMobile ? 'none' : 'flex', gap: '30px', listStyle: 'none', margin: 0, padding: 0, alignItems: 'center' },
     link: (path) => ({
       fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1.2px',

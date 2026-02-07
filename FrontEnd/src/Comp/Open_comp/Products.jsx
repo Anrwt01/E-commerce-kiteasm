@@ -62,6 +62,23 @@ const animationStyles = `
       height: 30px !important;
     }
   }
+
+  .out-of-stock-strip {
+    position: absolute;
+    top: 20px;
+    left: -35px;
+    background: #ef4444;
+    color: white;
+    padding: 5px 40px;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    transform: rotate(-45deg);
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    letter-spacing: 1px;
+    pointer-events: none;
+  }
 `;
 
 const Products = () => {
@@ -76,17 +93,31 @@ const Products = () => {
   const fetchProducts = useCallback(async (isFirstLoad = false) => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/search/products`, {
-        params: { category: activeCategory, search: searchTerm }
+      // 1. Determine which endpoint to use
+      // If no search term and category is "All", use the general "all products" API
+      const isSearching = searchTerm.trim() !== "" || activeCategory !== "All";
+      const endpoint = isSearching 
+        ? `${API_BASE_URL}/search/products` 
+        : `${API_BASE_URL}/user/products`;
+
+      const res = await axios.get(endpoint, {
+        params: isSearching ? { category: activeCategory, search: searchTerm } : {}
       });
-      const items = res.data.products || [];
+
+      // 2. Standardize data access 
+      // (Handling cases where one API returns .products and the other returns the array directly)
+      const items = res.data.products || res.data || [];
+      
       setProducts(items);
       setLoading(false);
-      if (isFirstLoad) {
-        setCategories(["All", ...new Set(items.map((p) => p.category))]);
+
+      // 3. Set categories only on the very first load of all products
+      if (isFirstLoad && !isSearching) {
+        const uniqueCats = ["All", ...new Set(items.map((p) => p.category))];
+        setCategories(uniqueCats);
       }
     } catch (error) {
-      console.error("Search fetch failed:", error);
+      console.error("Fetch failed:", error);
       setLoading(false);
     }
   }, [activeCategory, searchTerm]);
@@ -222,7 +253,8 @@ const Products = () => {
                 style={{ ...styles.card, animationDelay: `${index * 0.05}s` }}
                 onClick={() => navigate(`/products/${product._id}`)}
               >
-                <div style={styles.imgContainer}>
+                <div style={{ ...styles.imgContainer, opacity: product.stock === 0 ? 0.6 : 1 }}>
+                  {product.stock === 0 && <div className="out-of-stock-strip">Out of Stock</div>}
                   <img
                     src={`../uploads/${product._id}/main.jpg`}
                     alt={product.name}
@@ -240,11 +272,15 @@ const Products = () => {
                   </h3>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span className="product-price-text" style={{ fontSize: '1.2rem', fontWeight: '800', color: "var(--accent)" }}>₹{product.price}</span>
-                    <button className="add-btn" style={{
-                      background: "var(--accent)", color: "#ffffff", border: "none", borderRadius: "12px",
-                      width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: '700',
-                      boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
-                    }}>
+                    <button className="add-btn"
+                      disabled={product.stock === 0}
+                      style={{
+                        background: product.stock === 0 ? "#cbd5e1" : "var(--accent)",
+                        color: "#ffffff", border: "none", borderRadius: "12px",
+                        width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: '700',
+                        boxShadow: product.stock === 0 ? "none" : '0 4px 12px rgba(59, 130, 246, 0.3)',
+                        cursor: product.stock === 0 ? "not-allowed" : "pointer"
+                      }}>
                       <Plus size={20} />
                     </button>
                   </div>

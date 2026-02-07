@@ -187,14 +187,14 @@ const MyOrders = () => {
                 </button>
 
                 <header style={{ marginBottom: 60 }}>
-                    <h1 style={styles.mainTitle}>Order Manifest<span style={{ color: 'var(--accent)' }}>.</span></h1>
-                    <p style={styles.subtitle}>Track and manage your kite equipment deployments.</p>
+                    <h1 style={styles.mainTitle}>Orders<span style={{ color: 'var(--accent)' }}>.</span></h1>
+                    <p style={styles.subtitle}>Track and manage your kite & Products.</p>
                 </header>
 
                 {orders.length === 0 ? (
                     <div style={styles.emptyCard}>
                         <CubeIcon style={{ width: 64, margin: '0 auto', color: 'var(--slate-200)' }} />
-                        <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--slate-800)', marginTop: '24px' }}>Hangar is Empty</h2>
+                        <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--slate-800)', marginTop: '24px' }}>No orders</h2>
                         <p style={{ color: 'var(--slate-400)', marginTop: '12px' }}>No gear deployments found in your manifest.</p>
                         <button
                             onClick={() => navigate('/products')}

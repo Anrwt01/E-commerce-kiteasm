@@ -135,8 +135,9 @@ const Home = () => {
 
 
         .hero-title {
+         font-style: italic;
           font-size: clamp(3.5rem, 8vw, 6rem);
-          font-weight: 500;
+          font-weight: 800;
           color: var(--slate-800);
           margin: 0;
           letter-spacing: -4px;
@@ -351,7 +352,7 @@ const Home = () => {
 
           <h1 className="hero-title">Kiteasm</h1>
           <p className="hero-tagline">
-            Exclusively Curation of Premium Competition-Grade Gear
+            Exclusive Collection of Premium <br></br> Kites & Manjha
           </p>
           <Link to="/products" className="hero-btn">
             Explore All <ArrowRight size={18} />
@@ -418,7 +419,7 @@ const Home = () => {
         borderTop: "1px solid var(--border-soft)",
         backgroundColor: "var(--bg-card)"
       }}>
-        © 2026 KITEASM • AUTHENTIC KITE CULTURE
+        © 2021 KITEASM 
       </footer>
     </div>
   );

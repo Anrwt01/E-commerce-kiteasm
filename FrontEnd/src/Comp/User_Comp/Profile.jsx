@@ -176,7 +176,7 @@ const Profile = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <div style={{ width: '40px', height: '1px', backgroundColor: 'var(--border-soft)' }} />
               <p style={{ fontSize: '10px', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--slate-400)' }}>
-                CERTIFIED PILOT STATUS
+                USER STATUS
               </p>
             </div>
           </section>
@@ -185,7 +185,7 @@ const Profile = () => {
           <section>
             <div style={styles.sectionCard}>
               <div style={styles.infoBox}>
-                <p style={styles.label}>Electronic Mail</p>
+                <p style={styles.label}>E-Mail</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <p style={styles.valText}>{user?.email}</p>
                   <Mail size={18} color="var(--slate-200)" />
@@ -202,13 +202,13 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div style={{ ...styles.infoBox, borderBottom: 'none', marginBottom: '40px' }}>
+              {/* <div style={{ ...styles.infoBox, borderBottom: 'none', marginBottom: '40px' }}>
                 <p style={styles.label}>Access Protocol</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <p style={styles.valText}>Secure Transmission</p>
                   <ShieldCheck size={18} color="var(--slate-200)" />
                 </div>
-              </div>
+              </div> */}
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <button
@@ -221,7 +221,7 @@ const Profile = () => {
                   style={styles.btnSecondary}
                   onClick={() => navigate("/user/update")}
                 >
-                  UPDATE PILOT PROFILE
+                  UPDATE USER PROFILE
                 </button>
               </div>
             </div>

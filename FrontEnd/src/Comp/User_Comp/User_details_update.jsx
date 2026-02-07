@@ -209,14 +209,14 @@ const User_details_update = () => {
         </button>
 
         <header style={{ marginBottom: 60 }}>
-          <h1 style={styles.mainTitle}>Refine Coordinates<span style={{ color: 'var(--accent)' }}>.</span></h1>
-          <p style={styles.subtitle}>Update your navigation data and contact nodes for seamless fulfillment.</p>
+          <h1 style={styles.mainTitle}>User Profile<span style={{ color: 'var(--accent)' }}>.</span></h1>
+          <p style={styles.subtitle}>Update your data and contact.</p>
         </header>
 
         <form onSubmit={handleSubmit}>
           <div style={styles.sectionCard}>
             <div style={styles.inputGroup}>
-              <span style={styles.label}><User size={12} /> Identity Protocol</span>
+              <span style={styles.label}><User size={12} /> Identity </span>
               <div style={styles.grid}>
                 <input type="text" placeholder="Full Name" ref={nameRef} required style={styles.input} />
                 <input type="text" placeholder="Backup Phone Node" ref={phone2Ref} pattern="[0-9]{10}" style={styles.input} />
@@ -224,7 +224,7 @@ const User_details_update = () => {
             </div>
 
             <div style={{ ...styles.inputGroup, marginBottom: '40px' }}>
-              <span style={styles.label}><MapPin size={12} /> Deployment Hangar</span>
+              <span style={styles.label}><MapPin size={12} /> Deployment </span>
               <div style={{ ...styles.grid, marginBottom: '24px' }}>
                 <input type="text" placeholder="House / Flat No" ref={houseRef} required style={styles.input} />
                 <input type="text" placeholder="Gali / Locality" ref={galinoRef} required style={styles.input} />
@@ -237,7 +237,7 @@ const User_details_update = () => {
             </div>
 
             <button type="submit" disabled={loading} style={styles.btnPrimary}>
-              {loading ? <Loader2 size={20} className="animate-spin" /> : <><Save size={18} /> SYNC CHANGES</>}
+              {loading ? <Loader2 size={20} className="animate-spin" /> : <><Save size={18} /> SAVE CHANGES</>}
             </button>
           </div>
         </form>

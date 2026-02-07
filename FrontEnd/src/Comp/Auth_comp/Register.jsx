@@ -237,6 +237,7 @@ const Register = () => {
               <input className="kite-input" placeholder="House/Flat No." ref={houseRef} required />
               <input className="kite-input" placeholder="Locality" ref={galinoRef} required />
               <input className="kite-input" placeholder="City" ref={cityRef} required />
+              <input className="kite-input" placeholder="State" ref={stateRef} required />
               <input className="kite-input" placeholder="Pincode" ref={pincodeRef} required />
             </div>
           </div>

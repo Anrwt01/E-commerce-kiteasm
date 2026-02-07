@@ -56,6 +56,8 @@ export const sendOrderStatusEmail = async ( email, name, order) => {
             <p><strong>Total Amount:</strong> ₹${order.totalAmount}</p>
             <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
 
+            <p> Expected Delivery 4-5 Days </p>
+
             <h3 style="margin-top:20px;">📦 Items</h3>
             <table style="width:100%; border-collapse:collapse;">
               <thead>
