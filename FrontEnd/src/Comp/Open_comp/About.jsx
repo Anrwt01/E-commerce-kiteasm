@@ -1,7 +1,7 @@
 import React from 'react';
 import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap, Briefcase } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import kiteasm_logo from "../../assets/images/kiteasm_logo.jpg";
+import kiteasm_logo from "../../assets/Images/kiteasm_logo.jpg";
 
 const About = () => {
   const styles = {
