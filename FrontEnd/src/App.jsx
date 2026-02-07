@@ -18,7 +18,7 @@ import Contact from "./Comp/Open_comp/Contact.jsx";
 // Auth Pages
 import Login from "./Comp/Auth_comp/Login.jsx";
 import Register from "./Comp/Auth_comp/Register.jsx";
-import Profile from "./Comp/User_Comp/profile.jsx";
+import Profile from "./Comp/User_Comp/Profile.jsx";
 
 // User Secure Pages
 import Dashboard from "./Comp/User_Comp/Dashboard.jsx";
