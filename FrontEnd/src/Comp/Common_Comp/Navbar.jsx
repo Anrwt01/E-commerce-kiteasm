@@ -7,7 +7,7 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import kiteasm_logo from "../../assets/Photo/kiteasm_logo.jpg";
+import kiteasm_logo from "../../assets/Images/kiteasm_logo.jpg";
 
 const getAuthFromStorage = () => {
   const token = localStorage.getItem("token");
