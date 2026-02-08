@@ -274,20 +274,25 @@ const Checkout = () => {
 
     const only = (key) => types.length > 0 && types.every(t => t.includes(key));
 
+   
     items.forEach(item => {
       const name = normalize(item.productId?.name || "");
       const category = normalize(item.productId?.category || "");
 
       if (category === "kite") kiteQty += item.quantity;
+      if (name.includes("Kiteasm Kite Bag")) hasBag3 = true;
       if (name.includes("3inch")) hasBag3 = true;
       if (name.includes("6inch")) hasBag6 = true;
-      if (name.includes("Cover")) hasCover = true;
-      if (name.includes("Oswal")) hasOswal = true;
+      if (name.includes("3x Manjha Cover")) hasCover = true;
+      if (name.includes("Oswal No3")) hasOswal = true;
       if (name.includes("Stand")) hasStand = true;
       if (name.includes("manjha")) hasManjha = true;
     });
 
-    if (only("manjha")) return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
+    if (only("manjha")) {
+      return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
+    }
+
     if (hasManjha && hasCover && hasOswal) return 200;
     if (hasStand && hasCover) return 200;
     if (hasOswal && hasCover) return 200;
@@ -298,9 +303,10 @@ const Checkout = () => {
     }
 
     if (only("tape")) return 49;
-    if (only("cover")) return 99;
-    if (only("oswal")) return 149;
+    if (only("3x Manjha Cover")) return 99;
+    if (only("Oswal No3")) return 149;
     if (only("kite")) return 450;
+    // if(only("test")) return 0;
 
     return 250;
   };
