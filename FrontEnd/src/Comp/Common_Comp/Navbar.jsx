@@ -117,14 +117,31 @@ const Navbar = () => {
       display: 'block', padding: '15px 0', borderBottom: '1px solid #F1F5F9'
     }),
     sidebarAuthBtn: (isActive) => ({
-      backgroundColor: isActive ? '#E2E8F0' : '#3B82F6',
-      color: isActive ? '#1E293B' : '#ffffff',
-      padding: '14px', borderRadius: '50px',
-      fontSize: '12px', fontWeight: '900', textAlign: 'center', textDecoration: 'none', marginTop: '10px',
-      border: 'none',
-      boxShadow: isActive ? 'none' : '0 10px 15px -3px rgba(59, 130, 246, 0.4)'
-      
-    })
+  backgroundColor: isActive ? '#E2E8F0' : '#3B82F6',
+  color: isActive ? '#1E293B' : '#ffffff',
+  
+  // Reduced vertical padding (10px) to make the button less "tall"
+  padding: '10px 14px', 
+  
+  borderRadius: '50px',
+  fontSize: '12px', 
+  fontWeight: '900', 
+  textAlign: 'center', 
+  textDecoration: 'none', 
+  
+  // Controlled margin to prevent it from pushing to the very bottom
+  marginTop: '15px', 
+  marginBottom: '20px',
+  
+  border: 'none',
+  boxShadow: isActive ? 'none' : '0 8px 12px -3px rgba(59, 130, 246, 0.3)',
+  
+  // Ensures it doesn't stretch weirdly
+  display: 'block',
+  width: '100%',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease'
+})
   };
 
   const renderLinks = (isSidebar = false) => {

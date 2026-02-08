@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../utils/config.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   ShieldCheckIcon, ArrowLeftIcon, CheckCircleIcon,
   MapPinIcon, LockClosedIcon, TruckIcon, CreditCardIcon
@@ -230,6 +230,7 @@ const styles = {
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -307,6 +308,10 @@ const Checkout = () => {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
+
+      // If we have state passed from Cart, use it primarily for totals
+      const stateParams = location.state || {};
+
       const [cartRes, userRes] = await Promise.all([
         axios.get(`${API_BASE_URL}/user/cart`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`${API_BASE_URL}/user/details`, { headers: { Authorization: `Bearer ${token}` } })
@@ -315,11 +320,16 @@ const Checkout = () => {
       const items = cartRes.data.items || [];
       setCartItems(items);
 
-      const sub = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-      const ship = getDeliveryCharge(items);
-
-      setLogisticsCost(ship);
-      setTotalAmount(sub + ship);
+      // If state matches, use passed totals. Otherwise recalculate as fallback
+      if (stateParams.totalAmount) {
+        setTotalAmount(stateParams.totalAmount);
+        setLogisticsCost(stateParams.logistics || 0);
+      } else {
+        const sub = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        const ship = getDeliveryCharge(items);
+        setLogisticsCost(ship);
+        setTotalAmount(sub + ship);
+      }
 
       const user = userRes.data.user;
       const addr = user?.address?.[0] || {};
@@ -587,20 +597,7 @@ const Checkout = () => {
                 ))}
               </div>
 
-              <div style={styles.divider} />
 
-              <div style={styles.cartList}>
-                <div style={styles.cartItemLayout}>
-                  <span style={{ fontWeight: '600' }}>Inventory Subtotal</span>
-                  <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{totalAmount - logisticsCost}</span>
-                </div>
-                <div style={styles.cartItemLayout}>
-                  <span style={{ fontWeight: '600' }}>Logistics & Handling</span>
-                  <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{logisticsCost}</span>
-                </div>
-              </div>
-
-              <div style={styles.divider} />
 
               <div style={styles.totalRow}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>

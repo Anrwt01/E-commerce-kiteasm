@@ -215,6 +215,7 @@ const Cart = () => {
     if (only("3x Manjha Cover")) return 99;
     if (only("Oswal No3")) return 149;
     if (only("kite")) return 450;
+    // if(only("test")) return 0;
 
     return 250;
   };
@@ -446,7 +447,7 @@ const Cart = () => {
                   </div>
                   <div style={styles.cartList}>
                     <div style={styles.cartItem}>
-                      <span style={{ fontWeight: '600' }}>Inventory Subtotal</span>
+                      <span style={{ fontWeight: '600' }}>Products Subtotal</span>
                       <span style={{ fontWeight: 900, color: 'var(--slate-800)' }}>₹{subtotal}</span>
                     </div>
                     <div style={styles.cartItem}>
@@ -461,8 +462,12 @@ const Cart = () => {
                       <span style={styles.totalAmount}>₹{totalAmount}</span>
                     </div>
                   </div>
-                  <button onClick={() => navigate("/checkout")} style={styles.orderBtn} className="cart-order-btn">
-                    Authorize Fulfillment
+                  <button
+                    onClick={() => navigate("/checkout", { state: { totalAmount, logistics, subtotal } })}
+                    style={styles.orderBtn}
+                    className="cart-order-btn"
+                  >
+                     Payment
                   </button>
                 </div>
               </div>

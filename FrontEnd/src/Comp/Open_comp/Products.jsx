@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Layers } from "lucide-react";
+import { Plus, Search, Layers, Heart, ShieldCheck } from "lucide-react";
 import API_BASE_URL from "../../utils/config.js";
 
 // Helper to resolve image paths based on our new ID structure
@@ -33,6 +33,12 @@ const animationStyles = `
   }
   input:focus { outline: none !important; border: none !important; }
   
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 25px;
+  }
+  
   @media (max-width: 768px) {
     .header-row { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
     .search-section { width: 100% !important; align-items: flex-start !important; }
@@ -40,69 +46,54 @@ const animationStyles = `
     .page-wrapper { padding-top: 120px !important; }
   }
 
+  /* MOBILE 2-COLUMN FIX */
   @media (max-width: 600px) {
     .product-grid {
-      grid-template-columns: repeat(2, 1fr) !important;
+      display: grid !important;
+      /* minmax(0, 1fr) is the secret to breaking the inline 260px restriction */
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
       gap: 12px !important;
       padding: 0 10px !important;
+      width: 100% !important;
     }
 
     .product-card-hover {
-      padding: 0 !important; /* Remove padding to let image touch edges */
-      border-radius: 24px !important; /* Matches your screenshot */
-      overflow: hidden !important;
-      height: auto !important;
+      padding: 12px !important;
+      border-radius: 16px !important;
     }
 
-    /* Target the image container */
-    .product-card-hover > div:first-child { 
-      height: 160px !important; /* Shorter mobile height */
-      border-radius: 0 0 24px 24px !important; /* Bottom rounding for the image */
-      margin: 8px !important; /* Small gap from card edge */
-      width: calc(100% - 16px) !important;
-      position: relative;
-    }
-
-    /* Target the text area */
-    .product-card-hover > div:last-child {
-      padding: 0 12px 16px !important; /* Consistent side spacing */
+    .img-container-mobile { 
+      height: 160px !important; 
+      width: 100% !important;
     }
 
     .product-name-text {
-      font-size: 15px !important;
-      font-weight: 700 !important;
+      font-size: 14px !important;
       margin-bottom: 8px !important;
-      white-space: normal !important; /* Allow 2 lines like screenshot */
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
     }
 
     .product-price-text {
-      font-size: 16px !important;
-      font-weight: 800 !important;
+      font-size: 1.1rem !important;
     }
-
+    
     .add-btn {
-      display: none !important; /* Screenshot doesn't show a plus button on card */
+      display: none !important;
     }
-  }
+  } 
 
   .out-of-stock-strip {
     position: absolute;
-    top: 20px;
+    top: 15px;
     left: -35px;
     background: #ef4444;
     color: white;
     padding: 5px 40px;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 900;
     text-transform: uppercase;
     transform: rotate(-45deg);
     z-index: 10;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    letter-spacing: 1px;
     pointer-events: none;
   }
 `;
@@ -122,8 +113,8 @@ const Products = () => {
       // 1. Determine which endpoint to use
       // If no search term and category is "All", use the general "all products" API
       const isSearching = searchTerm.trim() !== "" || activeCategory !== "All";
-      const endpoint = isSearching 
-        ? `${API_BASE_URL}/search/products` 
+      const endpoint = isSearching
+        ? `${API_BASE_URL}/search/products`
         : `${API_BASE_URL}/user/products`;
 
       const res = await axios.get(endpoint, {
@@ -133,7 +124,7 @@ const Products = () => {
       // 2. Standardize data access 
       // (Handling cases where one API returns .products and the other returns the array directly)
       const items = res.data.products || res.data || [];
-      
+
       setProducts(items);
       setLoading(false);
 
@@ -202,11 +193,7 @@ const Products = () => {
       border: isActive ? 'none' : '1px solid var(--border-soft)',
       textTransform: 'uppercase'
     }),
-    grid: {
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-      gap: "25px"
-    },
+
     card: {
       background: "var(--bg-card)",
       border: "1px solid var(--border-soft)",
@@ -268,7 +255,7 @@ const Products = () => {
         </div>
 
         {/* Product Grid */}
-        <div style={styles.grid} className="product-grid">
+        <div className="product-grid">
           {loading ? (
             <p style={{ color: '#444' }}>Syncing Inventory...</p>
           ) : products.length > 0 ? (
@@ -279,8 +266,30 @@ const Products = () => {
                 style={{ ...styles.card, animationDelay: `${index * 0.05}s` }}
                 onClick={() => navigate(`/products/${product._id}`)}
               >
-                <div style={{ ...styles.imgContainer, opacity: product.stock === 0 ? 0.6 : 1 }}>
+                <div style={{ ...styles.imgContainer, opacity: product.stock === 0 ? 0.6 : 1, position: 'relative' }} className="img-container-mobile">
                   {product.stock === 0 && <div className="out-of-stock-strip">Out of Stock</div>}
+
+                  {/* Mobile-only badges */}
+                  <div className="mobile-badges" style={{ position: 'absolute', top: 0, left: 0, width: '100%', padding: '8px', display: 'flex', justifyContent: 'space-between', zIndex: 5, pointerEvents: 'none' }}>
+                    <button style={{
+                      width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)',
+                      border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer', pointerEvents: 'auto'
+                    }}>
+                      <Heart size={14} color="#94a3b8" />
+                    </button>
+
+                    {product.isExclusive && (
+                      <div style={{
+                        background: '#3b82f6', color: 'white', padding: '4px 10px', borderRadius: '20px',
+                        fontSize: '9px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px',
+                        boxShadow: '0 4px 10px rgba(59, 130, 246, 0.3)', pointerEvents: 'auto', height: 'fit-content'
+                      }}>
+                        <ShieldCheck size={10} strokeWidth={3} /> EXCLUSIVE
+                      </div>
+                    )}
+                  </div>
+
                   <img
                     src={`../uploads/${product._id}/main.jpg`}
                     alt={product.name}
