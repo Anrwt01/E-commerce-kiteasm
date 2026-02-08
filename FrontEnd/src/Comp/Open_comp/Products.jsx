@@ -85,8 +85,8 @@ const animationStyles = `
     position: absolute;
     top: 15px;
     left: -35px;
-    background: #ef4444;
-    color: white;
+    background: #FFD700;
+    color: black;
     padding: 5px 40px;
     font-size: 9px;
     font-weight: 900;
@@ -104,8 +104,45 @@ const Products = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [wishlistItems, setWishlistItems] = useState([]);
   const navigate = useNavigate();
   const isInitialMount = useRef(true);
+  const token = localStorage.getItem("token");
+
+  const fetchWishlist = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setWishlistItems(res.data.products?.map(p => p._id) || []);
+    } catch (error) {
+      console.error("Wishlist fetch failed:", error);
+    }
+  }, [token]);
+
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/toggle-wishlist`,
+        { productId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.status === 200 || res.status === 201) {
+        setWishlistItems(prev =>
+          prev.includes(productId)
+            ? prev.filter(id => id !== productId)
+            : [...prev, productId]
+        );
+      }
+    } catch (error) {
+      console.error("Wishlist toggle failed:", error);
+    }
+  };
 
   const fetchProducts = useCallback(async (isFirstLoad = false) => {
     setLoading(true);
@@ -142,12 +179,13 @@ const Products = () => {
   useEffect(() => {
     if (isInitialMount.current) {
       fetchProducts(true);
+      fetchWishlist();
       isInitialMount.current = false;
     } else {
       const delayDebounceFn = setTimeout(() => fetchProducts(false), 400);
       return () => clearTimeout(delayDebounceFn);
     }
-  }, [searchTerm, activeCategory, fetchProducts]);
+  }, [searchTerm, activeCategory, fetchProducts, fetchWishlist]);
 
   const styles = {
     pageWrapper: {
@@ -257,7 +295,7 @@ const Products = () => {
         {/* Product Grid */}
         <div className="product-grid">
           {loading ? (
-            <p style={{ color: '#444' }}>Syncing Inventory...</p>
+            <p style={{ color: '#444' }}>Loading Inventory...</p>
           ) : products.length > 0 ? (
             products.map((product, index) => (
               <div
@@ -270,24 +308,35 @@ const Products = () => {
                   {product.stock === 0 && <div className="out-of-stock-strip">Out of Stock</div>}
 
                   {/* Mobile-only badges */}
-                  <div className="mobile-badges" style={{ position: 'absolute', top: 0, left: 0, width: '100%', padding: '8px', display: 'flex', justifyContent: 'space-between', zIndex: 5, pointerEvents: 'none' }}>
-                    <button style={{
-                      width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.9)',
-                      border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer', pointerEvents: 'auto'
-                    }}>
-                      <Heart size={14} color="#94a3b8" />
-                    </button>
-
+                  <div className="mobile-badges" style={{ position: 'absolute', top: 0, right: 0, padding: '8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', zIndex: 5, pointerEvents: 'none' }}>
                     {product.isExclusive && (
                       <div style={{
                         background: '#3b82f6', color: 'white', padding: '4px 10px', borderRadius: '20px',
                         fontSize: '9px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '4px',
-                        boxShadow: '0 4px 10px rgba(59, 130, 246, 0.3)', pointerEvents: 'auto', height: 'fit-content'
+                        boxShadow: '0 4px 10px rgba(59, 130, 246, 0.3)', pointerEvents: 'auto', marginBottom: '4px'
                       }}>
                         <ShieldCheck size={10} strokeWidth={3} /> EXCLUSIVE
                       </div>
                     )}
+
+                    <button style={{
+                      width: '32px', height: '32px',
+                      borderRadius: '50%', background: 'rgba(255,255,255,0.9)',
+                      border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer', pointerEvents: 'auto',
+                      padding: '0', margin: '0', flex: 'none',
+                      overflow: 'hidden', boxSizing: 'border-box'
+                    }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleWishlist(product._id);
+                      }}>
+                      <Heart size={16}
+                        color={wishlistItems.includes(product._id) ? "#ef4444" : "#94a3b8"}
+                        fill={wishlistItems.includes(product._id) ? "#ef4444" : "none"}
+                      />
+                    </button>
                   </div>
 
                   <img
@@ -323,7 +372,7 @@ const Products = () => {
               </div>
             ))
           ) : (
-            <p style={{ color: '#666' }}>No items found in this flight path.</p>
+            <p style={{ color: '#666' }}>No items found.</p>
           )}
         </div>
       </div>

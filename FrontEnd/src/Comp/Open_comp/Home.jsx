@@ -310,7 +310,7 @@ const Home = () => {
 
         @media (max-width: 600px) {
           .hero-section { height: 60vh; }
-          .hero-title { font-size: 2.5rem; }
+          .hero-title { font-size: 3.5rem; letter-spacing: 1px; }
           .hero-tagline { font-size: 1rem; padding: 0 10px; }
           .products-section { padding: 60px 5%; }
           .section-title { font-size: 1.8rem; }
@@ -419,7 +419,7 @@ const Home = () => {
         borderTop: "1px solid var(--border-soft)",
         backgroundColor: "var(--bg-card)"
       }}>
-        © 2021 KITEASM 
+        © 2021 KITEASM
       </footer>
     </div>
   );

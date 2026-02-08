@@ -153,7 +153,7 @@ const styles = {
   },
   payGrid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: '1fr',
     gap: 20,
     marginTop: 32
   },
@@ -274,7 +274,7 @@ const Checkout = () => {
 
     const only = (key) => types.length > 0 && types.every(t => t.includes(key));
 
-   
+
     items.forEach(item => {
       const name = normalize(item.productId?.name || "");
       const category = normalize(item.productId?.category || "");
@@ -556,28 +556,15 @@ const Checkout = () => {
                   style={{
                     ...styles.payOption,
                     borderColor: paymentMethod === 'Razorpay' ? 'var(--accent)' : 'var(--border-soft)',
-                    boxShadow: paymentMethod === 'Razorpay' ? '0 10px 25px rgba(59, 130, 246, 0.1)' : 'none'
+                    boxShadow: paymentMethod === 'Razorpay' ? '0 10px 25px rgba(59, 130, 246, 0.1)' : 'none',
+                    width: '100%',
+                    boxSizing: 'border-box'
                   }}
                 >
                   <ShieldCheckIcon width={24} color={paymentMethod === 'Razorpay' ? 'var(--accent)' : 'var(--slate-400)'} />
                   <div>
                     <b style={{ color: paymentMethod === 'Razorpay' ? 'var(--slate-800)' : 'var(--slate-600)' }}>Digital Transmission</b>
                     <p style={{ margin: 0, fontSize: 11, color: 'var(--slate-400)' }}>UPI, Cards, NetBanking</p>
-                  </div>
-                </div>
-
-                <div
-                  onClick={() => setPaymentMethod("COD")}
-                  style={{
-                    ...styles.payOption,
-                    borderColor: paymentMethod === 'COD' ? 'var(--accent)' : 'var(--border-soft)',
-                    boxShadow: paymentMethod === 'COD' ? '0 10px 25px rgba(59, 130, 246, 0.1)' : 'none'
-                  }}
-                >
-                  <TruckIcon width={24} color={paymentMethod === 'COD' ? 'var(--accent)' : 'var(--slate-400)'} />
-                  <div>
-                    <b style={{ color: paymentMethod === 'COD' ? 'var(--slate-800)' : 'var(--slate-600)' }}>Arrival Settlement</b>
-                    <p style={{ margin: 0, fontSize: 11, color: 'var(--slate-400)' }}>Pay on Delivery</p>
                   </div>
                 </div>
               </div>
@@ -617,9 +604,7 @@ const Checkout = () => {
                 disabled={loading || isEditing}
                 style={{ ...styles.orderBtn, opacity: (loading || isEditing) ? 0.6 : 1 }}
               >
-                {loading ? "PROCESSING..." : (
-                  paymentMethod === "COD" ? "CONFIRM ORDER" : "PAY"
-                )}
+                {loading ? "PROCESSING..." : "PAY & ORDER"}
               </button>
 
               <p style={styles.secureNote}>

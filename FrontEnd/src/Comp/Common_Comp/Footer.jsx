@@ -127,7 +127,7 @@ const Footer = () => {
             <li style={styles.contactText}>Call: +91 7011001801 (toll free)</li>
             <li style={styles.contactText}>WhatsApp: +91 7011001801</li>
             <li style={styles.contactText}>Email: kiteasm01@gmail.com</li>
-            <li style={styles.contactText}>Mon to Fri 11 PM - 7 AM (IST)</li>
+            <li style={styles.contactText}>Mon to Sat 11 PM - 7 AM (IST)</li>
             <li style={{ marginTop: "30px" }}>
               <h5 style={styles.title}>MY ACCOUNT</h5>
               <Link to="/login" style={{ ...styles.link, display: "block", marginBottom: "8px" }}>Log in</Link>
@@ -163,7 +163,7 @@ const Footer = () => {
         <a href="https://www.instagram.com/kiteasm" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}>
           <Instagram size={18} />
         </a>
-        <a href="https://wa.me/9170111801" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}>
+        <a href="https://wa.me/917011001801" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}>
           <Phone size={18} />
         </a>
       </div>
