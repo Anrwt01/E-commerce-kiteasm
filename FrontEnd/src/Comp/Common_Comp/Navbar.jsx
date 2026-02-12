@@ -121,7 +121,7 @@ const Navbar = () => {
   color: isActive ? '#1E293B' : '#ffffff',
   
   // Reduced vertical padding (10px) to make the button less "tall"
-  padding: '10px 14px', 
+  padding: '8px 8px', 
   
   borderRadius: '50px',
   fontSize: '12px', 
@@ -130,8 +130,8 @@ const Navbar = () => {
   textDecoration: 'none', 
   
   // Controlled margin to prevent it from pushing to the very bottom
-  marginTop: '15px', 
-  marginBottom: '20px',
+  marginTop: '5px', 
+  marginBottom: '13px',
   
   border: 'none',
   boxShadow: isActive ? 'none' : '0 8px 12px -3px rgba(59, 130, 246, 0.3)',

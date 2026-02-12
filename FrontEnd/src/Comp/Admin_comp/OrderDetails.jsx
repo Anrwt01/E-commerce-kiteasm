@@ -26,6 +26,7 @@ const OrderDetails = () => {
 
             // Normalize data based on your specific backend object structure
             const data = res.data.order || res.data;
+            console.log(data);
             setOrder(data);
             setNewStatus(data.orderStatus || "processing");
             setLoading(false);
@@ -109,7 +110,7 @@ const OrderDetails = () => {
                             <option value="delivered">Delivered</option>
                         </select>
                         <button onClick={() => handleStatusUpdate(order._id, newStatus)} style={{ background: 'var(--accent)', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '12px', fontWeight: '900', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '12px', transition: '0.3s', boxShadow: '0 8px 16px rgba(59, 130, 246, 0.2)' }}>
-                            UPDATE UNIT
+                            Update Status
                         </button>
                     </div>
                 </div>
@@ -122,13 +123,13 @@ const OrderDetails = () => {
                             <div key={idx} style={{ display: 'flex', gap: '24px', padding: '20px 0', borderBottom: idx !== (order.items.length - 1) ? '1px solid var(--border-soft)' : 'none', alignItems: 'center' }}>
                                 <div style={{ width: '70px', height: '70px', borderRadius: '16px', backgroundColor: 'var(--bg-base)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid var(--border-soft)' }}>
                                     {item.productId?.mainImage || item.productId?.image ? (
-                                        <img src={item.productId?.mainImage || item.productId?.image} alt="item" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <img src={`../uploads/${item.productId._id}/main.jpg`} alt="item" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
                                         <CheckBadgeIcon width={24} color="var(--slate-400)" />
                                     )}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--slate-800)', fontWeight: '900', letterSpacing: '-0.3px' }}>{item.productId?.name || "Product Unnamed"}</h4>
+                                    <h4 style={{ margin: 0, fontSize: '16px', color: 'var(--slate-800)', fontWeight: '900', letterSpacing: '-0.3px' }}>{item.productname || "Product Unnamed"}</h4>
                                     <p style={{ margin: '6px 0 0', fontSize: '12px', color: 'var(--slate-400)', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Price: ₹{item.price} × {item.quantity}</p>
                                 </div>
                                 <span style={{ fontWeight: '900', color: 'var(--slate-800)', fontSize: '18px' }}>₹{(item.price * item.quantity).toLocaleString()}</span>

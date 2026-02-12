@@ -256,60 +256,68 @@ const Checkout = () => {
   const [logisticsCost, setLogisticsCost] = useState(0);
 
   const normalize = (s = "") => s.toLowerCase();
-
-  const getDeliveryCharge = (items = []) => {
+const getDeliveryCharge = (items = []) => {
     if (!Array.isArray(items) || items.length === 0) return 0;
 
     let kiteQty = 0;
+    let hasOswal = false;
+    let hasManjha = false;
+    let hasCover = false;
+    let hasStand = false;
     let hasBag3 = false;
     let hasBag6 = false;
-    let hasCover = false;
-    let hasOswal = false;
-    let hasStand = false;
-    let hasManjha = false;
 
-    const types = items.map(i =>
-      normalize(i.productId?.category || i.productId?.name || "")
-    );
-
-    const only = (key) => types.length > 0 && types.every(t => t.includes(key));
-
-
+    // Direct string matching for safety
     items.forEach(item => {
-      const name = normalize(item.productId?.name || "");
-      const category = normalize(item.productId?.category || "");
+        const name = (item.productId?.name || "").toLowerCase();
+        const category = (item.productId?.category || "").toLowerCase();
 
-      if (category === "kite") kiteQty += item.quantity;
-      if (name.includes("Kiteasm Kite Bag")) hasBag3 = true;
-      if (name.includes("3inch")) hasBag3 = true;
-      if (name.includes("6inch")) hasBag6 = true;
-      if (name.includes("3x Manjha Cover")) hasCover = true;
-      if (name.includes("Oswal No3")) hasOswal = true;
-      if (name.includes("Stand")) hasStand = true;
-      if (name.includes("manjha")) hasManjha = true;
+        // Check for Manjha (Category ya Name dono mein)
+        if (category === "manjha" || name.includes("manjha")) hasManjha = true;
+        
+        // Check for Oswal
+        if (name.includes("oswal")) hasOswal = true;
+        
+        // Check for other items
+        if (category === "kite") kiteQty += item.quantity;
+        if (name.includes("kiteasm kite bag") || name.includes("3inch")) hasBag3 = true;
+        if (name.includes("6inch")) hasBag6 = true;
+        if (name.includes("cover")) hasCover = true;
+        if (name.includes("stand")) hasStand = true;
     });
 
-    if (only("manjha")) {
-      return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
-    }
-
-    if (hasManjha && hasCover && hasOswal) return 200;
+    // --- PRIORITY 1: Combo Offers (Sabse pehle ye check hoga) ---
+    // Manjha + Oswal Combo (Arnav ka case)
+    if (hasManjha && hasOswal) return 200;
+    
+    // Other Combos
+    if ((hasManjha || hasStand || hasOswal) && hasCover) return 200;
     if (hasStand && hasCover) return 200;
-    if (hasOswal && hasCover) return 200;
 
-    if (kiteQty > 0) {
-      if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
-      if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
+    // --- PRIORITY 2: Pure Manjha Orders ---
+    const types = items.map(i => (i.productId?.category || "").toLowerCase());
+    const isPureManjha = types.length > 0 && types.every(t => t === "manjha");
+
+    if (isPureManjha) {
+        return items.reduce((sum, i) => sum + (i.quantity * 200), 0);
     }
 
-    if (only("tape")) return 49;
-    if (only("3x Manjha Cover")) return 99;
-    if (only("Oswal No3")) return 149;
-    if (only("kite")) return 450;
-    // if(only("test")) return 0;
+    // --- PRIORITY 3: Kites ---
+    if (kiteQty > 0) {
+        if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
+        if (hasBag3) return Math.ceil(kiteQty / 150) * 600;
+        return 450; // Default Kite Shipping
+    }
 
-    return 250;
-  };
+    // --- PRIORITY 4: Individual Small Items ---
+    const allNames = items.map(i => (i.productId?.name || "").toLowerCase());
+    if (allNames.every(n => n.includes("tape"))) return 49;
+    if (allNames.every(n => n.includes("cover"))) return 99;
+    if (allNames.every(n => n.includes("oswal"))) return 149;
+
+    // --- FINAL FALLBACK ---
+    return 250; 
+};
 
   const fetchData = async () => {
     try {
@@ -324,6 +332,7 @@ const Checkout = () => {
       ]);
 
       const items = cartRes.data.items || [];
+      console.log(cartRes.data.items, userRes.data.user)
       setCartItems(items);
 
       // If state matches, use passed totals. Otherwise recalculate as fallback
@@ -410,7 +419,7 @@ const Checkout = () => {
         phone2: formData.phone2,
         address: {
           house: formData.address.house,
-          Galino: formData.address.galino,
+          Galino: formData.address.galino, // Backend matches Galino (Capital G)
           city: formData.address.city,
           state: formData.address.state,
           pincode: formData.address.pincode
@@ -418,15 +427,18 @@ const Checkout = () => {
         paymentMethod
       };
 
+      // 1. Create Internal Order
       const res = await axios.post(`${API_BASE_URL}/user/checkout`, orderPayload, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       if (res.data.success) {
         const serverOrderId = res.data.orderId;
+
         if (paymentMethod === "Razorpay") {
+          // 2. Initialize Razorpay Order
           const { data: pRes } = await axios.post(
-            `${API_BASE_URL}/razorpay`,
+            `${API_BASE_URL}/payment/create-order/`, // Agar ye /api/razorpay hai toh change karein
             { orderId: serverOrderId },
             { headers: { Authorization: `Bearer ${token}` } }
           );
@@ -438,35 +450,43 @@ const Checkout = () => {
             name: "KITEASM",
             order_id: pRes.razorpayOrderId,
             handler: async (response) => {
+              console.log("Razorpay Success Response:", response);
               try {
+                // 3. HIT VERIFICATION (The Critical Step)
                 const verificationPayload = {
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                   orderId: serverOrderId
                 };
+
                 const { data: vRes } = await axios.post(
-                  `${API_BASE_URL}/verify`,
+                  `${API_BASE_URL}/payment/verify`, // CHECK: Is it /api/verify or /verify?
                   verificationPayload,
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
-                if (vRes.success) navigate("/orders", { replace: true });
+
+                if (vRes.success) {
+                  navigate("/orders", { replace: true });
+                }
               } catch (verifyErr) {
-                alert("Payment succeeded but verification failed.");
+                console.error("Verification Error Details:", verifyErr.response?.data);
+                alert("Payment captured but verification failed. Support team will contact you.");
               }
             },
             theme: { color: "#3b82f6" },
           };
+
           const rzp = new window.Razorpay(options);
           rzp.open();
+          setLoading(false); // Stop loading after modal opens
         } else {
           navigate("/orders", { replace: true });
         }
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || "Unknown Deployment Error";
-      alert(`Checkout Failed: ${errorMsg}`);
-    } finally {
+      console.error("Checkout Final Error:", err);
+      alert(`Checkout Failed: ${err.response?.data?.message || err.message}`);
       setLoading(false);
     }
   };

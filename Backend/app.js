@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, "Public")));
 // 🚏 Routes
 app.use("/api", Routes);
 // server.js / app.js
-app.use("/api", paymentRoutes);
+// app.use("/api", paymentRoutes);
 
 // 404 Handler - Unmatched routes
 app.use((req, res) => {

@@ -1,15 +1,21 @@
 import ExcelJS from "exceljs";
 import { OrderModel } from "../../../Schema/OrderSchema.js";
+
 export const downloadOrderExcel = async (req, res) => {
     try {
-        const { startDate, endDate } = req.query; // Expecting YYYY-MM-DD
+        const { startDate, endDate } = req.query;
 
         // 1. Create Filter
-        let query = {};
+        let query = {
+            $or: [
+                { paymentStatus: "paid" },
+            ]
+        };
+
         if (startDate && endDate) {
             query.createdAt = {
                 $gte: new Date(startDate),
-                $lte: new Date(new Date(endDate).setHours(23, 59, 59)) // Include the full end day
+                $lte: new Date(new Date(endDate).setHours(23, 59, 59))
             };
         }
 
@@ -24,11 +30,12 @@ export const downloadOrderExcel = async (req, res) => {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Orders Report");
 
-        // Define Columns
+        // Define Columns (Added Phone Column)
         worksheet.columns = [
             { header: "Order ID", key: "id", width: 25 },
             { header: "Date", key: "date", width: 20 },
             { header: "Customer Name", key: "name", width: 20 },
+            { header: "Phone Number", key: "phone", width: 15 }, // <-- Naya Column
             { header: "Email", key: "email", width: 25 },
             { header: "Amount", key: "amount", width: 15 },
             { header: "Status", key: "status", width: 15 },
@@ -37,10 +44,16 @@ export const downloadOrderExcel = async (req, res) => {
 
         // 4. Add Rows
         orders.forEach(order => {
+            // Phone numbers ko combine kar rahe hain (Phone1 / Phone2) agar Phone2 ho toh
+            const fullPhone = order.customerDetails.phone2
+                ? `${order.customerDetails.phone1} / ${order.customerDetails.phone2}`
+                : order.customerDetails.phone1;
+
             worksheet.addRow({
                 id: order._id.toString(),
                 date: order.createdAt.toLocaleString(),
                 name: order.customerDetails.name,
+                phone: fullPhone, // <-- Row data
                 email: order.customerDetails.email,
                 amount: `₹${order.totalAmount}`,
                 status: order.orderStatus,

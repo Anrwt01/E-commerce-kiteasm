@@ -1,0 +1,134 @@
+/* Admin Dashboard & General Layout */
+.admin-container {
+    background-color: var(--bg-base);
+    min-height: 100vh;
+    padding: 160px 24px 80px;
+    font-family: var(--font-sans);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 60px;
+}
+
+/* Stats Grid */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-bottom: 60px;
+}
+
+/* Data Export Terminal */
+.admin-export-terminal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 60px;
+}
+
+.admin-export-controls {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+/* Navigation Grid */
+.admin-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+}
+
+/* Product Grid */
+.admin-product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+}
+
+/* Form Grids */
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+}
+
+/* Details Grid (Order Details) */
+.admin-details-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 24px;
+}
+
+/* Table */
+.admin-table-wrapper {
+    background-color: white;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-floating);
+    overflow: hidden;
+}
+
+.admin-table-scroll {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px; /* Ensure table doesn't squash too much */
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+@media (max-width: 1024px) {
+    .admin-details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        padding: 100px 16px 40px !important;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+    
+    .admin-header h1 {
+        font-size: 2rem !important;
+    }
+    
+    .admin-export-terminal {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .admin-export-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .admin-nav-grid,
+    .admin-product-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .floating-card {
+        padding: 24px !important;
+    }
+}

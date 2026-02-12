@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import API_BASE_URL from "../../utils/config.js";
+import './Admin.css';
 import {
     CubeIcon,
     ClipboardDocumentListIcon,
@@ -22,8 +23,12 @@ const AdminDashboard = () => {
         loading: true
     });
 
-    // --- DATE RANGE STATE FOR EXCEL ---
     const [dateRange, setDateRange] = useState({
+        startDate: '',
+        endDate: ''
+    });
+
+    const [cartDateRange, setCartDateRange] = useState({
         startDate: '',
         endDate: ''
     });
@@ -40,14 +45,15 @@ const AdminDashboard = () => {
                 ]);
 
                 // Extraction based on your log: ordersRes.data.data
-                const allOrders = ordersRes.data.data || [];
+                // 🔴 Filter: Only include PAID orders for accurate metrics
+                const allOrders = (ordersRes.data.data || []).filter(order => order.paymentStatus === "paid");
                 const allProducts = productsRes.data.data || productsRes.data.products || [];
 
                 const now = new Date();
                 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
                 const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-                // 🟢 Filter: Monthly Orders
+                // 🟢 Filter: Monthly Paid Orders
                 const monthlyOrders = allOrders.filter(order => {
                     const created = new Date(order.createdAt || order.date);
                     return !isNaN(created) && created >= startOfMonth && created <= endOfMonth;
@@ -116,6 +122,37 @@ const AdminDashboard = () => {
         link.parentNode.removeChild(link);
         window.URL.revokeObjectURL(url);
     };
+
+    const handleDownloadCartExcel = async () => {
+        const { startDate, endDate } = cartDateRange;
+        if (!startDate || !endDate) {
+            alert("Please select both Start and End dates for the abandoned cart report.");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`${API_BASE_URL}/admin/download-carts`, {
+                params: { startDate, endDate },
+                headers: { Authorization: `Bearer ${token}` },
+                responseType: 'blob',
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Abandoned_Carts_Report_${startDate}_to_${endDate}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Cart download error", error);
+            alert("Failed to generate report.");
+        }
+    };
+
+   
     const stats = [
         {
             label: "Total Revenue",
@@ -164,11 +201,11 @@ const AdminDashboard = () => {
     );
 
     return (
-        <div style={{ backgroundColor: 'var(--bg-base)', minHeight: '100vh', padding: '160px 24px 80px', fontFamily: 'var(--font-sans)' }}>
+        <div className="admin-container" style={{ backgroundColor: 'var(--bg-base)' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
 
                 {/* --- HEADER --- */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '60px' }}>
+                <div className="admin-header">
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent)', marginBottom: '12px' }}>
                             <ShieldCheckIcon style={{ width: '18px' }} />
@@ -179,7 +216,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* --- VITAL STATISTICS --- */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '60px' }}>
+                <div className="admin-stats-grid">
                     {stats.map((stat) => (
                         <div key={stat.label} className="floating-card" style={{ padding: '32px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
@@ -195,7 +232,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* --- DATA EXPORT TERMINAL (NEW SECTION) --- */}
-                <div className="floating-card" style={{ padding: '40px', marginBottom: '60px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '32px' }}>
+                <div className="floating-card admin-export-terminal" style={{ padding: '40px', marginBottom: '32px' }}>
                     <div style={{ flex: '1 1 400px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--accent)', marginBottom: '8px' }}>
                             <CalendarDaysIcon style={{ width: '24px' }} />
@@ -204,7 +241,7 @@ const AdminDashboard = () => {
                         <p style={{ color: 'var(--slate-600)', margin: 0, fontSize: '15px' }}>Generate encrypted Excel reports for specific flight periods.</p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                    <div className="admin-export-controls">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                             <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>Start Date</label>
                             <input
@@ -233,28 +270,74 @@ const AdminDashboard = () => {
                             }}
                         >
                             <DocumentArrowDownIcon style={{ width: '20px' }} />
-                            Download .xlsx
+                            Orders Log
                         </button>
                     </div>
                 </div>
 
+                {/* --- ABANDONED CART EXPORT --- */}
+                 <div className="floating-card admin-export-terminal" style={{ padding: '40px', marginBottom: '60px' }}>
+                    <div style={{ flex: '1 1 400px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#6366f1', marginBottom: '8px' }}>
+                            <CubeIcon style={{ width: '24px' }} />
+                            <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: 'var(--slate-800)' }}>Abandoned Cart Intel</h2>
+                        </div>
+                        <p style={{ color: 'var(--slate-600)', margin: 0, fontSize: '15px' }}>Recover lost revenue by exporting details of units left in customer hangars.</p>
+                    </div>
+
+                    <div className="admin-export-controls">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>Start Date</label>
+                            <input
+                                type="date"
+                                value={cartDateRange.startDate}
+                                onChange={(e) => setCartDateRange({ ...cartDateRange, startDate: e.target.value })}
+                                style={{ background: 'var(--bg-base)', border: '1px solid var(--border-soft)', color: 'var(--slate-800)', padding: '12px 16px', borderRadius: '14px', outline: 'none', fontWeight: '600' }}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                            <label style={{ fontSize: '10px', fontWeight: '900', color: 'var(--slate-400)', textTransform: 'uppercase', letterSpacing: '1px' }}>End Date</label>
+                            <input
+                                type="date"
+                                value={cartDateRange.endDate}
+                                onChange={(e) => setCartDateRange({ ...cartDateRange, endDate: e.target.value })}
+                                style={{ background: 'var(--bg-base)', border: '1px solid var(--border-soft)', color: 'var(--slate-800)', padding: '12px 16px', borderRadius: '14px', outline: 'none', fontWeight: '600' }}
+                            />
+                        </div>
+                        <button
+                            onClick={handleDownloadCartExcel}
+                            style={{
+                                background: '#6366f1', color: 'white', border: 'none', padding: '14px 28px',
+                                borderRadius: '16px', fontWeight: '800', cursor: 'pointer', display: 'flex',
+                                alignItems: 'center', gap: '10px', transition: 'all 0.4s',
+                                boxShadow: '0 10px 20px rgba(99, 102, 241, 0.3)'
+                            }}
+                        >
+                            <DocumentArrowDownIcon style={{ width: '20px' }} />
+                            Carts Intel
+                        </button>
+                    </div>
+                </div> 
+
+                
+
                 {/* --- NAVIGATION GRID --- */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '32px' }}>
-                    <Link to="/admin/products" className="floating-card" style={cardStyle}>
+                <div className="admin-nav-grid">
+                    <Link to="/admin/products" className="floating-card" style={{ ...cardStyle }}>
                         <div style={iconBoxStyle}><CubeIcon style={{ width: '24px' }} /></div>
                         <h3 style={titleStyle}>Inventory Fleet</h3>
                         <p style={descStyle}>Manage aircraft gear, update stock levels, and monitor SKU health.</p>
                         <div style={linkStyle}>Manage Fleet <ArrowUpRightIcon style={{ width: '16px' }} /></div>
                     </Link>
 
-                    <Link to="/admin/add-product" className="floating-card" style={cardStyle}>
+                    <Link to="/admin/add-product" className="floating-card" style={{ ...cardStyle }}>
                         <div style={iconBoxStyle}><PlusIcon style={{ width: '24px' }} /></div>
                         <h3 style={titleStyle}>Deploy Listing</h3>
                         <p style={descStyle}>Launch new products into the global marketplace with high-precision details.</p>
                         <div style={linkStyle}>Start Deployment <ArrowUpRightIcon style={{ width: '16px' }} /></div>
                     </Link>
 
-                    <Link to="/admin/orders" className="floating-card" style={cardStyle}>
+                    <Link to="/admin/orders" className="floating-card" style={{ ...cardStyle }}>
                         <div style={iconBoxStyle}><ClipboardDocumentListIcon style={{ width: '24px' }} /></div>
                         <h3 style={titleStyle}>Order Logistics</h3>
                         <p style={descStyle}>Real-time monitoring of global order flow, shipping statuses, and fulfillment.</p>

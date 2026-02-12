@@ -2,60 +2,41 @@ import { OrderModel } from "../../../Schema/OrderSchema.js";
 import { CartModel } from "../../../Schema/Cart_Schema.js";
 import { ProductModel } from "../../../Schema/Product_Schema.js";
 import { paymentSch } from "../../../Schema/Payment_schema.js";
-import { UserModel } from "../../../Schema/User_Schema.js";
-import { sendOrderEmail } from "../../Helpers/Email.js";
-import { sendOrderStatusEmail } from "../../Helpers/SendOrderStatusEmail.js";
+import Razorpay from "razorpay";
+import crypto from "crypto";
+import dotenv from "dotenv";
+dotenv.config();
 
+// const razorpay = new Razorpay({
+//   key_id: process.env.RAZORPAY_KEY,
+//   key_secret: process.env.RAZORPAY_SECRET
+// });
+
+// 1. Pehle sirf Order create hoga (Pending status mein)
 export const Checkout = async (req, res) => {
     try {
-
-    
         const userId = req.userId;
-        const {
-            productname, 
-            items, 
-            totalAmount, 
-            address, 
-            name, 
-            email, 
-            phone1, 
-            phone2, 
-            paymentMethod,
-            paymentId // Passed from frontend if online payment
-        } = req.body;
-        // console.log(req.body)
+        const { address, name, email, phone1, phone2, paymentMethod, totalAmount } = req.body;
 
-        // 1. Validate incoming data
-        if (!email || !address || !items || items.length === 0) {
-            return res.status(400).json({ success: false, message: "Missing required order data." });
+        // 1. Fresh Cart fetch karo with Population (Database se Product Name uthane ke liye)
+        const cart = await CartModel.findOne({ userId }).populate("items.productId");
+
+        if (!cart || cart.items.length === 0) {
+            return res.status(400).json({ success: false, message: "Cart khali hai bhai!" });
         }
 
-        
-        for (const item of items) {
-            const product = await ProductModel.findById(item.productId?._id || item.productId);
-            
-            if (!product) {
-                return res.status(404).json({ success: false, message: `Product ${item.productId} not found.` });
-            }
+        // 2. Items Map karo (Ab productname seedha DB se aayega, Frontend se nahi)
+        const orderItems = cart.items.map(item => ({
+            productId: item.productId._id,
+            productname: item.productId.name, // 100% Reliable Name
+            quantity: item.quantity,
+            price: item.productId.price
+        }));
 
-            if (product.stock < item.quantity) {
-                return res.status(400).json({ success: false, message: `Insufficient stock for ${product.name}` });
-            }
-
-            // Decrease the stock count
-            product.stock -= item.quantity;
-            await product.save();
-        }
-
-        // 3. Create Order
+        // 3. Naya Order Create karo (Pending status mein)
         const newOrder = await OrderModel.create({
             userId,
-            items: items.map(item => ({
-                productId: item.productId?._id || item.productId,
-                productname :item.productname,
-                quantity: item.quantity,
-                price: item.price
-            })),
+            items: orderItems,
             totalAmount,
             customerDetails: {
                 name,
@@ -63,37 +44,20 @@ export const Checkout = async (req, res) => {
                 phone1,
                 phone2,
                 address: `${address.house}, ${address.Galino}, ${address.city}, ${address.state} - ${address.pincode}`,
-                paymentMethod: paymentMethod || "COD"
+                paymentMethod: paymentMethod || "Razorpay"
             },
-            paymentStatus: paymentMethod === "COD" ? "pending" : "paid",
-            orderStatus: "processing"
+            paymentStatus: "pending",
+            orderStatus: "pending"
         });
 
-        // 4. Clear Cart
-        await CartModel.findOneAndDelete({ userId });
-
-        
-        
-    
-            if (paymentMethod === "COD") {
-                // We already have newOrder from the DB, so we pass it directly
-                sendOrderEmail(newOrder, {}, "CASH_ON_DELIVERY") // 'user' is now inside 'newOrder'
-                    .catch(err => console.error("Admin Email Error:", err));
-                
-                    const order = newOrder
-                sendOrderStatusEmail(email, name, order)
-                    .catch(err => console.error("Customer Email Error:", err));
-            }
-
-        // 6. Final Response
         res.status(201).json({ 
             success: true, 
-            message: "Order placed successfully", 
+            message: "Order initiated successfully", 
             orderId: newOrder._id 
         });
 
     } catch (error) {
-        console.error("CRITICAL BACKEND ERROR:", error);
+        console.error("Checkout Error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };

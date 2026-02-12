@@ -19,15 +19,15 @@ import { User_Single_prod } from "../Http/Controller/User/user1Prod.js"; // Rena
 // import { Full_cart } from "../Http/Controller/User/Full_cart.js";
 // import { removeFromCart } from "../Http/Controller/User/Remove_cart.js";
 import { updateUserDetails } from "../Http/Controller/User/updateUserDetails.js";
-import {getCart, removeFromCart , addToCart}  from "../Http/Controller/User/Cart_Controller.js"
+import { getCart, removeFromCart, addToCart } from "../Http/Controller/User/Cart_Controller.js"
 import { userDetails } from "../Http/Controller/User/userDetails.js";
-import {createRazorpayPayment, verifyPayment } from  "../Http/Controller/Payment/createRazorpayPayment.js"
+import { createRazorpayPayment, verifyPayment } from "../Http/Controller/Payment/createRazorpayPayment.js"
 
 /* 📦 Order & Checkout Controllers */
 import { Checkout } from "../Http/Controller/User/Checkout.js";
 import { SendContactEmail } from '../Http/Controller/Open_panel/ContactController.js';
 import { All_product as UserOrders } from "../Http/Controller/User/All_orders.js";
-import {updateadd} from "../Http/Controller/User/new_add.js"
+import { updateadd } from "../Http/Controller/User/new_add.js"
 
 // /* 💳 Payment Controllers */
 // import { createRazorpayPayment } from "../Http/Controller/Payment/createRazorpayPayment.js";
@@ -37,12 +37,14 @@ import {updateadd} from "../Http/Controller/User/new_add.js"
 /* 🛠 Admin Controllers */
 import { AdminALLorder } from "../Http/Controller/Admin_panel/allOrder.js";
 import { Order_Update, getSingleOrder } from "../Http/Controller/Admin_panel/Order.js";
-import {downloadOrderExcel} from "../Http/Controller/Admin_panel/downloadOrderExcel.js"
+import { downloadOrderExcel } from "../Http/Controller/Admin_panel/downloadOrderExcel.js"
 import { New_prod } from "../Http/Controller/Admin_panel/New_prod.js";
 import { Update_prod } from "../Http/Controller/Admin_panel/Update_Prod.js";
 import { All_product, Delete_prod } from "../Http/Controller/Admin_panel/Product_all.js";
 import { Single_prod_details } from "../Http/Controller/Admin_panel/Single_product.js";
 import { updateOrderStatus } from "../Http/Controller/Admin_panel/updateOrderStatus.js";
+import { downloadCartExcel } from "../Http/Controller/Admin_panel/abandoned.js";
+// import { downloadProductExcel } from "../Http/Controller/Admin_panel/downloadProductExcel.js";
 
 
 
@@ -68,12 +70,12 @@ router.post("/auth/register", Register);
    USER PRODUCTS
 =========================== */
 // Public Routes
-router.get("/search/products", searchproduct); 
+router.get("/search/products", searchproduct);
 router.get("/suggest/products", getProductSuggestions);
 // router.get("/search/products",searchproduct)
 // router.get("/suggest/products",getProductSuggestions)
 
-router.post("/auth/forgot-password",forgotPassword )
+router.post("/auth/forgot-password", forgotPassword)
 
 router.get("/user/products", User_All_product);
 router.get("/user/products/:Prod_id", User_Single_prod); // Use :Prod_id to match controller
@@ -90,7 +92,7 @@ router.delete("/user/cart/remove/:productId", verifyme, removeFromCart);
 =========================== */
 router.post("/user/checkout", verifyme, Checkout);
 router.get("/user/orders", verifyme, UserOrders);
-router.get("/user/Details", verifyme,userDetails )
+router.get("/user/Details", verifyme, userDetails)
 
 /* ===========================
    PAYMENTS
@@ -126,7 +128,9 @@ router.get(
    getSingleOrder
 );
 
-router.get("/admin/download-orders",verifyme, verifyRole, downloadOrderExcel);
+router.get("/admin/download-orders", verifyme, verifyRole, downloadOrderExcel);
+router.get("/admin/download-carts", verifyme, verifyRole, downloadCartExcel);
+// router.get("/admin/download-inventory", verifyme, verifyRole, downloadProductExcel);
 
 router.put("/user/profile/update", verifyme, updateUserDetails);
 router.put("/user/add-update", verifyme, updateadd);
@@ -175,10 +179,10 @@ router.delete(
 );
 
 router.put(
-  "/admin/orderupdate/status/:orderId",
-  verifyme,
-  verifyRole,
-  updateOrderStatus
+   "/admin/orderupdate/status/:orderId",
+   verifyme,
+   verifyRole,
+   updateOrderStatus
 );
 
 

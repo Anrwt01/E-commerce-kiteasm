@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap, Briefcase } from 'lucide-react';
+import { Wind, BookOpen, Quote, Instagram, Youtube, UserPlus, Zap, Briefcase, HelpCircle, CreditCard, Truck, RotateCcw, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import kiteasm_logo from "../../assets/Images/kiteasm_logo.jpg";
 
@@ -122,7 +122,7 @@ const About = () => {
           .social-link { width: 36px !important; height: 36px !important; }
           .register-btn { padding: 14px 24px !important; font-size: 13px !important; }
           .become-seller { padding: 40px 20px !important; }
-          .cta { padding: 80px 20px !important; }
+          .cta { padding: 60px 20px !important; }
         }
       `}</style>
       {/* 1. HERO SECTION */}
@@ -176,13 +176,13 @@ const About = () => {
           {/* Founder */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-                    <img src="../teampictures/udit.jpg" alt="Founder" style={{ 
-          width: '100%', 
-          height: '100%',     // Crucial for the cover property to work
-          objectFit: 'cover',  // This ensures the photo fills the area without distortion
-          borderRadius: '30px',
-          display: 'block'     // Removes inline spacing
-        }}/>
+              <img src="../teampictures/udit.jpg" alt="Founder" style={{
+                width: '100%',
+                height: '100%',     // Crucial for the cover property to work
+                objectFit: 'cover',  // This ensures the photo fills the area without distortion
+                borderRadius: '30px',
+                display: 'block'     // Removes inline spacing
+              }} />
             </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Udit Sanwal</h3>
             <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Founder & CEO</p>
@@ -196,8 +196,8 @@ const About = () => {
           {/* Designer */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="../teampictures/joshi.jpg" alt="Designer" style={{ 
-                width: '100%', 
+              <img src="../teampictures/joshi.jpg" alt="Designer" style={{
+                width: '100%',
                 height: '100%',     // Crucial for the cover property to work
                 objectFit: 'cover',  // This ensures the photo fills the area without distortion
                 borderRadius: '30px',
@@ -216,14 +216,14 @@ const About = () => {
           {/* Developer */}
           <div style={styles.ownerCard} className="hover-card">
             <div style={{ width: '140px', height: '140px', borderRadius: '40px', backgroundColor: '#f1f5f9', margin: '0 auto 24px', border: '2px solid var(--accent)', overflow: 'hidden', padding: '10px' }}>
-              <img src="../teampictures/aditya.jpg" alt="Developer" style={{ 
-                width: '100%', 
+              <img src="../teampictures/aditya.jpg" alt="Developer" style={{
+                width: '100%',
                 height: '100%',     // Crucial for the cover property to work
                 objectFit: 'cover',  // This ensures the photo fills the area without distortion
                 borderRadius: '30px',
                 display: 'block'     // Removes inline spacing
               }} />
-                        </div>
+            </div>
             <h3 style={{ fontSize: '26px', marginBottom: '8px', color: 'var(--slate-800)', fontWeight: '800' }}>Aditya Pundir</h3>
             <p style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>Sales Head </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
@@ -245,16 +245,69 @@ const About = () => {
             Join the fastest growing kite marketplace. Whether you craft artisanal kites or produce high-quality gear, reach thousands of enthusiasts directly.
           </p>
           <button style={{ ...styles.registerBtn, backgroundColor: 'transparent', border: '2px solid var(--accent)', color: 'var(--accent)', boxShadow: 'none' }} className="register-btn">
-            START SELLING
+            Contact Us on WhatsApp/Phone
           </button>
         </div>
       </section>
 
+      {/* 3.6 CUSTOMER CARE SECTION */}
+      <section style={styles.section}>
+        <div style={{ textAlign: 'left', marginBottom: '60px' }}>
+          <h2 style={{ fontSize: '48px', fontWeight: '800', color: 'var(--slate-800)', letterSpacing: '-1px' }}>Customer Care<span style={{ color: 'var(--accent)' }}>.</span></h2>
+          <p style={{ color: 'var(--slate-600)', fontSize: '18px', marginTop: '10px' }}>Call us Anytime Our Working Hours are 9 AM to 6 PM for any queries.</p>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          {/* FAQ */}
+          <div style={{ padding: '32px', background: 'white', borderRadius: '24px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-floating)' }}>
+            <div style={{ width: '48px', height: '48px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+              <HelpCircle size={24} color="var(--accent)" />
+            </div>
+            <h4 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '12px', color: 'var(--slate-800)' }}>General FAQ</h4>
+            <p style={{ fontSize: '14px', color: 'var(--slate-600)', lineHeight: '1.6' }}>Find quick answers about our premium kites, string quality on WhatsApp.</p>
+          </div>
+
+          {/* Payment */}
+          <div style={{ padding: '32px', background: 'white', borderRadius: '24px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-floating)' }}>
+            <div style={{ width: '48px', height: '48px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+              <CreditCard size={24} color="#10B981" />
+            </div>
+            <h4 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '12px', color: 'var(--slate-800)' }}>Secure Payment</h4>
+            <p style={{ fontSize: '14px', color: 'var(--slate-600)', lineHeight: '1.6' }}>We Support UPI, Credit Cards through Razorpay as a secured payment method.</p>
+          </div>
+
+          {/* Shipping */}
+          <div style={{ padding: '32px', background: 'white', borderRadius: '24px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-floating)' }}>
+            <div style={{ width: '48px', height: '48px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+              <Truck size={24} color="#F59E0B" />
+            </div>
+            <h4 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '12px', color: 'var(--slate-800)' }}>Shipping</h4>
+            <p style={{ fontSize: '14px', color: 'var(--slate-600)', lineHeight: '1.6' }}>Pan-India dispatch within 48 hours. Track your orders from dispatch id we send on your registered phone.</p>
+          </div>
+
+          {/* Returns */}
+          <div style={{ padding: '32px', background: 'white', borderRadius: '24px', border: '1px solid var(--border-soft)', boxShadow: 'var(--shadow-floating)' }}>
+            <div style={{ width: '48px', height: '48px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+              <RotateCcw size={24} color="#EF4444" />
+            </div>
+            <h4 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '12px', color: 'var(--slate-800)' }}>Policy & Returns</h4>
+            <p style={{ fontSize: '14px', color: 'var(--slate-600)', lineHeight: '1.6' }}>Damaged during Shipping? Our 7-day swap policy ensures you're never grounded for long.</p>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '50px', textAlign: 'center' }}>
+          <p style={{ color: 'var(--slate-500)', fontSize: '15px' }}>Still have questions? Our mission control is ready.</p>
+          <Link to="/contact" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--accent)', fontWeight: '800', textDecoration: 'none', marginTop: '10px', fontSize: '14px', letterSpacing: '1px' }}>
+            <MessageSquare size={16} /> CONTACT SUPPORT
+          </Link>
+        </div>
+      </section>
+
       {/* 4. CTA */}
-      <section style={{ textAlign: 'center', padding: '120px 24px', borderTop: '1px solid var(--border-soft)' }} className="cta">
-        <h2 style={{ fontSize: '48px', fontWeight: '900', color: 'var(--slate-800)', marginBottom: '20px', letterSpacing: '-2px' }}>Join the Sky.</h2>
+      <section style={{ textAlign: 'center', padding: '70px ', borderTop: '1px solid var(--border-soft)' }} className="cta">
+        <h2 style={{ fontSize: '48px', fontWeight: '900', color: 'var(--slate-800)', marginBottom: '20px', letterSpacing: '-2px' }}>Join the Kiteasm.</h2>
         <p style={{ color: 'var(--slate-600)', fontSize: '18px', marginBottom: '50px', maxWidth: '600px', margin: '0 auto 50px' }}>
-          Explore the premium collection of kites and gear. Elevate your flying experience today.
+          Explore the premium collection of kites and Manjha. Elevate your flying experience today.
         </p>
 
         <Link to="/register" style={{ textDecoration: 'none' }}>

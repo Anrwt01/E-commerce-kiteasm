@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { productImages } from "../../utils/productImages";
 import axios from "axios";
 import API_BASE_URL from "../../utils/config.js";
+import './Admin.css';
 import { useNavigate } from "react-router-dom";
 import {
   PlusIcon, ArrowLeftIcon,
@@ -94,7 +95,7 @@ const AllProducts = () => {
   );
 
   return (
-    <div style={s.container}>
+    <div className="admin-container" style={{ backgroundColor: 'var(--bg-base)' }}>
       <style>{`
         @media (max-width: 600px) {
           .admin-product-grid {
@@ -117,7 +118,7 @@ const AllProducts = () => {
         }
       `}</style>
       <div style={s.wrapper}>
-        <header style={s.header}>
+        <header className="admin-header">
           <div>
             <button onClick={() => navigate('/admin')} style={{ background: 'none', border: 'none', color: 'var(--slate-400)', cursor: 'pointer', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '1px' }}>
               <ArrowLeftIcon width={16} /> Back to Dashboard
@@ -129,7 +130,7 @@ const AllProducts = () => {
           </button>
         </header>
 
-        <div style={s.grid} className="admin-product-grid">
+        <div className="admin-product-grid">
           {products.map((p) => {
             const isEditing = editingId === p._id;
             return (

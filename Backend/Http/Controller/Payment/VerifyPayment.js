@@ -63,6 +63,16 @@ export const verifyPayment = async (req, res) => {
     // Or if valid customerDetails exists in order schema (step 177 showed it does), use that.
     const userDetails = order.customerDetails || (order.userId ? { name: order.userId.name, email: order.userId.email } : {});
 
+    const orderItemIds = order.items.map(item => item.productId.toString());
+
+    await CartModel.findOneAndUpdate(
+      { userId: order.userId },
+      { 
+        $pull: { 
+          items: { productId: { $in: orderItemIds } } 
+        } 
+  }
+);
     // Run asynchronously, don't block response
     sendOrderEmail(order, userDetails, razorpay_payment_id).catch(err => console.error("Email send failed", err));
 

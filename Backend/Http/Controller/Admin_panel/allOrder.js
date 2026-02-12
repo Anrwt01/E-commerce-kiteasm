@@ -5,12 +5,16 @@ import { OrderModel } from "../../../Schema/OrderSchema.js";
 
 
 export const AdminALLorder = async (req, res) => {
-   
-    try {
-    const orders = await OrderModel.find({})
-      .sort({ createdAt: -1 }); // 
-   
-      return res.status(200).json({
+
+  try {
+    const orders = await OrderModel.find({
+      $or: [
+        { paymentStatus: "paid" },
+      ]
+    })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
       success: true,
       count: orders.length,
       data: orders

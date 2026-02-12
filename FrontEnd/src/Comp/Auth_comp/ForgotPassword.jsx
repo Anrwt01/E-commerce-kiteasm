@@ -8,13 +8,11 @@ const ForgotPassword = () => {
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
     const navigate = useNavigate();
 
     const handleResetRequest = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         try {
             await axios.post(`${API_BASE_URL}/auth/forgot-password`, { email });
             setSubmitted(true);
@@ -26,165 +24,204 @@ const ForgotPassword = () => {
     };
 
     const theme = {
-        bg: "var(--bg-base)",
-        surface: "var(--bg-card)",
-        border: "var(--border-soft)",
-        textMain: "var(--slate-800)",
-        textMuted: "var(--slate-400)",
-        accent: "var(--accent)",
-    };
-
-    const inputStyle = {
-        width: '100%',
-        padding: '18px 20px',
-        backgroundColor: 'white',
-        border: `1px solid ${theme.border}`,
-        color: theme.textMain,
-        fontSize: '14px',
-        outline: 'none',
-        marginBottom: '24px',
-        borderRadius: '16px',
-        transition: 'all 0.3s ease',
-        boxSizing: 'border-box',
-        fontWeight: '600',
-        fontFamily: 'var(--font-sans)'
+        bg: "#f8fafc", // slate-50
+        surface: "#ffffff",
+        border: "#e2e8f0", // slate-200
+        textMain: "#0f172a", // slate-900
+        textMuted: "#64748b", // slate-500
+        accent: "#3b82f6", // blue-500
     };
 
     return (
-        <div style={{
-            backgroundColor: theme.bg,
-            minHeight: "100vh",
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: '20px',
-            boxSizing: 'border-box'
-        }}>
+        <div className="forgot-password-wrapper">
             <style>
                 {`
-                    input:focus { border-color: ${theme.accent} !important; }
-                    .back-btn:hover { color: var(--slate-800) !important; transform: translateX(-4px); }
+                    :root {
+                        --accent: ${theme.accent};
+                        --text-main: ${theme.textMain};
+                        --text-muted: ${theme.textMuted};
+                    }
+                    .forgot-password-wrapper {
+                        background-color: ${theme.bg};
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 24px;
+                        font-family: 'Inter', system-ui, sans-serif;
+                    }
+                    .auth-card {
+                        max-width: 440px;
+                        width: 100%;
+                        background: ${theme.surface};
+                        padding: 40px;
+                        border-radius: 24px;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+                        border: 1px solid ${theme.border};
+                    }
+                    .back-btn {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        font-size: 13px;
+                        font-weight: 700;
+                        color: var(--text-muted);
+                        background: none;
+                        border: none;
+                        cursor: pointer;
+                        margin-bottom: 32px;
+                        transition: all 0.2s ease;
+                        padding: 0;
+                    }
+                    .back-btn:hover {
+                        color: var(--accent);
+                        transform: translateX(-4px);
+                    }
+                    .title {
+                        font-size: 32px;
+                        font-weight: 800;
+                        letter-spacing: -1px;
+                        color: var(--text-main);
+                        margin: 0 0 12px 0;
+                        line-height: 1.2;
+                    }
+                    .desc {
+                        color: var(--text-muted);
+                        font-size: 15px;
+                        line-height: 1.6;
+                        margin-bottom: 32px;
+                    }
+                    .input-group {
+                        position: relative;
+                        margin-bottom: 20px;
+                    }
+                    .custom-input {
+                        width: 100%;
+                        padding: 16px 48px 16px 16px;
+                        border-radius: 12px;
+                        border: 1px solid ${theme.border};
+                        font-size: 15px;
+                        font-weight: 500;
+                        transition: all 0.2s ease;
+                        box-sizing: border-box;
+                    }
+                    .custom-input:focus {
+                        outline: none;
+                        border-color: var(--accent);
+                        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+                    }
+                    .input-icon {
+                        position: absolute;
+                        right: 16px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: var(--text-muted);
+                    }
+                    .submit-btn {
+                        width: 100%;
+                        padding: 16px;
+                        background-color: var(--accent);
+                        color: white;
+                        border: none;
+                        border-radius: 12px;
+                        font-weight: 700;
+                        font-size: 15px;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+                    }
+                    .submit-btn:hover:not(:disabled) {
+                        filter: brightness(1.1);
+                        transform: translateY(-1px);
+                        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+                    }
+                    .submit-btn:disabled {
+                        opacity: 0.7;
+                        cursor: not-allowed;
+                    }
+                    .success-icon-box {
+                        width: 64px;
+                        height: 64px;
+                        background: #eff6ff;
+                        border-radius: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 24px;
+                    }
+                    .footer-tag {
+                        margin-top: 32px;
+                        text-align: center;
+                        font-size: 11px;
+                        font-weight: 700;
+                        color: var(--text-muted);
+                        letter-spacing: 1px;
+                        opacity: 0.6;
+                    }
                     @media (max-width: 480px) {
-                        h1 { fontSize: 32px !important; }
-                        .container { paddingTop: 0 !important; }
+                        .auth-card {
+                            padding: 24px;
+                            border-radius: 20px;
+                        }
+                        .title { font-size: 26px; }
+                        .forgot-password-wrapper { padding: 16px; }
                     }
                 `}
             </style>
 
-            <div className="container" style={{ maxWidth: '400px', width: '100%', margin: '0 auto' }}>
-
+            <div className="auth-card">
                 {/* Back Button */}
-                <button
-                    className="back-btn"
-                    onClick={() => navigate("/login")}
-                    style={{
-                        background: 'none', border: 'none', display: 'flex', alignItems: 'center',
-                        gap: '10px', fontSize: '11px', fontWeight: '900', color: theme.textMuted,
-                        cursor: 'pointer', marginBottom: '40px', textTransform: 'uppercase',
-                        transition: '0.3s', padding: 0, letterSpacing: '1px'
-                    }}
-                >
-                    <ArrowLeftIcon width={16} /> Back to Sign In
+                <button className="back-btn" onClick={() => navigate("/login")}>
+                    <ArrowLeftIcon width={18} /> BACK TO SIGN IN
                 </button>
 
                 {!submitted ? (
                     <>
-                        <div style={{ marginBottom: '60px' }}>
-                            <h1 style={{
-                                fontSize: 'clamp(2rem, 5vw, 3rem)',
-                                fontWeight: '900',
-                                letterSpacing: '-2px',
-                                margin: 0,
-                                color: theme.textMain,
-                                lineHeight: '1.1'
-                            }}>
+                        <div className="header-section">
+                            <h1 className="title">
                                 Identity Recovery<span style={{ color: theme.accent }}>.</span>
                             </h1>
-                            <p style={{ marginTop: '16px', color: 'var(--slate-600)', fontSize: '16px', lineHeight: '1.6' }}>
+                            <p className="desc">
                                 Initiate credential transmission. Provide your pilot email to receive a system-generated override.
                             </p>
                         </div>
 
                         <form onSubmit={handleResetRequest}>
-                            <div style={{ position: 'relative' }}>
+                            <div className="input-group">
                                 <input
                                     type="email"
                                     placeholder="Pilot Email Address"
+                                    className="custom-input"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
-                                    style={inputStyle}
                                 />
-                                <EnvelopeIcon width={18} style={{ position: 'absolute', right: '16px', top: '16px', color: 'var(--accent)' }} />
+                                <EnvelopeIcon width={20} className="input-icon" />
                             </div>
 
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                style={{
-                                    width: '100%',
-                                    padding: '20px',
-                                    backgroundColor: theme.accent,
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '18px',
-                                    fontWeight: '900',
-                                    fontSize: '13px',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    transition: 'all 0.4s ease',
-                                    boxShadow: `0 10px 25px rgba(59, 130, 246, 0.3)`,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1.5px'
-                                }}
-                            >
+                            <button type="submit" className="submit-btn" disabled={loading}>
                                 {loading ? 'TRANSMITTING...' : 'INITIATE RECOVERY'}
                             </button>
                         </form>
                     </>
                 ) : (
-                    <div className="floating-card" style={{
-                        textAlign: 'center',
-                        padding: '60px 40px',
-                    }}>
-                        <div style={{
-                            width: '70px', height: '70px', backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            borderRadius: '50%', display: 'flex', alignItems: 'center',
-                            justifyContent: 'center', margin: '0 auto 32px'
-                        }}>
-                            <CheckCircleIcon width={40} color={theme.accent} />
+                    <div style={{ textAlign: 'center' }}>
+                        <div className="success-icon-box">
+                            <CheckCircleIcon width={36} color={theme.accent} />
                         </div>
-                        <h2 style={{ color: 'var(--slate-800)', fontSize: '26px', fontWeight: '900', marginBottom: '16px', letterSpacing: '-1px' }}>Transmission Successful</h2>
-                        <p style={{ color: 'var(--slate-600)', fontSize: '16px', lineHeight: '1.6', marginBottom: '40px' }}>
-                            New credentials routed to <span style={{ color: 'var(--slate-800)', fontWeight: '800' }}>{email}</span>. Access your inbox to resume operations.
+                        <h2 className="title" style={{fontSize: '24px'}}>Successful</h2>
+                        <p className="desc">
+                            New credentials routed to <br/>
+                            <strong style={{ color: theme.textMain }}>{email}</strong>. Check your inbox.
                         </p>
-                        <Link
-                            to="/login"
-                            style={{
-                                display: 'block', width: '100%', padding: '20px',
-                                backgroundColor: theme.accent, color: 'white',
-                                textDecoration: 'none', borderRadius: '18px',
-                                fontWeight: '900', fontSize: '13px',
-                                transition: '0.4s',
-                                textTransform: 'uppercase',
-                                letterSpacing: '1.5px',
-                                boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)'
-                            }}
-                        >
-                            Return to Sign In
+                        <Link to="/login" className="submit-btn" style={{ display: 'block', textDecoration: 'none', textAlign: 'center' }}>
+                            RETURN TO SIGN IN
                         </Link>
                     </div>
                 )}
 
-                <p style={{
-                    marginTop: '48px',
-                    textAlign: 'center',
-                    fontSize: '10px',
-                    color: '#333',
-                    textTransform: 'uppercase',
-                    letterSpacing: '2px',
-                    fontWeight: '600'
-                }}>
-                    Secured Fleet Protocol // v2.4.0
+                <p className="footer-tag">
+                    SECURED PROTOCOL // V2.4.0
                 </p>
             </div>
         </div>

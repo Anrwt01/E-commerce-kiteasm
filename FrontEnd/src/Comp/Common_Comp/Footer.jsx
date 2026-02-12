@@ -111,7 +111,7 @@ const Footer = () => {
           <ul style={styles.list}>
             {["FAQ", "Payment", "Shipping", "Returns"].map(item => (
               <li key={item} style={styles.listItem}>
-                <Link to="#" style={styles.link}>{item}</Link>
+                <Link to="/about" style={styles.link}>{item}</Link>
               </li>
             ))}
             <li style={styles.listItem}>

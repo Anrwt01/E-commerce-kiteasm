@@ -205,6 +205,7 @@ const Cart = () => {
     if (hasManjha && hasCover && hasOswal) return 200;
     if (hasStand && hasCover) return 200;
     if (hasOswal && hasCover) return 200;
+     if (hasManjha && hasOswal) return 200;
 
     if (kiteQty > 0) {
       if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
