@@ -47,7 +47,7 @@ export const Checkout = async (req, res) => {
                 paymentMethod: paymentMethod || "Razorpay"
             },
             paymentStatus: "pending",
-            orderStatus: "pending"
+            orderStatus: "processing"
         });
 
         res.status(201).json({ 

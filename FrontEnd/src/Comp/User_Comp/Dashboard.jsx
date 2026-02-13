@@ -19,9 +19,18 @@ const Dashboard = () => {
     const token = localStorage.getItem("token");
 
     const fetchQuickProducts = async () => {
+        // 1. Load from cache (Sharing same cache as home page)
+        const cached = localStorage.getItem("kiteasm_home_products");
+        if (cached) {
+            setFeaturedProducts(JSON.parse(cached));
+        }
+
         try {
             const res = await axios.get(`${API_BASE_URL}/user/products`);
-            setFeaturedProducts(res.data.products || []);
+            const items = res.data.products || [];
+            setFeaturedProducts(items);
+            // 2. Update cache
+            localStorage.setItem("kiteasm_home_products", JSON.stringify(items));
         } catch (err) {
             console.error("Error fetching products:", err);
         }
@@ -85,29 +94,29 @@ const Dashboard = () => {
 
     if (loading || !user) return null;
 
-   const owners = [
-    {
-        name: "Udit Sanwal",
-        role: "FOUNDER & CEO",
-        image: "../teampictures/udit.jpg", 
-        instagram: "https://www.instagram.com/_notrio_/",
-        youtube: "https://www.youtube.com/@RioTheExplorer"
-    },
-    {
-        name: "Shubham Joshi",
-        role: "Head Of Marketing",
-        image: "../teampictures/joshi.jpg",
-        instagram: "https://www.instagram.com/KiteASM",
-        youtube: "https://www.youtube.com/@kiteasm01"
-    },
-    {
-        name: "Aditya Pundir",
-        role: "Sales Head",
-        image: "../teampictures/aditya.jpg",
-        instagram: "https://www.instagram.com/KiteASM",
-        youtube: "https://www.youtube.com/@kiteasm01"
-    }
-];
+    const owners = [
+        {
+            name: "Udit Sanwal",
+            role: "FOUNDER & CEO",
+            image: "../teampictures/udit.jpg",
+            instagram: "https://www.instagram.com/_notrio_/",
+            youtube: "https://www.youtube.com/@RioTheExplorer"
+        },
+        {
+            name: "Shubham Joshi",
+            role: "Head Of Marketing",
+            image: "../teampictures/joshi.jpg",
+            instagram: "https://www.instagram.com/KiteASM",
+            youtube: "https://www.youtube.com/@kiteasm01"
+        },
+        {
+            name: "Aditya Pundir",
+            role: "Sales Head",
+            image: "../teampictures/aditya.jpg",
+            instagram: "https://www.instagram.com/KiteASM",
+            youtube: "https://www.youtube.com/@kiteasm01"
+        }
+    ];
     return (
         <div className="dash-container">
             {/* Soft Grid Background */}

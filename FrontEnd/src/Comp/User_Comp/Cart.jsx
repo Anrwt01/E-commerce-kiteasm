@@ -205,7 +205,7 @@ const Cart = () => {
     if (hasManjha && hasCover && hasOswal) return 200;
     if (hasStand && hasCover) return 200;
     if (hasOswal && hasCover) return 200;
-     if (hasManjha && hasOswal) return 200;
+    if (hasManjha && hasOswal) return 200;
 
     if (kiteQty > 0) {
       if (hasBag6) return Math.ceil(kiteQty / 250) * 600;
@@ -226,6 +226,15 @@ const Cart = () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
 
+      // 1. Initial Load from Cache
+      const cached = localStorage.getItem("kiteasm_cart_cache");
+      if (cached) {
+        const items = JSON.parse(cached);
+        setCart(items);
+        calculateTotals(items);
+        setLoading(false);
+      }
+
       const res = await axios.get(`${API_BASE_URL}/user/cart`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -233,6 +242,9 @@ const Cart = () => {
       const items = res.data.cart?.items || res.data.items || [];
       setCart(items);
       calculateTotals(items);
+
+      // 2. Refresh Cache
+      localStorage.setItem("kiteasm_cart_cache", JSON.stringify(items));
     } catch (err) {
       console.error("Cart fetch error:", err);
     } finally {
@@ -443,7 +455,7 @@ const Cart = () => {
                   <div style={styles.cardHeader}>
                     <div style={styles.iconHeading}>
                       <ArrowRight size={16} />
-                      <span>Shipment Manifest</span>
+                      <span>Order total</span>
                     </div>
                   </div>
                   <div style={styles.cartList}>
@@ -468,7 +480,7 @@ const Cart = () => {
                     style={styles.orderBtn}
                     className="cart-order-btn"
                   >
-                     Payment
+                    Payment
                   </button>
                 </div>
               </div>

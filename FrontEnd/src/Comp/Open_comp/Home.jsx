@@ -55,14 +55,22 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      // 1. Try to load from cache
+      const cachedProducts = localStorage.getItem("kiteasm_home_products");
+      if (cachedProducts) {
+        setProducts(JSON.parse(cachedProducts));
+        setLoading(false);
+      }
+
       try {
-        setLoading(true);
         const res = await axios.get(`${API_BASE_URL}/user/products`);
         const allProducts = res.data.products || [];
-        // Filter to show ONLY exclusive products
         const exclusiveOnly = allProducts.filter(product => product.isExclusive === true);
+        const finalProducts = exclusiveOnly.slice(0, 8);
 
-        setProducts(exclusiveOnly.slice(0, 8));
+        setProducts(finalProducts);
+        // 2. Update cache
+        localStorage.setItem("kiteasm_home_products", JSON.stringify(finalProducts));
       } catch (err) {
         console.error("Error fetching products:", err);
       } finally {
@@ -112,6 +120,16 @@ const Home = () => {
         @keyframes backgroundScroll {
           from { background-position: 0 0; }
           to { background-position: 2400px 1200px; } /* Diagonally for more dynamic feel */
+        }
+
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        .skeleton {
+          background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.5s infinite;
         }
 
         .hero-content {
@@ -311,12 +329,19 @@ const Home = () => {
         @media (max-width: 600px) {
           .hero-section { height: 60vh; }
           .hero-title { font-size: 3.5rem; letter-spacing: 1px; }
-          .hero-tagline { font-size: 1rem; padding: 0 10px; }
-          .products-section { padding: 60px 5%; }
+          .hero-tagline { font-size: 0.9rem; padding: 0 10px; margin: 20px auto 30px; line-height: 1.4; max-width: 320px; }
+          .products-section { padding: 10px 5%; }
           .section-title { font-size: 1.8rem; }
-          /* 2-column grid for mobile as requested */
-          .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px; } 
+          .products-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px; } 
           .product-image { height: auto; aspect-ratio: 1/1; }
+          .product-name { 
+            font-size: 0.9rem; 
+            margin-bottom: 4px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+          }
+          .product-price { font-size: 0.95rem; }
         }
 
         .home-wishlist-btn {
@@ -329,6 +354,8 @@ const Home = () => {
           border-radius: 50%;
           width: 36px;
           height: 36px;
+          aspect-ratio: 1/1;
+          flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -352,7 +379,7 @@ const Home = () => {
 
           <h1 className="hero-title">Kiteasm</h1>
           <p className="hero-tagline">
-            Exclusive Collection of Premium <br></br> Kites & Manjha
+            Exclusive Collection of Premium Kites & Manjha
           </p>
           <Link to="/products" className="hero-btn">
             Explore All <ArrowRight size={18} />
@@ -386,12 +413,24 @@ const Home = () => {
                   <Heart size={18} fill={wishlistItems.includes(product._id) ? "var(--accent)" : "none"} />
                 </button>
 
-                <img
-                  src={`../uploads/${product._id}/main.jpg`}
-                  alt={product.name}
-                  className="product-image"
-                  onError={(e) => { e.target.src = "https://via.placeholder.com/300?text=Kiteasm+Premium"; }}
-                />
+                <div className="product-image-container skeleton" style={{ borderRadius: '18px', overflow: 'hidden' }}>
+                  <img
+                    src={`../uploads/${product._id}/main.jpg`}
+                    alt={product.name}
+                    loading="lazy"
+                    decoding="async"
+                    className="product-image"
+                    style={{ opacity: 0, transition: 'opacity 0.5s ease' }}
+                    onLoad={(e) => {
+                      e.target.style.opacity = 1;
+                      e.target.parentElement.classList.remove('skeleton');
+                    }}
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/300?text=Kiteasm+Premium";
+                      e.target.parentElement.classList.remove('skeleton');
+                    }}
+                  />
+                </div>
 
                 <div className="product-info">
                   <h3 className="product-name">{product.name}</h3>

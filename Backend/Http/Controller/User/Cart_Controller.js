@@ -24,34 +24,43 @@ export const addToCart = async (req, res) => {
         const userId = req.userId;
         const { productId, quantity = 1 } = req.body;
 
-        
+
         // console.log(productId)
         // console.log(typeof productId)
 
         const product = await ProductModel.findById(productId);
         if (!product) return res.status(404).json({ message: "Product not found" });
 
+        // Check overall stock
+        if (product.stock <= 0) {
+            return res.status(400).json({ message: "Product is out of stock" });
+        }
+
+        // Check if requested quantity exceeds available stock
+        if (quantity > product.stock) {
+            return res.status(400).json({ message: `Insufficient stock. Only ${product.stock} items available.` });
+        }
+
         let cart = await CartModel.findOne({ userId });
 
         if (cart) {
-            // Check if product exists in cart
             const itemIndex = cart.items.findIndex(
                 (p) => p.productId.toString() === productId
             );
 
             if (itemIndex > -1) {
-                // Product exists, update quantity
-                cart.items[itemIndex].quantity += quantity;
+                // Check if total new quantity exceeds stock
+                const totalReqQuantity = cart.items[itemIndex].quantity + quantity;
+                if (totalReqQuantity > product.stock) {
+                    return res.status(400).json({
+                        message: `Cannot add more. You already have ${cart.items[itemIndex].quantity} in cart, and total stock is ${product.stock}.`
+                    });
+                }
+                cart.items[itemIndex].quantity = totalReqQuantity;
             } else {
-                // Product does not exist, push new item
-                cart.items.push({
-                    productId,
-                    quantity,
-                    price: product.price
-                });
+                cart.items.push({ productId, quantity, price: product.price });
             }
         } else {
-            // New Cart
             cart = new CartModel({
                 userId,
                 items: [{ productId, quantity, price: product.price }]
@@ -70,10 +79,10 @@ export const addToCart = async (req, res) => {
 export const removeFromCart = async (req, res) => {
     try {
         // 1. Get productId from the URL (:productId)
-        const { productId } = req.params; 
+        const { productId } = req.params;
 
         // 2. Get userId from the auth middleware (protect/verifyToken)
-        const userId =  req.userId; 
+        const userId = req.userId;
 
         // 3. Find the cart
         let cart = await CartModel.findOne({ userId });
@@ -95,13 +104,13 @@ export const removeFromCart = async (req, res) => {
 
         // 5. Save and Return
         await cart.save();
-        
+
         // It's helpful to populate images/name again if your frontend expects it
         const updatedCart = await CartModel.findOne({ userId }).populate("items.productId");
 
-        res.status(200).json({ 
-            message: "Item removed", 
-            cart: updatedCart 
+        res.status(200).json({
+            message: "Item removed",
+            cart: updatedCart
         });
 
     } catch (error) {

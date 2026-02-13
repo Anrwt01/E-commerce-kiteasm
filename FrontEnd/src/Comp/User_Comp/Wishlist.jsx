@@ -15,12 +15,22 @@ const Wishlist = () => {
             navigate("/login");
             return;
         }
-        setLoading(true);
+
+        // 1. Load from cache
+        const cached = localStorage.getItem("kiteasm_wishlist_cache");
+        if (cached) {
+            setProducts(JSON.parse(cached));
+            setLoading(false);
+        }
+
         try {
             const res = await axios.get(`${API_BASE_URL}/my-wishlist`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setProducts(res.data.products || []);
+            const data = res.data.products || [];
+            setProducts(data);
+            // 2. Update cache
+            localStorage.setItem("kiteasm_wishlist_cache", JSON.stringify(data));
         } catch (error) {
             console.error("Wishlist fetch failed:", error);
         } finally {
